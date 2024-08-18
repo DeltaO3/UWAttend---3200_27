@@ -31,8 +31,3 @@ def student():
 @app.route('/login', methods=['GET'])
 def login():
     return flask.render_template('login.html')
-
-
-
-
-app.run(port=5958)
