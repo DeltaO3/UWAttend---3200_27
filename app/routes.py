@@ -6,13 +6,10 @@ from app import app
 
 # HOME -   /home/
 @app.route('/', methods=['GET'])
-def home():
-    return flask.render_template('home.html')
-	
 @app.route('/home', methods=['GET'])
 def home():
     return flask.render_template('home.html')
-
+	
 # CONFIGURATION - /session/ /admin/
 @app.route('/session', methods=['GET'])
 def session():
