@@ -6,12 +6,15 @@
 			<span class="navbar-toggler-icon"></span>
 		</button>
 		<div class="collapse navbar-collapse" id="navbarNav">
-			<!-- TODO: use jinja to change which one is active-->
 			<div class="navbar-nav nav-underline">
+				<!-- TODO: {% if nav == Home %} active {% endif %} in class for each page-->
 				<a class="nav-link active" aria-current="page" href="#">Home</a>
 				<a class="nav-link" href="#">Config</a>
+				<!-- TODO: add jinja login conditional-->
+				<a class="nav-link" href="#">Admin</a>
 			</div>
 		</div>
+		<span class="navbar-text fw-bold me-3">Username </span>
+		<button class="btn btn-danger">Log out</button>
 	</div>
-
 </nav>
