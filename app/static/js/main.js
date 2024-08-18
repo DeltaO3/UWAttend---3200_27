@@ -14,9 +14,16 @@ function updateTime() {
 
 // Function to update the database name dynamically
 function updateDatabaseName() {
-    const unitCode = document.getElementById('unit_code').value;
+    const unitCodeInput = document.getElementById('unit_code');
+    const semesterInput = document.getElementById('semester');
+
+    // UpperCase handling for unit code and semester
+    unitCodeInput.value = unitCodeInput.value.toUpperCase();
+    semesterInput.value = semesterInput.value.toUpperCase();
+
+    const unitCode = unitCodeInput.value;
     const sessionName = document.getElementById('session_name').value;
-    const semester = document.getElementById('semester').value;
+    const semester = semesterInput.value;
     const currentYear = new Date().getFullYear();
 
     if (unitCode && sessionName && semester) {
