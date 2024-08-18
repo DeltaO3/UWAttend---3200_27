@@ -1,0 +1,61 @@
+<!-- File: templates/session.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Session Configuration</h2>
+<form action="/session" method="POST">
+    <!-- Session Name Input -->
+    <div>
+        <label for="session_name">Session Name:</label>
+        <input type="text" id="session_name" name="session_name" placeholder="Enter here" list="session_list" required oninput="updateDatabaseName()">
+        <datalist id="session_list">
+            {% for session in sessions %}
+                <option value="{{ session }}">{{ session }}</option>
+            {% endfor %}
+        </datalist>
+    </div>
+
+    <!-- Unit Code Input -->
+    <div>
+        <label for="unit_code">Unit Code:</label>
+        <input type="text" id="unit_code" name="unit_code" placeholder="Enter here" list="unit_code_list" required oninput="updateDatabaseName()">
+        <datalist id="unit_code_list">
+            {% for code in unit_codes %}
+                <option value="{{ code }}">{{ code }}</option>
+            {% endfor %}
+        </datalist>
+    </div>
+
+    <!-- Semester Input -->
+    <div>
+        <label for="semester">Semester:</label>
+        <input type="text" id="semester" name="semester" placeholder="Enter here" list="semester_list" required oninput="updateDatabaseName()">
+        <datalist id="semester_list">
+            {% for sem in semesters %}
+                <option value="{{ sem }}">{{ sem }}</option>
+            {% endfor %}
+        </datalist>
+    </div>
+
+    <!-- Session Time -->
+    <div>
+        <label for="session_time_display">Current Time:</label>
+        <div id="session_time_display">Loading...</div>
+
+        <!-- Hidden input to store current time for backend -->
+        <input type="hidden" id="session_time" name="session_time">
+    </div>
+
+    <!-- Display Generated Database Name -->
+    <div>
+        <label for="database_name_display">Database Name:</label>
+        <div id="database_name_display"></div>
+    </div>
+
+    <!-- Buttons -->
+    <div>
+        <button type="button" onclick="window.history.back()">Back</button>
+        <button type="submit">Update</button>
+    </div>
+</form>
+{% endblock %}
