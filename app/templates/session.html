@@ -58,4 +58,12 @@
         <button type="submit">Update</button>
     </div>
 </form>
+
+<!-- Passing placeholder lists to main.js -->
+<script>
+    const validSessions = {{ sessions | tojson }};
+    const validUnitCodes = {{ unit_codes | tojson }};
+    const validSemesters = {{ semesters | tojson }};
+</script>
+
 {% endblock %}
