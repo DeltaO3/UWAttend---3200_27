@@ -1,9 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="vh-100 d-flex">
-	<div class="container-fluid bg-secondary flex-grow-1">
-		<h1 class="text-primary">Hello world!</h1>
+<div class="container">
+	<div class="row">
+		<p class="col-md-4 text-center">Unit name: <span>Here</span></p>
+		<p class="col-md-4 text-center">Session name: <span>Here</span></p>
+		<p class="col-md-4 text-center">Day/Time: <span>Here</span></p>
+	</div>
+	<div class="d-flex align-items-center flex-column">
+		<h1>
+			0 signed in of 0
+		</h1>
+		<h2>
+			Sign in Student:
+		</h2>
+		<!-- Use Flask forms?-->
+		<form>
+			<input type="search" class="form-control" id="studentSignIn" placeholder="Enter name or ID...">
+		</form>
+		<h1>
+			Class List:
+		</h1>
 	</div>
 </div>
 {% endblock %}
