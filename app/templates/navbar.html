@@ -12,11 +12,15 @@
 		<div class="collapse navbar-collapse row ms-1 ms-md-0" id="navbarNav">
 			<!-- Left side -->
 			<div class="navbar-nav nav-underline col-md-6">
-				<!-- TODO: {% if nav == Home %} active {% endif %} in class for each page-->
-				<a class="nav-link active" aria-current="page" href="#">Home</a>
-				<a class="nav-link" href="#">Config</a>
+				<!-- question: url_for doesnt detect the empty / as a route for home. is there a better way?-->
+				<a class="nav-link {% if request.path == url_for('home') or request.path == '/' %}active"
+					aria-current="page {% endif %}" href="{{ url_for('home')}}">
+					Home</a>
+				<a class="nav-link {% if request.path == url_for('session') %}active" aria-current="page{% endif %}"
+					href="{{ url_for('session')}}">Config</a>
 				<!-- TODO: add jinja login conditional-->
-				<a class="nav-link" href="#">Admin</a>
+				<a class="nav-link {% if request.path == url_for('admin') %}active" aria-current="page{% endif %}"
+					href="{{ url_for('admin')}}">Admin</a>
 			</div>
 			<!-- Right side -->
 			<div class="navbar-nav d-flex justify-content-end col-md-6">
