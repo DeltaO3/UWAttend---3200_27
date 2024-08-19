@@ -2,27 +2,25 @@
 {% block content %}
 
 <div class="container-fluid">
-	<div class="row mt-2 text-center">
-		<p class="col-md-4">Unit name: <span>Here</span></p>
-		<p class="col-md-4">Session name: <span>Here</span></p>
-		<p class="col-md-4">Day/Time: <span>Here</span></p>
-	</div>
-	<div class="d-flex align-items-center flex-column">
-		<h1 class="my-2">
-			0 signed in of 0
-		</h1>
-		<!-- Use Flask forms?-->
-		<form>
-			<label for="studentSignIn" class="form-label">Sign in Student</label>
-			<input type="search" class="form-control" id="studentSignIn" placeholder="Enter name or ID...">
-		</form>
-		<h2 class="my-2">
-			Class List:
-		</h2>
+	<div class="row mt-2 mx-5">
+		<div class="d-flex justify-content-center align-items-center col-md-4 bg-info-subtle order-md-2">
+			<h4>Unit-Session-Day/time</h4>
+		</div>
+		<div class="col-md-8 order-md-1">
+			<h2>
+				0 signed in of 0
+			</h2>
+			<!-- Use Flask forms?-->
+			<form>
+				<label for="studentSignIn" class="form-label">Sign in Student</label>
+				<input type="search" class="form-control" id="studentSignIn" placeholder="Enter name or ID...">
+			</form>
+		</div>
+
 	</div>
 
 	<!-- Table element -->
-	<div class="mx-4 mx-md-5" id="classTable">
+	<div class="mx-4 mt-3 mx-md-5" id="classTable">
 		<div class="row d-none d-md-flex text-center lead bg-dark-subtle rounded">
 			<span class="col">Name</span>
 			<span class="col">ID</span>
@@ -31,14 +29,10 @@
 		</div>
 
 		<div class="row table-element text-center my-2 py-2 rounded border border-primary">
-			<span class="d-md-none col-md-0 col-4 lead">Name:</span>
-			<span class="col-md col-8">Alex</span>
-			<span class="d-md-none col-md-0 col-4 lead">ID:</span>
-			<span class="col-md col-8">12345678</span>
-			<span class="d-md-none col-md-0 col-4 lead">Login:</span>
-			<span class="col-md col-8">Yes</span>
-			<span class="d-md-none col-md-0 col-4 lead">Photo:</span>
-			<span class="col-md col-8">Yes</span>
+			<span class="col-md col-6">Alex</span>
+			<span class="col-md col-6">12345678</span>
+			<span class="d-none d-md-inline col-md">Yes</span>
+			<span class="d-none d-md-inline col-md">Yes</span>
 		</div>
 	</div>
 
