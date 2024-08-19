@@ -43,20 +43,30 @@ function updateDatabaseName() {
 
 // Function to validate form inputs
 function validateConfig(event) {
-    const unitCode = document.getElementById('unit_code').value.toUpperCase();
-    const sessionName = document.getElementById('session_name').value;
+    const unitCodeInput = document.getElementById('unit_code');
+    const sessionNameInput = document.getElementById('session_name');
     // const semester = document.getElementById('semester').value.toUpperCase();
+
+    const unitCode = unitCodeInput.value.toUpperCase();
+    const sessionName = sessionNameInput.value;
 
     let isValid = true;
     let errorMessage = '';
 
+    // Reset error states
+    unitCodeInput.classList.remove('input-error');
+    sessionNameInput.classList.remove('input-error');
+
     if (!validSessions.includes(sessionName)) {
         isValid = false;
         errorMessage += 'Invalid session name. ';
+        sessionNameInput.classList.add('input-error');
+
     }
     if (!validUnitCodes.includes(unitCode)) {
         isValid = false;
         errorMessage += 'Invalid unit code. ';
+        unitCodeInput.classList.add('input-error');
     }
 //  if (!validSemesters.includes(semester)) {
 //      isValid = false;
