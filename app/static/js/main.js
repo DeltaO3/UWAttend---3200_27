@@ -41,45 +41,6 @@ function updateDatabaseName() {
     }
 }
 
-// Function to validate form inputs
-function validateConfig(event) {
-    const unitCodeInput = document.getElementById('unit_code');
-    const sessionNameInput = document.getElementById('session_name');
-    // const semester = document.getElementById('semester').value.toUpperCase();
-
-    const unitCode = unitCodeInput.value.toUpperCase();
-    const sessionName = sessionNameInput.value;
-
-    let isValid = true;
-    let errorMessage = '';
-
-    // Reset error states
-    unitCodeInput.classList.remove('input-error');
-    sessionNameInput.classList.remove('input-error');
-
-    if (!validSessions.includes(sessionName)) {
-        isValid = false;
-        errorMessage += 'Invalid session name. ';
-        sessionNameInput.classList.add('input-error');
-
-    }
-    if (!validUnitCodes.includes(unitCode)) {
-        isValid = false;
-        errorMessage += 'Invalid unit code. ';
-        unitCodeInput.classList.add('input-error');
-    }
-//  if (!validSemesters.includes(semester)) {
-//      isValid = false;
-//      errorMessage += 'Invalid semester. ';
-//  }
-
-    if (!isValid) {
-        alert(errorMessage);  // Show a popup alert with the error message
-        event.preventDefault();  // Prevent form submission
-    }
-
-}
-
 // Run code only on /session
 if (window.location.href.indexOf("session") != -1) {
     // Update the time every second
@@ -88,6 +49,4 @@ if (window.location.href.indexOf("session") != -1) {
     // Initial call to display the time immediately when the page loads
     updateTime();
 
-    // Add event listener to validate configuration menu form on submission
-    document.querySelector('form').addEventListener('submit', validateConfig);
 }
