@@ -5,8 +5,8 @@
 <h2>Session Configuration</h2>
 <form action="/session" method="POST">
     <!-- Session Name Input -->
-    <div>
-        <label for="session_name">Session Name:</label>
+    <div class="mb-3">
+        <label for="session_name" class="form-label">Session Name:</label>
         <input type="text" id="session_name" name="session_name" placeholder="Enter here" list="session_list" required oninput="updateDatabaseName()">
         <datalist id="session_list">
             {% for session in sessions %}
@@ -16,8 +16,8 @@
     </div>
 
     <!-- Unit Code Input -->
-    <div>
-        <label for="unit_code">Unit Code:</label>
+    <div class="mb-3">
+        <label for="unit_code" class="form-label">Unit Code:</label>
         <input type="text" id="unit_code" name="unit_code" placeholder="Enter here" list="unit_code_list" required oninput="updateDatabaseName()">
         <datalist id="unit_code_list">
             {% for code in unit_codes %}
@@ -39,8 +39,8 @@
     -->
 
     <!-- Session Time -->
-    <div>
-        <label for="session_time_display">Current Time:</label>
+    <div class="mb-3">
+        <label for="session_time_display" class="form-label">Current Time:</label>
         <div id="session_time_display">Loading...</div>
 
         <!-- Hidden input to store current time for backend -->
@@ -48,15 +48,15 @@
     </div>
 
     <!-- Display Generated Database Name -->
-    <div>
-        <label for="database_name_display">Database Name:</label>
+    <div class="mb-3">
+        <label for="database_name_display" class="form-label">Database Name:</label>
         <div id="database_name_display"></div>
     </div>
 
     <!-- Buttons -->
-    <div>
-        <button type="button" onclick="window.history.back()">Back</button>
-        <button type="submit">Update</button>
+    <div class="mt-3">
+        <button type="button" class="btn btn-secondary" onclick="window.history.back()">Back</button>
+        <button type="submit" class="btn btn-primary">Update</button>
     </div>
 </form>
 
