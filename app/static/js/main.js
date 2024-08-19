@@ -80,18 +80,14 @@ function validateConfig(event) {
 
 }
 
-// Need to combine these two if statements to one at some point... Is there a way to check if a webpage is specifically "session.html"????
-// Check if we are on a page with a session time display
-if (document.getElementById('session_time_display') && document.getElementById('session_time')) {
+// Run code only on /session
+if (window.location.href.indexOf("session") != -1) {
     // Update the time every second
     setInterval(updateTime, 1000);
 
     // Initial call to display the time immediately when the page loads
     updateTime();
-}
 
-// Check if form exists before adding event listener
-if (document.querySelector('form')){
     // Add event listener to validate configuration menu form on submission
     document.querySelector('form').addEventListener('submit', validateConfig);
 }
