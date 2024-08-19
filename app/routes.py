@@ -29,13 +29,13 @@ def student():
 def login():
 
     # placeholder values for testing
-    username = "u1"
-    password = "p1"
-    
+    test_username = "u1"
+    test_password = "p1"
+
     form = LoginForm()
 
     if flask.request.method == 'POST' and form.validate_on_submit() :
-        if form.username.data == username and form.password.data == password :
+        if form.username.data == test_username and form.password.data == test_password :
             return(flask.redirect(flask.url_for('session')))
 
     return flask.render_template('login.html', form=form)
