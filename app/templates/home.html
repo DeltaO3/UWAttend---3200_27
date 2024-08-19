@@ -2,8 +2,8 @@
 {% block content %}
 
 <div class="container-fluid">
-	<div class="row mt-2 mx-5">
-		<div class="d-flex justify-content-center align-items-center col-md-4 bg-info-subtle order-md-2">
+	<div class="row mt-2 mx-md-5 mx-2">
+		<div class="d-flex justify-content-center align-items-center col-md-4 order-md-2">
 			<h4>Unit-Session-Day/time</h4>
 		</div>
 		<div class="col-md-8 order-md-1">
@@ -27,13 +27,14 @@
 			<span class="col">Login</span>
 			<span class="col">Photo</span>
 		</div>
-
+		{% for student in students%}
 		<div class="row table-element text-center my-2 py-2 rounded border border-primary">
-			<span class="col-md col-6">Alex</span>
-			<span class="col-md col-6">12345678</span>
-			<span class="d-none d-md-inline col-md">Yes</span>
-			<span class="d-none d-md-inline col-md">Yes</span>
+			<span class="col-md col-6">{{student.name}}</span>
+			<span class="col-md col-6">{{student.id}}</span>
+			<span class="d-none d-md-inline col-md">{{student.login}}</span>
+			<span class="d-none d-md-inline col-md">{{student.photo}}</span>
 		</div>
+		{% endfor %}
 	</div>
 
 	<div class="fixed-bottom row pb-2 bg-body">
