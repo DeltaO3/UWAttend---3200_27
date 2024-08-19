@@ -6,20 +6,20 @@
 			aria-controls="navbarNav" aria-expanded="false" aria-label="navbar-toggler-icon">
 			<span class="navbar-toggler-icon"></span>
 		</button>
-		<!-- Left side -->
-		<div class="collapse navbar-collapse" id="navbarNav">
-			<div class="navbar-nav nav-underline">
+		<div class="collapse navbar-collapse row ms-1 ms-md-0" id="navbarNav">
+			<!-- Left side -->
+			<div class="navbar-nav nav-underline col-md-6">
 				<!-- TODO: {% if nav == Home %} active {% endif %} in class for each page-->
 				<a class="nav-link active" aria-current="page" href="#">Home</a>
 				<a class="nav-link" href="#">Config</a>
 				<!-- TODO: add jinja login conditional-->
 				<a class="nav-link" href="#">Admin</a>
 			</div>
-		</div>
-		<!-- Right side -->
-		<div class="collapse navbar-collapse" id="navbarNav">
-			<div class="navbar-nav ms-auto">
-				<span class="navbar-text fw-bold me-3 d-none d-md-block">Username</span>
+			<!-- Right side -->
+			<div class="navbar-nav d-flex justify-content-end col-md-6">
+				<span class="navbar-text fw-bold text-truncate me-3 d-none d-md-block ">
+					Usernaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+				</span>
 				<button class="btn btn-danger">Logout</button>
 			</div>
 		</div>
