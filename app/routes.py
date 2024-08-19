@@ -18,9 +18,16 @@ def session():
         # Handle form submission
         session_name = flask.request.form.get('session_name')
         unit_code = flask.request.form.get('unit_code')
-        semester = flask.request.form.get('semester')
+        # semester = flask.request.form.get('semester')
         session_time = flask.request.form.get('session_time')
         current_year = datetime.now().year
+
+        # Determine the semester based on the current month
+        current_month = datetime.now().month
+        if current_month <= 5:
+            semester = "SEM1"
+        else:
+            semester = "SEM2"
 
         # Create Database
         database_name = f"{unit_code}_{semester}_{current_year}"
@@ -38,9 +45,9 @@ def session():
     # Placeholder options for now. Replace these with info from the database
     placeholder_sessions = ["Safety", "CAD", "Computer", "PipeWorks", "Measurement", "ReverseEng", "DataMapping", "Soldering", "HandTools"]
     placeholder_unit_codes = ["GENG200", "CITS3007"]
-    placeholder_semesters = ["SEM1", "SEM2"]
+    # placeholder_semesters = ["SEM1", "SEM2"]
 
-    return flask.render_template('session.html', sessions=placeholder_sessions, unit_codes=placeholder_unit_codes, semesters=placeholder_semesters)
+    return flask.render_template('session.html', sessions=placeholder_sessions, unit_codes=placeholder_unit_codes)
 
 @app.route('/admin', methods=['GET'])
 def admin():

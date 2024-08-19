@@ -26,7 +26,7 @@
         </datalist>
     </div>
 
-    <!-- Semester Input -->
+    <!-- Semester Input
     <div>
         <label for="semester">Semester:</label>
         <input type="text" id="semester" name="semester" placeholder="Enter here" list="semester_list" required oninput="updateDatabaseName()">
@@ -36,6 +36,7 @@
             {% endfor %}
         </datalist>
     </div>
+    -->
 
     <!-- Session Time -->
     <div>
@@ -63,7 +64,6 @@
 <script>
     const validSessions = {{ sessions | tojson }};
     const validUnitCodes = {{ unit_codes | tojson }};
-    const validSemesters = {{ semesters | tojson }};
 </script>
 
 {% endblock %}

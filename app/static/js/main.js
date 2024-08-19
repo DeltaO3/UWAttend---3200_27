@@ -15,18 +15,25 @@ function updateTime() {
 // Function to update the database name dynamically
 function updateDatabaseName() {
     const unitCodeInput = document.getElementById('unit_code');
-    const semesterInput = document.getElementById('semester');
+    // const semesterInput = document.getElementById('semester');
 
     // UpperCase handling for unit code and semester
     unitCodeInput.value = unitCodeInput.value.toUpperCase();
-    semesterInput.value = semesterInput.value.toUpperCase();
+    // semesterInput.value = semesterInput.value.toUpperCase();
 
     const unitCode = unitCodeInput.value;
     const sessionName = document.getElementById('session_name').value;
-    const semester = semesterInput.value;
+    // const semester = semesterInput.value;
     const currentYear = new Date().getFullYear();
 
-    if (unitCode && sessionName && semester) {
+    // Calculate semester based on the current month
+    const currentMonth = new Date().getMonth() + 1;
+    let semester = "SEM2";
+    if (currentMonth <= 5) {
+        semester = "SEM1";
+    }
+
+    if (unitCode && sessionName) {
         const databaseName = `${unitCode}_${semester}_${currentYear}`;
         document.getElementById('database_name_display').textContent = databaseName;
     } else {
@@ -38,7 +45,7 @@ function updateDatabaseName() {
 function validateConfig(event) {
     const unitCode = document.getElementById('unit_code').value.toUpperCase();
     const sessionName = document.getElementById('session_name').value;
-    const semester = document.getElementById('semester').value.toUpperCase();
+    // const semester = document.getElementById('semester').value.toUpperCase();
 
     let isValid = true;
     let errorMessage = '';
@@ -51,10 +58,10 @@ function validateConfig(event) {
         isValid = false;
         errorMessage += 'Invalid unit code. ';
     }
-    if (!validSemesters.includes(semester)) {
-        isValid = false;
-        errorMessage += 'Invalid semester. ';
-    }
+//  if (!validSemesters.includes(semester)) {
+//      isValid = false;
+//      errorMessage += 'Invalid semester. ';
+//  }
 
     if (!isValid) {
         alert(errorMessage);  // Show a popup alert with the error message
