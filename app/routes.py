@@ -1,6 +1,6 @@
 import flask
 from app import app
-
+from app.forms import LoginForm
 
 
 
@@ -48,6 +48,17 @@ def student():
     return flask.render_template('student.html')
 	
 # LOGIN - /login/ 
-@app.route('/login', methods=['GET'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return flask.render_template('login.html')
+
+    # placeholder values for testing
+    test_username = "u1"
+    test_password = "p1"
+
+    form = LoginForm()
+
+    if flask.request.method == 'POST' and form.validate_on_submit() :
+        if form.username.data == test_username and form.password.data == test_password :
+            return(flask.redirect(flask.url_for('session')))
+
+    return flask.render_template('login.html', form=form)
