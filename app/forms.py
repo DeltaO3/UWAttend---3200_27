@@ -1,6 +1,11 @@
 from flask_wtf import FlaskForm
+import flask
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
 from wtforms.validators import DataRequired, ValidationError
+import sqlite3
+from app import app
+import app.routes
+
 
 class LoginForm(FlaskForm):
     username = StringField('Username:', validators=[DataRequired()])
@@ -9,23 +14,29 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Log In')
 
 class SessionForm(FlaskForm):
-    session_name = SelectField(
-        'Session Name',
-        choices=[
-            ('Safety', 'Safety'), ('CAD', 'CAD'), ('Computer', 'Computer'),
-            ('PipeWorks', 'PipeWorks'), ('Measurement', 'Measurement'),
-            ('ReverseEng', 'Reverse Engineering'), ('DataMapping', 'Data Mapping'),
-            ('Soldering', 'Soldering'), ('HandTools', 'Hand Tools')
-        ],
-        validators=[DataRequired()]
-    )
+    
+   
+    connect = sqlite3.connect("app\\Attendance.db")
+    cursor = connect.cursor() 
+    cursor.execute("SELECT UnitName FROM session" )
 
-    unit_code = SelectField(
-        'Unit Code',
-        choices=[
-            ('GENG200', 'GENG200'), ('CITS3007', 'CITS3007')
-        ],
-        validators=[DataRequired()]
-    )
+
+
+    
+    students = cursor.fetchall()
+    students_list = []
+    
+    for row in students:
+        
+        students_list.append(row[0])
+
+    print(students_list)
+
+
+    
+    
+    session_name = SelectField('Session Name', choices=students_list, validators=[DataRequired()])
+
+    unit_code = SelectField('Unit Code', choices=[('GENG200', 'GENG200'), ('CITS3007', 'CITS3007')], validators=[DataRequired()])
 
     submit = SubmitField('Update')
