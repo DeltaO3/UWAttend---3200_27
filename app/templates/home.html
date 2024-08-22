@@ -1,7 +1,47 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="bg-secondary vh-100 d-flex justify-content-center align-items-center">
-	<h1 class="text-primary">Hello world!</h1>
+<div class="container-fluid">
+	<div class="row mt-2 mx-md-5 mx-2">
+		<div class="d-flex justify-content-center align-items-center col-md-4 order-md-2">
+			<h4>Unit-Session-Day/time</h4>
+		</div>
+		<div class="col-md-8 order-md-1">
+			<h2>
+				0 signed in of 0
+			</h2>
+			<!-- Use Flask forms?-->
+			<form>
+				<label for="studentSignIn" class="form-label">Sign in Student</label>
+				<input type="search" class="form-control" id="studentSignIn" placeholder="Enter name or ID...">
+			</form>
+		</div>
+
+	</div>
+
+	<!-- Table element -->
+	<div class="mx-4 mt-3 mx-md-5" id="classTable">
+		<div class="row d-none d-md-flex text-center lead bg-dark-subtle rounded">
+			<span class="col">Name</span>
+			<span class="col">ID</span>
+			<span class="col">Login</span>
+			<span class="col">Photo</span>
+		</div>
+		{% for student in students%}
+		<div class="row table-element text-center my-2 py-2 rounded border border-primary">
+			<span class="col-md col-6">{{student.name}}</span>
+			<span class="col-md col-6">{{student.id}}</span>
+			<span class="d-none d-md-inline col-md">{{student.login}}</span>
+			<span class="d-none d-md-inline col-md">{{student.photo}}</span>
+		</div>
+		{% endfor %}
+	</div>
+
+	<div class="fixed-bottom row pb-2 bg-body">
+		<button class="btn col-md-3 col">Sync</button>
+		<button class="btn btn-danger col">Sign All Out</button>
+		<button class="btn col-md-3 col">Download</button>
+	</div>
+
 </div>
 {% endblock %}
