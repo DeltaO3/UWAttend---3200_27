@@ -1,5 +1,6 @@
 import flask
 from app import app
+from flask import request, render_template
 
 
 
@@ -45,9 +46,27 @@ def admin():
 # STUDENT - /student/
 @app.route('/student', methods=['GET'])
 def student():
-    return flask.render_template('student.html')
+    alex = {
+        "name": "alex",
+        "id": "12345678",
+        "login": "yes",
+        "photo": "no"
+    }
+    return flask.render_template('student.html', student=alex)
 	
 # LOGIN - /login/ 
 @app.route('/login', methods=['GET'])
 def login():
     return flask.render_template('login.html')
+
+@app.route('/save_changes', methods=['POST'])
+def save_changes():
+    # Access form data 
+    grade = request.form.get('grade')
+    comment = request.form.get('comment')
+    photo = request.form.get('photo')
+
+    # Process form data here (save changes to db)
+
+    return render_template('home.html') 
+
