@@ -11,9 +11,9 @@
 				0 signed in of 0
 			</h2>
 			<!-- Use Flask forms?-->
-			<form>
+			<form method="POST">
 				<label for="studentSignIn" class="form-label">Sign in Student</label>
-				<input type="search" class="form-control" id="studentSignIn" placeholder="Enter name or ID...">
+				<input type="search" class="form-control" id="studentSignIn" name="studentSignIn" placeholder="Enter name or ID...">
 			</form>
 		</div>
 
@@ -29,10 +29,10 @@
 		</div>
 		{% for student in students%}
 		<div class="row table-element text-center my-2 py-2 rounded border border-primary">
-			<span class="col-md col-6">{{student.name}}</span>
-			<span class="col-md col-6">{{student.id}}</span>
-			<span class="d-none d-md-inline col-md">{{student.login}}</span>
-			<span class="d-none d-md-inline col-md">{{student.photo}}</span>
+			<span class="col-md col-6">{{student[3]}}</span>
+			<span class="col-md col-6">{{student[0]}}</span>
+			<span class="d-none d-md-inline col-md">{{student[9]}}</span>
+			<span class="d-none d-md-inline col-md">{{student[8]}}</span>
 		</div>
 		{% endfor %}
 	</div>
