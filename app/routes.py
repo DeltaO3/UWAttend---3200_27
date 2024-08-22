@@ -8,7 +8,30 @@ from app import app
 @app.route('/', methods=['GET'])
 @app.route('/home', methods=['GET'])
 def home():
-    return flask.render_template('home.html')
+    #placeholder data for table
+    students = []
+    alex = {
+        "name": "alex",
+        "id": "12345678",
+        "login": "yes",
+        "photo": "yes"
+    }
+    bob = {
+        "name": "bob",
+        "id": "87654321",
+        "login": "no",
+        "photo": "yes"
+    }
+    cathy = {
+        "name": "cathy",
+        "id": "22224444",
+        "login": "yes",
+        "photo": "no"
+    }
+    students.append(alex)
+    students.append(bob)
+    students.append(cathy)
+    return flask.render_template('home.html', students=students)
 	
 # CONFIGURATION - /session/ /admin/
 @app.route('/session', methods=['GET'])
