@@ -3,46 +3,68 @@ from datetime import datetime
 from app import app
 from app.forms import LoginForm
 from app.forms import SessionForm
+import sqlite3
 
-
+global_unit_code = ""
+global_UserId =0
 
 # HOME -   /home/
-@app.route('/', methods=['GET'])
-@app.route('/home', methods=['GET'])
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/home', methods=['GET', 'POST'])
 def home():
-    #placeholder data for table
-    students = []
-    alex = {
-        "name": "alex",
-        "id": "12345678",
-        "login": "yes",
-        "photo": "yes"
-    }
-    bob = {
-        "name": "bob",
-        "id": "87654321",
-        "login": "no",
-        "photo": "yes"
-    }
-    cathy = {
-        "name": "cathy",
-        "id": "22224444",
-        "login": "yes",
-        "photo": "no"
-    }
-    students.append(alex)
-    students.append(bob)
-    students.append(cathy)
-    return flask.render_template('home.html', students=students)
+
+    global global_unit_code
+    connect = sqlite3.connect("app\\Attendance.db")
+    cursor = connect.cursor()
+    print(global_unit_code)
+    cursor.execute("SELECT * FROM attendance WHERE DateTime > datetime('now','-3 days') AND UnitId == ?", [global_unit_code])
+
+    students = cursor.fetchall() 
+
+
+
+     
+    if flask.request.method == "GET":      
+        
+        return flask.render_template('home.html', students=students)
+    
+
+    if flask.request.method == "POST":
+        
+        print("in /home/ post")
+        connect = sqlite3.connect("app\\Attendance.db")
+        name = flask.request.form['studentSignIn']
+        print(name)
+
+        cursor = connect.cursor() 
+        cursor.execute("INSERT INTO attendance (AttendanceID, UnitId, StudentId, Surname, Title, PreferedName, PeriodOfDay) VALUES (?,?,?,?,?,?,?)", (name,global_unit_code,2,name,2,2,2)) 
+        connect.commit()
+
+        cursor.execute("SELECT * FROM attendance WHERE DateTime > datetime('now','-1 day') AND UnitId == ?", [global_unit_code])
+
+        students = cursor.fetchall() 
+        
+
+        return flask.render_template('home.html', students=students)
+
+
+
+
+
 	
 # CONFIGURATION - /session/ /admin/
 @app.route('/session', methods=['GET', 'POST'])
 def session():
+
+    global global_unit_code
     form = SessionForm()
     if form.validate_on_submit():
+        
         # Handle form submission
-        session_name = form.session_name.data
-        unit_code = form.unit_code.data
+        session_name        = form.session_name.data
+        global_unit_code    = form.unit_code.data
+        unit_code           = form.unit_code.data
+        
         current_year = datetime.now().year
 
         # Determine the semester based on the current month
@@ -63,6 +85,12 @@ def session():
 
     return flask.render_template('session.html', form=form)
 
+
+
+
+
+
+
 @app.route('/admin', methods=['GET'])
 def admin():
     return flask.render_template('admin.html')
@@ -71,19 +99,46 @@ def admin():
 @app.route('/student', methods=['GET'])
 def student():
     return flask.render_template('student.html')
+
+
+
+
+
+
+
+
 	
 # LOGIN - /login/ 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 
-    # placeholder values for testing
-    test_username = "u1"
-    test_password = "p1"
-
+    
     form = LoginForm()
 
     if flask.request.method == 'POST' and form.validate_on_submit() :
-        if form.username.data == test_username and form.password.data == test_password :
+        
+        data = flask.request.form
+
+        username = data["username"]
+        password = data["password"]
+
+        
+        # SQLITE functionality
+        connect = sqlite3.connect("app\\Attendance.db")
+        cursor = connect.cursor() 
+        cursor.execute("SELECT UserId, hash, Username FROM login WHERE ? == hash AND ? == Username", [password, username])
+
+        # Fetch a velu that matches password (can only be one)
+        students = cursor.fetchall()
+        if len(students) == 0:
+            print("Wrong password")
+        else:
+            
+            
+            print(students[0][0], " has logged in")
             return(flask.redirect(flask.url_for('session')))
+
+        
+            
 
     return flask.render_template('login.html', form=form)
