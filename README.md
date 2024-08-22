@@ -71,3 +71,12 @@ Change port with
 ```
 flask run -p port_number
 ```
+
+# Testing `utilities.py`
+Currently the only functionality of `utilities.py` is to read and print out a `csv` file. This will change once database has been configured and frontend is developed.
+
+To test functionality:
+
+``` shell
+python utilites.py
+```
