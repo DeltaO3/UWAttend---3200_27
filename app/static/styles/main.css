@@ -7,4 +7,12 @@
 @keyframes flash-red {
     0%, 100% { background-color: white; }
     50% { background-color: #f8d7da; }
+
+.table-element {
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.table-element:hover {
+  background-color: var(--bs-primary);
 }

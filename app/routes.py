@@ -1,8 +1,8 @@
 import flask
-from app import app
 from datetime import datetime
+from app import app
+from app.forms import LoginForm
 from app.forms import SessionForm
-
 
 
 
@@ -10,7 +10,30 @@ from app.forms import SessionForm
 @app.route('/', methods=['GET'])
 @app.route('/home', methods=['GET'])
 def home():
-    return flask.render_template('home.html')
+    #placeholder data for table
+    students = []
+    alex = {
+        "name": "alex",
+        "id": "12345678",
+        "login": "yes",
+        "photo": "yes"
+    }
+    bob = {
+        "name": "bob",
+        "id": "87654321",
+        "login": "no",
+        "photo": "yes"
+    }
+    cathy = {
+        "name": "cathy",
+        "id": "22224444",
+        "login": "yes",
+        "photo": "no"
+    }
+    students.append(alex)
+    students.append(bob)
+    students.append(cathy)
+    return flask.render_template('home.html', students=students)
 	
 # CONFIGURATION - /session/ /admin/
 @app.route('/session', methods=['GET', 'POST'])
@@ -50,6 +73,17 @@ def student():
     return flask.render_template('student.html')
 	
 # LOGIN - /login/ 
-@app.route('/login', methods=['GET'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return flask.render_template('login.html')
+
+    # placeholder values for testing
+    test_username = "u1"
+    test_password = "p1"
+
+    form = LoginForm()
+
+    if flask.request.method == 'POST' and form.validate_on_submit() :
+        if form.username.data == test_username and form.password.data == test_password :
+            return(flask.redirect(flask.url_for('session')))
+
+    return flask.render_template('login.html', form=form)
