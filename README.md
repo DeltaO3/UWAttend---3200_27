@@ -39,7 +39,7 @@ Set the secret key:
 - WINDOWS (COMMAND PROMPT) :
 
 ```
-set SECRET_KEY='secret_string'
+setx SECRET_KEY 'insert_secret_key_here'
 ```
 
 - UNIX:
@@ -47,6 +47,7 @@ set SECRET_KEY='secret_string'
 ```
 export SECRET_KEY='secret_string'
 ```
+
 Note: variable name must be SECRET_KEY, but the value can be any string (a random and long key is best for security).
 
 **_When database things are done, add instructions here!_**
