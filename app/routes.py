@@ -1,6 +1,5 @@
 import flask
 from app import app
-from flask import request, render_template
 
 
 
@@ -68,5 +67,5 @@ def save_changes():
 
     # Process form data here (save changes to db)
 
-    return render_template('home.html') 
+    return flask.redirect('home') 
 
