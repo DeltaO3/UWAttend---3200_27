@@ -62,3 +62,7 @@ def login():
             return(flask.redirect(flask.url_for('session')))
 
     return flask.render_template('login.html', form=form)
+
+@app.route('/nfc', methods=['GET'])
+def nfc():
+    return flask.render_template('nfc.html')

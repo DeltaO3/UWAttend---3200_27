@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<br>
+<h1>NFC Reader Test</h1>
+<p>Click the button below and bring an NFC tag close to your device to scan it.</p>
+<button id="scan-button">Start NFC Scan</button>
+<div id="nfc-output">
+    <p>Waiting for NFC scan...</p>
+</div>
+
+<script>
+    document.getElementById('scan-button').addEventListener('click', () => {
+        // Check if NFC is supported
+        if ('NDEFReader' in window) {
+            const nfcOutput = document.getElementById('nfc-output');
+            const ndef = new NDEFReader();
+
+            ndef.scan().then(() => {
+                nfcOutput.innerHTML = "<p>NFC scan started successfully. Bring a tag close to scan.</p>";
+
+                ndef.onreading = event => {
+                    const message = event.message;
+                    nfcOutput.innerHTML = "<p>NFC message received.</p>";
+
+                    console.log("NFC message received:", message);
+                    console.log("Message records:", message.records);
+
+                    // Dump all message data
+                    const messageDump = document.createElement('pre');
+                    messageDump.textContent = `Message:\n${JSON.stringify(message, null, 2)}`;
+                    nfcOutput.appendChild(messageDump);
+
+                    message.records.forEach((record, index) => {
+                        console.log(`Record ${index + 1}:`, record);
+
+                        const recordDump = document.createElement('pre');
+                        recordDump.textContent = `Record ${index + 1}:\n${JSON.stringify(record, null, 2)}`;
+                        nfcOutput.appendChild(recordDump);
+                    });
+                };
+                ndef.onreadingerror = () => {
+                    console.log("NFC reading error.");
+                }
+            }).catch(error => {
+                nfcOutput.innerHTML = "<p>Error starting NFC scan: " + error + "</p>";
+                console.error("Error starting NFC scan:", error);
+            });
+        } else {
+            document.getElementById('nfc-output').innerHTML = "<p>NFC is not supported by this browser.</p>";
+            console.error("NFC is not supported by this browser.");
+        }
+    });
+</script>
+{% endblock %}

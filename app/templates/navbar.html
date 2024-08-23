@@ -21,6 +21,8 @@
 				<!-- TODO: add jinja login conditional-->
 				<a class="nav-link {% if request.path == url_for('admin') %}active" aria-current="page{% endif %}"
 					href="{{ url_for('admin')}}">Admin</a>
+					<a class="nav-link {% if request.path == url_for('nfc') %}active" aria-current="page{% endif %}"
+					href="{{ url_for('nfc')}}">NFC</a>
 			</div>
 			<!-- Right side -->
 			<div class="navbar-nav d-flex justify-content-end col-md-6">
