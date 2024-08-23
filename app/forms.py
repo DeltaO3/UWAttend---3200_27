@@ -30,13 +30,18 @@ class SessionForm(FlaskForm):
         
         students_list.append(row[0])
 
-    print(students_list)
-
-
     
+
+    cursor.execute("SELECT UnitCode FROM session" )
+    session_data = cursor.fetchall()
+    UnitCode = []
+
+    for row in session_data:
+        
+        UnitCode.append(row[0])
     
     session_name = SelectField('Session Name', choices=students_list, validators=[DataRequired()])
 
-    unit_code = SelectField('Unit Code', choices=[('GENG200', 'GENG200'), ('CITS3007', 'CITS3007')], validators=[DataRequired()])
+    unit_code = SelectField('Unit Code', choices=UnitCode, validators=[DataRequired()])
 
     submit = SubmitField('Update')
