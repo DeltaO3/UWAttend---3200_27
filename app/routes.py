@@ -70,12 +70,17 @@ def admin():
 # STUDENT - /student/
 @app.route('/student', methods=['GET'])
 def student():
-    return flask.render_template('student.html')
+    alex = {
+        "name": "alex",
+        "id": "12345678",
+        "login": "yes",
+        "photo": "no"
+    }
+    return flask.render_template('student.html', student=alex)
 	
 # LOGIN - /login/ 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-
     # placeholder values for testing
     test_username = "u1"
     test_password = "p1"
@@ -87,3 +92,15 @@ def login():
             return(flask.redirect(flask.url_for('session')))
 
     return flask.render_template('login.html', form=form)
+
+@app.route('/save_changes', methods=['POST'])
+def save_changes():
+    # Access form data 
+    grade = request.form.get('grade')
+    comment = request.form.get('comment')
+    photo = request.form.get('photo')
+
+    # Process form data here (save changes to db)
+
+    return flask.redirect('home') 
+
