@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+
+<p>Welcome to UWAttend. Please log in to access the app.</p>
+
+<form method="POST" novalidate>
+    {{ form.hidden_tag() }}
+
+    {{ form.username.label}}
+    {{ form.username }}
+    <br>
+
+    {% for error in form.username.errors %}
+    <span>{{ error }}</span><br>
+    {% endfor %}
+
+    {{ form.password.label }}
+    {{ form.password }}
+    <br>
+
+    {% for error in form.password.errors %}
+    <span>{{ error }}</span><br>
+    {% endfor %}
+
+    {{ form.remember_me() }} {{ form.remember_me.label}}
+    <br>
+    
+    {{ form.submit() }}
+
+</form>
+
+{% endblock %}
