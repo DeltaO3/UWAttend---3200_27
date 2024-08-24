@@ -35,7 +35,7 @@ class attendance_data(db.Model):
 # 
 class session_data(db.Model):
 
-    SessionId = db.Column(db.Integer, primary_key=True)
+    SessionId = db.Column(db.Text, primary_key=True)
     UserId = db.Column(db.Text)
     UnitName = db.Column(db.Text)
     UnitCode = db.Column(db.Text)
