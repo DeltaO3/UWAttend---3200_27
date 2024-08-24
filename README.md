@@ -34,7 +34,23 @@ pip install flask
 pip install -r requirements.txt
 ```
 
-**_When secret keys/database things are done, add instructions here!_**
+Set the secret key:
+
+- WINDOWS (COMMAND PROMPT) :
+
+```
+setx SECRET_KEY 'insert_secret_key_here'
+```
+
+- UNIX:
+
+```
+export SECRET_KEY='secret_string'
+```
+
+Note: variable name must be SECRET_KEY, but the value can be any string (a random and long key is best for security).
+
+**_When database things are done, add instructions here!_**
 
 Run the flask app :
 
@@ -54,4 +70,13 @@ Change port with
 
 ```
 flask run -p port_number
+```
+
+# Testing `utilities.py`
+Currently the only functionality of `utilities.py` is to read and print out a `csv` file. This will change once database has been configured and frontend is developed.
+
+To test functionality:
+
+``` shell
+python utilites.py
 ```
