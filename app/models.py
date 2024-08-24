@@ -31,14 +31,14 @@ class attendance_data(db.Model):
     PeriodOfDay = db.Column(db.Text)
     Consent = db.Column(db.Text)
     AttendanceMarked = db.Column(db.Text)
-    SessionId = db.Column(db.Integer)
+    SessionId = db.Column(db.Integer)        # this is a foreign key defined in the database itself
 
 # The Primary Key is a combination of (DateTime() + UnitCode)
 # UserId : this is who is running the class and configured the session
 class session_data(db.Model):
 
     SessionId = db.Column(db.Text, primary_key=True)
-    UserId = db.Column(db.Text)
+    UserId = db.Column(db.Text)                # this is a foreign key defined in the database itself
     UnitName = db.Column(db.Text)
     UnitCode = db.Column(db.Text)
 
