@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from app import app
 from app import db
-
+from datetime import datetime
 
 # admin, this is the classes that are allocated to each staff member by the admin
 # the values here will be listed in /Sessions/ so a faculty can only select what they are
@@ -26,7 +26,7 @@ class attendance_data(db.Model):
     Surname = db.Column(db.Text) 
     Title = db.Column(db.Text)
     PreferedName = db.Column(db.Text)
-    DateTime = db.Column(db.Text)
+    DateTime = db.Column(db.Text, datetime.now().strftime("%Y%m%d%H%M"))
     SignedOut = db.Column(db.Text)
     PeriodOfDay = db.Column(db.Text)
     Consent = db.Column(db.Text)
