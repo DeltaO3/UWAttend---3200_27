@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid">
+    <!-- Form element -->
+    <form method="POST" action="{{ url_for('save_changes') }}">
+        <div class="mx-4 mt-3 mx-md-5">
+            <div class="mb-3">
+                <strong>Student name:</strong> {{ student.name }}
+            </div>
+            <div class="mb-3">
+                <strong>Student ID:</strong> {{ student.id }}
+            </div>
+        </div>
+        <div class="mx-4 mt-3 mx-md-5">
+            <!-- Login Switch -->
+            <div style="display:flex; gap: 1em;">
+                <label for="login" class="form-check-label">Login:</label>
+                <div class="mb-3 form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="login" id="login" {% if student.login == 'yes' %} checked {% endif %}>
+                </div>
+            </div>
+            
+            <!-- Photo Switch -->
+            <div style="display:flex; gap: 1em;">
+                <label for="photo" class="form-check-label">Photo:</label>
+                <div class="mb-3 form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="photo" id="photo" {% if student.photo == 'yes' %} checked {% endif %}>
+                </div>
+            </div>
+
+            <!-- Grade Input -->
+            <div class="mb-3">
+                <label for="grade" class="form-label">Grade:</label>
+                <input type="text" name="grade" id="grade" value="{{ student.grade }}" class="form-control">
+            </div>
+        </div>
+
+        <!-- Comment Section -->
+        <div class="mx-4 mt-3 mx-md-5">
+            <label for="comment" class="form-label">Leave a Comment:</label>
+            <textarea name="comment" id="comment" rows="4" class="form-control"></textarea>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="fixed-bottom row pb-2 bg-body">
+            <button type="submit" class="btn btn-success col">Save Changes</button>
+            <a href="{{ url_for('home') }}" class="btn btn-danger col">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
