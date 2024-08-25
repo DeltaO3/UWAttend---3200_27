@@ -9,8 +9,9 @@
 				Does this student consent to being photographed?
 			</div>
 			<div class="modal-footer border-0 pt-0 d-flex justify-content-between">
-				<button type="button" class="btn btn-danger w-25 py-2" data-bs-dismiss="modal">No</button>
-				<button type="button" class="btn btn-success w-25 py-2">Yes</button> <!-- perform POST request!-->
+				<button type="button" class="btn btn-danger w-25 py-2" onclick="addAttendance()">No</button>
+				<button type="button" class="btn btn-success w-25 py-2" onclick="addAttendance('yes')">Yes</button>
+				<!-- perform POST request!-->
 			</div>
 		</div>
 	</div>

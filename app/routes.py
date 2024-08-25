@@ -104,3 +104,9 @@ def save_changes():
 
     return flask.redirect('home') 
 
+@app.route('/add_student', methods=['POST'])
+def add_student():
+    request = flask.request.get_json()
+    print(request["consent"])
+    
+    return "yes"
