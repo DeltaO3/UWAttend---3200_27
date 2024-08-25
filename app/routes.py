@@ -106,7 +106,14 @@ def save_changes():
 
 @app.route('/add_student', methods=['POST'])
 def add_student():
+    #gets the consent
     request = flask.request.get_json()
-    print(request["consent"])
-    
-    return "yes"
+    consent = request["consent"]
+    print(consent)
+    #if consent is yes, change it, else, do nothing with it and do normal request
+    #can opt to either add form data to the request JSON in consent.js, and access as above,
+    #or use flask.request.form.get instead with a properly set up flask form
+
+    # Demo JS and routing will ALWAYS reload the page after this route 
+    # - is there any need to return anything
+    return flask.redirect('home')
