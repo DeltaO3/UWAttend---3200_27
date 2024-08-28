@@ -29,3 +29,9 @@ class SessionForm(FlaskForm):
     )
 
     submit = SubmitField('Update')
+
+class AddUnitForm(FlaskForm):
+    unitcode = StringField('Unit Code:', validators=[DataRequired()])
+    semester = StringField('Semester:', validators=[DataRequired()])
+    consentcheck = BooleanField('Photo Consent Required?')
+    submit = SubmitField('Add Unit')

@@ -3,6 +3,7 @@ from datetime import datetime
 from app import app
 from app.forms import LoginForm
 from app.forms import SessionForm
+from app.forms import AddUnitForm
 
 
 
@@ -63,9 +64,14 @@ def session():
 
     return flask.render_template('session.html', form=form)
 
-@app.route('/admin', methods=['GET'])
+@app.route('/admin', methods=['GET', 'POST'])
 def admin():
-    return flask.render_template('admin.html')
+    form = AddUnitForm()
+    if form.validate_on_submit():
+        
+        # Redirect back to home page when done
+        return flask.redirect(flask.url_for('home'))
+    return flask.render_template('admin.html', form=form)
 
 # STUDENT - /student/
 @app.route('/student', methods=['GET'])

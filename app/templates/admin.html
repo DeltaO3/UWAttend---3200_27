@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Add a Unit</h2>
+<form method="POST">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+        {{ form.unitcode.label(class="form-label") }}
+        {{ form.unitcode() }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.semester.label(class="form-label") }}
+        {{ form.semester() }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.consentcheck.label(class="form-label") }}
+        {{ form.consentcheck() }}
+    </div>
+
+    <br/>
+    {{ form.submit() }}
+</form>
+
+{% endblock %}
