@@ -24,7 +24,7 @@ class attendance_data(db.Model):
     DateTime = db.Column(db.Text, default=datetime.now().strftime("%Y%m%d%H%M"))
     SignedOut = db.Column(db.Text)                           # empty until the sign all out button is pressed
     PeriodOfDay = db.Column(db.Text)
-    Consent = db.Column(db.Text, default="no")
+    Consent = db.Column(db.Text)
     AttendanceMarked = db.Column(db.Text, default="yes")     # defaults because its assumed when this function is used the attendance is getting marked
     SessionId = db.Column(db.Integer)                        # this is a foreign key defined in the database itself
 
