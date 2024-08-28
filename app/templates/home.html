@@ -15,9 +15,10 @@
 				{{ form.hidden_tag() }}
 				<div class="input-group">
 					<label for="studentSignIn" class="form-label visually-hidden">{{ form.student_sign_in.label }}</label>
-					{{ form.student_sign_in(class="form-control", placeholder="Enter name or ID...") }}
+					{{ form.student_sign_in(id='student_search', class="form-control", placeholder="Enter name or ID...") }}
 					<button type="submit" class="btn btn-primary">Submit</button>
 				</div>
+				<div id="suggestions_container" class="list-group mt-2"></div>
 				{{ form.consent_status(id="consentStatus", type="hidden") }}
 			</form>
 			{% include 'photoConsent.html'%}
@@ -52,4 +53,5 @@
 </div>
 
 <script src="{{url_for('static', filename='js/consent.js')}}"></script>
+<script src="{{ url_for('static', filename='js/student_suggestions.js') }}"></script>
 {% endblock %}

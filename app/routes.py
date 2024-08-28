@@ -17,7 +17,7 @@ def home():
     alex = {
         "name": "alex",
         "id": "12345678",
-        "login": "yes",
+        "login": "no",
         "photo": "yes"
     }
     bob = {
@@ -29,13 +29,14 @@ def home():
     cathy = {
         "name": "cathy",
         "id": "22224444",
-        "login": "yes",
+        "login": "no",
         "photo": "no"
     }
     
     students.append(alex)
     students.append(bob)
     students.append(cathy)
+
     return flask.render_template('home.html', form=form, students=students)
 	
 # CONFIGURATION - /session/ /admin/
@@ -111,9 +112,34 @@ def save_changes():
 def add_student():
     form = StudentSignInForm()
 
+    #placeholder data for table
+    students = []
+    alex = {
+        "name": "alex",
+        "id": "12345678",
+        "login": "no",
+        "photo": "yes",
+    }
+    bob = {
+        "name": "bob",
+        "id": "87654321",
+        "login": "no",
+        "photo": "yes"
+    }
+    cathy = {
+        "name": "cathy",
+        "id": "22224444",
+        "login": "no",
+        "photo": "no"
+    }
+    
+    students.append(alex)
+    students.append(bob)
+    students.append(cathy)
+
     if form.validate_on_submit():
         # Handle form submission
-        student_name = form.student_sign_in.data
+        student_name = form.student_sign_in.data.strip().lower()
         consent_status = form.consent_status.data
 
         # Printing for debugging
@@ -122,5 +148,6 @@ def add_student():
 
         # Update student info in database (login/consent)
 
-        # Redirect back to home page when done
         return flask.redirect(flask.url_for('home'))
+
+    return flask.redirect(flask.url_for('home'))

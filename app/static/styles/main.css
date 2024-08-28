@@ -22,3 +22,12 @@
 .table-element:hover {
   background-color: var(--bs-primary);
 }
+
+/* Darker grey for odd and even items for the student-suggestions on homepage */
+.list-group-item:nth-child(odd) {
+    background-color: #f8f9fa; /* Light grey for odd items */
+}
+
+.list-group-item:nth-child(even) {
+    background-color: #e9ecef; /* Slightly darker grey for even items */
+}
