@@ -3,8 +3,7 @@ from datetime import datetime
 from app import app
 from app.forms import LoginForm
 from app.forms import SessionForm
-
-
+from app.utilities import get_perth_time
 
 # HOME -   /home/
 @app.route('/', methods=['GET'])
@@ -39,14 +38,23 @@ def home():
 @app.route('/session', methods=['GET', 'POST'])
 def session():
     form = SessionForm()
+
+    # Get perth time
+    perth_time = get_perth_time()
+    humanreadable_perth_time = perth_time.strftime('%B %d, %Y, %H:%M:%S %Z')
+
+    # For JS formatting
+    formatted_perth_time = perth_time.isoformat()
+
+
     if form.validate_on_submit():
         # Handle form submission
         session_name = form.session_name.data
         unit_code = form.unit_code.data
-        current_year = datetime.now().year
+        current_year = perth_time.year
 
         # Determine the semester based on the current month
-        current_month = datetime.now().month
+        current_month = perth_time.month
         semester = "SEM1" if current_month <= 5 else "SEM2"
 
         # Create Database
@@ -57,11 +65,12 @@ def session():
         print(f"Unit Code: {unit_code}")
         print(f"Semester: {semester}")
         print(f"Database Name: {database_name}")
+        print(f"Current Date/Time: {humanreadable_perth_time}")
 
         # Redirect back to home page when done
         return flask.redirect(flask.url_for('home'))
 
-    return flask.render_template('session.html', form=form)
+    return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
 
 @app.route('/admin', methods=['GET'])
 def admin():
