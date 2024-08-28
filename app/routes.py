@@ -55,7 +55,7 @@ def session():
 
         # Determine the semester based on the current month
         current_month = perth_time.month
-        semester = "SEM1" if current_month <= 5 else "SEM2"
+        semester = "SEM1" if current_month <= 6 else "SEM2"
 
         # Create Database
         database_name = f"{unit_code}_{semester}_{current_year}"
