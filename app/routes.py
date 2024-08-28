@@ -6,9 +6,10 @@ from app.forms import LoginForm, SessionForm, StudentSignInForm
 
 
 # HOME -   /home/
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/home', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
+@app.route('/home', methods=['GET'])
 def home():
+
     form = StudentSignInForm()
     
     #placeholder data for table
@@ -31,20 +32,6 @@ def home():
         "login": "yes",
         "photo": "no"
     }
-
-    if form.validate_on_submit():
-        # Handle form submission
-        student_name = form.student_sign_in.data
-        consent_status = form.consent_status.data
-
-        # Printing for debugging
-        print(f"Student Name: {student_name}")
-        print(f"Consent Status: {consent_status}")
-
-        # Update student info in database (login/consent)
-
-        # Redirect back to home page when done
-        return flask.redirect(flask.url_for('home'))
     
     students.append(alex)
     students.append(bob)
@@ -119,3 +106,21 @@ def save_changes():
     # Process form data here (save changes to db)
 
     return flask.redirect('home') 
+
+@app.route('/add_student', methods=['POST'])
+def add_student():
+    form = StudentSignInForm()
+
+    if form.validate_on_submit():
+        # Handle form submission
+        student_name = form.student_sign_in.data
+        consent_status = form.consent_status.data
+
+        # Printing for debugging
+        print(f"Student Name: {student_name}")
+        print(f"Consent Status: {consent_status}")
+
+        # Update student info in database (login/consent)
+
+        # Redirect back to home page when done
+        return flask.redirect(flask.url_for('home'))

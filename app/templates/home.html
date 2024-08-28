@@ -11,7 +11,7 @@
 				0 signed in of 0
 			</h2>
 			<!-- Use Flask forms?-->
-			<form id="attendanceForm" method="POST" action="{{ url_for('home') }}">
+			<form id="attendanceForm" method="POST" action="{{ url_for('add_student') }}">
 				{{ form.hidden_tag() }}
 				<div class="input-group">
 					<label for="studentSignIn" class="form-label visually-hidden">{{ form.student_sign_in.label }}</label>
