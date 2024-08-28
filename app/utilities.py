@@ -3,6 +3,8 @@
 
 import csv
 import os
+from datetime import datetime
+import pytz
 
 # Set of functions used to read a populate the database from a csv file.
 # Checklist for future
@@ -37,6 +39,14 @@ def process_csv(file_path):
 
     # Import the data to the database (currently just a placeholder)
     import_data_to_db(data)
+
+# Return the current Perth time
+def get_perth_time():
+    utc_time = datetime.utcnow()
+    perth_tz = pytz.timezone('Australia/Perth')
+    perth_time = pytz.utc.localize(utc_time).astimezone(perth_tz)
+
+    return perth_time
 
 if __name__ == "__main__":
     # For testing purposes. Remove when integrating into main application
