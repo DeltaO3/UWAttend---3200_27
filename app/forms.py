@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField , FileField
 from wtforms.validators import DataRequired, ValidationError
 
 class LoginForm(FlaskForm):
@@ -33,5 +33,8 @@ class SessionForm(FlaskForm):
 class AddUnitForm(FlaskForm):
     unitcode = StringField('Unit Code:', validators=[DataRequired()])
     semester = StringField('Semester:', validators=[DataRequired()])
+    #Need to add custom validators to check if files uploaded end in csv
+    studentfile = FileField('Student List CSV Upload:', validators=[DataRequired()])
+    facilitatorfile = FileField('Facilitator List CSV Upload:')
     consentcheck = BooleanField('Photo Consent Required?')
     submit = SubmitField('Add Unit')

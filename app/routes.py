@@ -75,12 +75,26 @@ def session():
 
     return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
 
+#should be add unit routing
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     form = AddUnitForm()
+
+
     if form.validate_on_submit():
+
+        #Form data held here
+        newunit_code = form.unitcode.data
+        semester = form.semester.data
+        consent_required = form.consentcheck.data
+        student_file = form.studentfile.data
+        facilitator_file = form.facilitatorfile.data
+
+        #something here to save the csv files somewhere
+
+        #something here to upload csv fiels to database using utilities.py
         
-        # Redirect back to home page when done
+        # Redirect back to home page when done should lead back to admin page when implemented
         return flask.redirect(flask.url_for('home'))
     return flask.render_template('admin.html', form=form)
 

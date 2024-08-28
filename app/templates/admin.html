@@ -2,26 +2,36 @@
 {% block content %}
 
 <h2>Add a Unit</h2>
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
 
     <div class="mb-3">
         {{ form.unitcode.label(class="form-label") }}
-        {{ form.unitcode() }}
+        {{ form.unitcode(class="form-control") }}
     </div>
 
     <div class="mb-3">
         {{ form.semester.label(class="form-label") }}
-        {{ form.semester() }}
+        {{ form.semester(class="form-control") }}
     </div>
 
     <div class="mb-3">
         {{ form.consentcheck.label(class="form-label") }}
-        {{ form.consentcheck() }}
+        {{ form.consentcheck(class="form-check-input") }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.studentfile.label(class="form-label") }}
+        {{ form.studentfile(class="form-control-file") }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.facilitatorfile.label(class="form-label") }}
+        {{ form.facilitatorfile(class="form-control-file") }}
     </div>
 
     <br/>
-    {{ form.submit() }}
+    {{ form.submit(class="btn btn-primary") }}
 </form>
 
 {% endblock %}
