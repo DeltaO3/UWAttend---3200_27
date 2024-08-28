@@ -13,8 +13,11 @@
 			<!-- Use Flask forms?-->
 			<form id="attendanceForm" method="POST" action="{{ url_for('home') }}">
 				{{ form.hidden_tag() }}
-				<label for="studentSignIn" class="form-label">{{ form.student_sign_in.label }}</label>
-				{{ form.student_sign_in(class="form-control", placeholder="Enter name or ID...") }}
+				<div class="input-group">
+					<label for="studentSignIn" class="form-label visually-hidden">{{ form.student_sign_in.label }}</label>
+					{{ form.student_sign_in(class="form-control", placeholder="Enter name or ID...") }}
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</div>
 				{{ form.consent_status(id="consentStatus", type="hidden") }}
 			</form>
 			{% include 'photoConsent.html'%}
