@@ -1,11 +1,12 @@
 import flask
 from datetime import datetime
-from app import app
-from app.forms import LoginForm
-from app.forms import SessionForm
 from flask_sqlalchemy import SQLAlchemy
 from .models import db, attendance_data, session_data, login_data
 from sqlalchemy.exc import IntegrityError
+from app import app
+from app.forms import LoginForm
+from app.forms import SessionForm
+
 
 
 # HOME -   /home/
