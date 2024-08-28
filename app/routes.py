@@ -1,15 +1,16 @@
 import flask
 from datetime import datetime
 from app import app
-from app.forms import LoginForm
-from app.forms import SessionForm
+from app.forms import LoginForm, SessionForm, StudentSignInForm
 
 
 
 # HOME -   /home/
-@app.route('/', methods=['GET'])
-@app.route('/home', methods=['GET'])
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/home', methods=['GET', 'POST'])
 def home():
+    form = StudentSignInForm()
+    
     #placeholder data for table
     students = []
     alex = {
@@ -30,10 +31,25 @@ def home():
         "login": "yes",
         "photo": "no"
     }
+
+    if form.validate_on_submit():
+        # Handle form submission
+        student_name = form.student_sign_in.data
+        consent_status = form.consent_status.data
+
+        # Printing for debugging
+        print(f"Student Name: {student_name}")
+        print(f"Consent Status: {consent_status}")
+
+        # Update student info in database (login/consent)
+
+        # Redirect back to home page when done
+        return flask.redirect(flask.url_for('home'))
+    
     students.append(alex)
     students.append(bob)
     students.append(cathy)
-    return flask.render_template('home.html', students=students)
+    return flask.render_template('home.html', form=form, students=students)
 	
 # CONFIGURATION - /session/ /admin/
 @app.route('/session', methods=['GET', 'POST'])
@@ -96,24 +112,10 @@ def login():
 @app.route('/save_changes', methods=['POST'])
 def save_changes():
     # Access form data 
-    grade = request.form.get('grade')
-    comment = request.form.get('comment')
-    photo = request.form.get('photo')
+    grade = flask.request.form.get('grade')
+    comment = flask.request.form.get('comment')
+    photo = flask.request.form.get('photo')
 
     # Process form data here (save changes to db)
 
     return flask.redirect('home') 
-
-@app.route('/add_student', methods=['POST'])
-def add_student():
-    #gets the consent
-    request = flask.request.get_json()
-    consent = request["consent"]
-    print(consent)
-    #if consent is yes, change it, else, do nothing with it and do normal request
-    #can opt to either add form data to the request JSON in consent.js, and access as above,
-    #or use flask.request.form.get instead with a properly set up flask form
-
-    # Demo JS and routing will ALWAYS reload the page after this route 
-    # - is there any need to return anything
-    return flask.redirect('home')
