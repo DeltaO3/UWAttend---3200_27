@@ -11,10 +11,11 @@
 				0 signed in of 0
 			</h2>
 			<!-- Use Flask forms?-->
-			<form>
+			<form id="attendanceForm">
 				<label for="studentSignIn" class="form-label">Sign in Student</label>
 				<input type="search" class="form-control" id="studentSignIn" placeholder="Enter name or ID...">
 			</form>
+			{% include 'photoConsent.html'%}
 		</div>
 
 	</div>
@@ -44,4 +45,6 @@
 	</div>
 
 </div>
+
+<script src="{{url_for('static', filename='js/consent.js')}}"></script>
 {% endblock %}

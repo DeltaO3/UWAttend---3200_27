@@ -21,7 +21,7 @@
     <!-- Session Time -->
     <div>
         <label for="session_time_display" class="form-label">Current Time:</label>
-        <div id="session_time_display">Loading...</div>
+        <div id="session_time_display" data-perth-time="{{ perth_time }}">Loading...</div>
 
         <!-- Hidden input to store current time for backend -->
         <input type="hidden" id="session_time" name="session_time">

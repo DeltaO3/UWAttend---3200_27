@@ -4,12 +4,23 @@ function updateTime() {
     const timeElementDisplay = document.getElementById('session_time_display');
     // Time for backend
     const timeElementHidden = document.getElementById('session_time');
+    // Retrieve current Perth time string from the data attribute
+    let perthTimeStr = timeElementDisplay.getAttribute('data-perth-time');
 
-    const now = new Date();
-    const formattedTime = now.toLocaleTimeString();
+    // Convert and increment time for live feedback
+    let perthTime = new Date(perthTimeStr);
+    perthTime.setSeconds(perthTime.getSeconds() + 1);
 
+    // Format to human readable
+    const formattedTime = perthTime.toLocaleTimeString();
+
+    // Update the displayed time
     timeElementDisplay.textContent = formattedTime;
     timeElementHidden.value = formattedTime;
+
+    // Convert back to ISO string so it can be used in the next update
+    const newPerthTimeStr = perthTime.toISOString();
+    timeElementDisplay.setAttribute('data-perth-time', newPerthTimeStr);
 }
 
 // Function to update the database name dynamically
@@ -29,8 +40,8 @@ function updateDatabaseName() {
     // Calculate semester based on the current month
     const currentMonth = new Date().getMonth() + 1;
     let semester = "SEM2";
-    if (currentMonth <= 5) {
-        semester = "SEM1";
+    if (currentMonth <= 6) {
+        semester = "SEM1":
     }
 
     if (unitCode && sessionName) {

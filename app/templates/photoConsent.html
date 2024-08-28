@@ -1,0 +1,18 @@
+<div class="modal fade" id="consentModal" tabindex="-1" data-bs-backdrop="static" aria-labelledby="consentModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header border-0 pb-0 d-flex justify-content-center ">
+				<h1 class="modal-title fs-4" id="consentModalLabel">Consent to photography</h1>
+			</div>
+			<div class="modal-body text-center">
+				Does this student consent to being photographed?
+			</div>
+			<div class="modal-footer border-0 pt-0 d-flex justify-content-between">
+				<button type="button" class="btn btn-danger w-25 py-2" onclick="addAttendance()">No</button>
+				<button type="button" class="btn btn-success w-25 py-2" onclick="addAttendance('yes')">Yes</button>
+				<!-- perform POST request!-->
+			</div>
+		</div>
+	</div>
+</div>
