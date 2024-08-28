@@ -20,7 +20,7 @@ class attendance_data(db.Model):
     StudentId = db.Column(db.Text)     # callista provides this or user input
     Surname = db.Column(db.Text)       # callista provides this
     Title = db.Column(db.Text)         # callista provides this
-    PreferedName = db.Column(db.Text)  # callista provides this
+    PreferredName = db.Column(db.Text)  # callista provides this
     DateTime = db.Column(db.Text, default=datetime.now().strftime("%Y%m%d%H%M"))
     SignedOut = db.Column(db.Text)                           # empty until the sign all out button is pressed
     PeriodOfDay = db.Column(db.Text)
