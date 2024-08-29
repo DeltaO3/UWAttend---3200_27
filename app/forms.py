@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, HiddenField
 from wtforms.validators import DataRequired, ValidationError
 
 class LoginForm(FlaskForm):
@@ -29,3 +29,7 @@ class SessionForm(FlaskForm):
     )
 
     submit = SubmitField('Update')
+
+class StudentSignInForm(FlaskForm):
+    student_sign_in = StringField('Sign in Student', validators=[DataRequired()])
+    consent_status = HiddenField('Consent Status', default="none")
