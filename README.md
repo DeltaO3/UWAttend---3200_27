@@ -97,7 +97,7 @@ To sync the changes in another system, refresh migrations folder (so that the ne
 ```
 flask db upgrade
 ```
-To revert changes and go back to a previous migration:
+To revert changes:
 ```
 flask db downgrade
 ```
