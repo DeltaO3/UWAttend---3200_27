@@ -61,7 +61,7 @@ class Attendance(db.Model) :
     sessionID: Mapped[int] = mapped_column(ForeignKey('session.sessionID'), nullable=False)
     studentID: Mapped[int] = mapped_column(ForeignKey('student.studentID'), nullable=False)
     signInTime: Mapped[time] = mapped_column(nullable=False)
-    signOutTime: Mapped[time] = mapped_column(nullable=False)
+    signOutTime: Mapped[time] = mapped_column()
     facilitatorID: Mapped[int] = mapped_column(ForeignKey('user.userID'), nullable=False)
     marks: Mapped[Optional[str]] = mapped_column(String(100))     # | separated string
     comments: Mapped[Optional[str]] = mapped_column(String(1000))     # | separated string
