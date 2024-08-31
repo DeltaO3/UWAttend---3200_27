@@ -1,7 +1,7 @@
 from typing import List, Optional
 from datetime import date, time
 from sqlalchemy import ForeignKey, Column, Table, Integer, String
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy.orm import relationship, Mapped, mapped_column, DeclarativeBase
 from app import db
 
 class User(db.Model) :
@@ -14,7 +14,6 @@ class User(db.Model) :
 
     unitsCoordinate: Mapped[List['Unit']] = relationship(secondary='Units_Coordinators_Table', back_populates='coordinators')
     unitsFacilitate: Mapped[List['Unit']] = relationship(secondary='Units_Facilitators_Table', back_populates='facilitators')
-
 
 class Unit(db.Model) :
     unitID: Mapped[int] = mapped_column(primary_key=True)
@@ -36,7 +35,6 @@ class Unit(db.Model) :
     consent: Mapped[bool] = mapped_column(nullable=False)
     commentSuggestions: Mapped[Optional[str]] = mapped_column(String(2000))     # | separated string
 
-
 class Student(db.Model) :
     studentID: Mapped[int] = mapped_column(primary_key=True)
     studentNumber: Mapped[int] = mapped_column(nullable=False)
@@ -47,14 +45,12 @@ class Student(db.Model) :
     unitID: Mapped[int] = mapped_column(ForeignKey('unit.unitID'), nullable=False)
     consent: Mapped[int] = mapped_column(nullable=False)   # 0 (no), 1 (yes), -1 (consent not required)
 
-
 class Session(db.Model) :
     sessionID: Mapped[int] = mapped_column(primary_key=True)
     unitID: Mapped[int] = mapped_column(ForeignKey('unit.unitID'), nullable=False)
     sessionName: Mapped[str] = mapped_column(String(50), nullable=False)
     sessionTime: Mapped[str] = mapped_column(String(50), nullable=False)
     sessionDate: Mapped[date] = mapped_column(nullable=False)
-
 
 class Attendance(db.Model) :
     attendanceID: Mapped[int] = mapped_column(primary_key=True)
@@ -67,13 +63,19 @@ class Attendance(db.Model) :
     comments: Mapped[Optional[str]] = mapped_column(String(1000))     # | separated string
     consent_given: Mapped[int] = mapped_column(nullable=False)
 
+class Base(DeclarativeBase):
+    pass
 
-Units_Coordinators_Table = Table('Units_Facilitators_Table',
+Units_Coordinators_Table = Table(
+    'Units_Coordinators_Table',
+    Base.metadata,
     Column('userID', Integer, ForeignKey('user.userID'), primary_key=True),
     Column('unitID', Integer, ForeignKey('unit.unitID'), primary_key=True)
 )
 
-Units_Facilitators_Table = Table('Units_Facilitators_Table',
+Units_Facilitators_Table = Table(
+    'Units_Facilitators_Table',
+    Base.metadata,
     Column('userID', Integer, ForeignKey('user.userID'), primary_key=True),
     Column('unitID', Integer, ForeignKey('unit.unitID'), primary_key=True)
 )
