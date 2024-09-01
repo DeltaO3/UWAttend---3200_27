@@ -1,10 +1,10 @@
 from typing import List, Optional
 from datetime import date, time
 from sqlalchemy import ForeignKey, Column, Table, Integer, String
-from sqlalchemy.orm import relationship, Mapped, mapped_column, DeclarativeBase
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app import db
 
-# Define association tables before models
+# Define association tables
 Units_Coordinators_Table = db.Table(
     'Units_Coordinators_Table',
     Column('userID', Integer, ForeignKey('user.userID'), primary_key=True),
