@@ -25,7 +25,7 @@ class User(db.Model) :
     firstName: Mapped[Optional[str]] = mapped_column(String(50))
     lastName: Mapped[Optional[str]] = mapped_column(String(50))
     passwordHash: Mapped[str] = mapped_column(String(256), nullable=False)
-    type: Mapped[int] = mapped_column(nullable=False)   # 1 (admin), 2 (coordinator), 3 (facilitator)
+    userType: Mapped[int] = mapped_column(nullable=False)   # 1 (admin), 2 (coordinator), 3 (facilitator)
 
     unitsCoordinate: Mapped[List['Unit']] = relationship(secondary='Units_Coordinators_Table', back_populates='coordinators')
     unitsFacilitate: Mapped[List['Unit']] = relationship(secondary='Units_Facilitators_Table', back_populates='facilitators')
