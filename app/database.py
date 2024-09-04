@@ -50,7 +50,7 @@ def AddStudent(studentID, studentNumber, firstName, lastName, title, preferredNa
         db.session.rollback()
         print(f'An error occurred: {e}')  
 
-    return 0
+   
 
 def AddSession(sessionID, unitID, sessionName, sessionTime, sessionDate):
     
@@ -69,7 +69,7 @@ def AddSession(sessionID, unitID, sessionName, sessionTime, sessionDate):
         db.session.rollback()
         print(f'An error occurred: {e}')
 
-    return 0
+   
 
 def AddAttendance(attendanceID, sessionID, studentID, signOutTime=None, facilitatorID=None, marks=None, comments=None, consent_given=None):
 
@@ -95,7 +95,7 @@ def AddAttendance(attendanceID, sessionID, studentID, signOutTime=None, facilita
         db.session.rollback()
         print(f'An error occurred: {e}')
 
-    return 0
+    
 
 def AddUser(userID, uwaID, firstName, lastName, passwordHash, userType):
 
@@ -115,7 +115,7 @@ def AddUser(userID, uwaID, firstName, lastName, passwordHash, userType):
         db.session.rollback()
         print(f'An error occurred: {e}')
 
-    return 0
+    
 
 def AddUnit(unitID, unitCode, unitName, studyPeriod, active, startDate, endDate, sessionNames, sessionTimes, comments, marks, consent, commentSuggestions):
 
@@ -143,7 +143,7 @@ def AddUnit(unitID, unitCode, unitName, studyPeriod, active, startDate, endDate,
         db.session.rollback()
         print(f'An error occurred: {e}')
 
-    return 0
+   
 
 def GetAttendance(attendanceID = None, input_sessionID = None, studentID = None):
 
