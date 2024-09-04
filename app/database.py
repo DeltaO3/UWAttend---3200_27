@@ -163,12 +163,8 @@ def GetAttendance(attendanceID = None, input_sessionID = None, studentID = None)
     
     attendance_records = query.all()
     
-    # Debugging, this is how you access the records 
-    for record in attendance_records:
-        
-        print(f"Attendance ID: {record.attendanceID}, Sign-In Time: {record.signInTime}, Sign-Out Time: {record.signOutTime}")
-        
-    return 0
+    
+    return attendance_records
 
 def GetSession(sessionID = None, unitID = None):
 
@@ -186,12 +182,7 @@ def GetSession(sessionID = None, unitID = None):
     
     attendance_records = query.all()
     
-    # Debugging, this is how you access the records 
-    for record in attendance_records:
-        
-        print(f"Attendance ID: {record.sessionID}, Sign-In Time: {record.sessionTime}")
-        
-    return 0
+    return attendance_records
 
 def GetStudent(unitID = None, studentID = None, studentNumber = None):
 
@@ -211,12 +202,7 @@ def GetStudent(unitID = None, studentID = None, studentNumber = None):
     
     attendance_records = query.all()
     
-    # Debugging, this is how you access the records 
-    for record in attendance_records:
-        
-        print(f"Attendance ID: {record.firstName}")
-        
-    return 0
+    return attendance_records
 
 def GetUser(userID = None, uwaID = None, userType = None):
 
@@ -236,10 +222,5 @@ def GetUser(userID = None, uwaID = None, userType = None):
     
     attendance_records = query.all()
     
-    # Debugging, this is how you access the records 
-    for record in attendance_records:
-        
-        print(f"Attendance ID: {record.firstName}")
-        
-    return 0
+    return attendance_records
 
