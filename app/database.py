@@ -19,7 +19,7 @@ def SignOut(studentID, sessionID):
     new_signOutTime = get_perth_time().time()
     
     query = db.session.query(Attendance)
-    attendance_record = query.filter( and_(Attendance.studentID == studentID,Attendance.sessionID == sessionID )).first()
+    attendance_record = query.filter( and_(Attendance.studentID == studentID,Attendance.sessionID == sessionID, Attendance.signOutTime == None )).first()
    
     
     # If the record exists, update the signOutTime
