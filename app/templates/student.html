@@ -11,6 +11,16 @@
             <div class="mb-3">
                 <strong>Student ID:</strong> {{ student.id }}
             </div>
+            <div class="mb-3">
+                <label for="sign_in_time" class="form-check-label">Sign in time/date:</label> 
+                <input type="date" name="dateIn" id="dateIn" value="{{ attendance.signInDate }}" class="form-control">
+                <input type="time" name="timeIn" id="timeIn" value="{{ attendance.signInTime }}" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label for="sign_out_time" class="form-check-label">Sign out time/date:</label>
+                <input type="date" name="dateOut" id="dateOut" value="{{ attendance.signOutDate }}" class="form-control">
+                <input type="time" name="dateOut" id="dateOut" value="{{ attendance.signOutTime }}" class="form-control">
+            </div>
         </div>
         <div class="mx-4 mt-3 mx-md-5">
             <!-- Login Switch -->

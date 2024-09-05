@@ -88,7 +88,15 @@ def student():
         "login": "yes",
         "photo": "no"
     }
-    return flask.render_template('student.html', student=alex)
+
+    attendance = {
+        "signInDate": "2022-01-01", 
+        "signInTime": "09:01:27",
+        "signOutDate": "2022-01-01",
+        "signOutTime": "10:54:33",
+        "studentID": "12345678",
+    }
+    return flask.render_template('student.html', student=alex, attendance=attendance)
 
 @app.route('/remove_from_session', methods=['POST'])
 def remove_from_session():
