@@ -3,10 +3,10 @@
 
 import csv
 import os
-from datetime import datetime
 from app import app, db
 from app.models import Student
-import pytz
+from app.database import AddStudent
+from app.helpers import get_perth_time
 
 # Set of functions used to read and populate students into the database from a csv file.
 # Checklist for future
@@ -34,30 +34,26 @@ def student_exists(student_number):
 # Imports students into the database given a .csv file
 def import_student_in_db(data):
     for record in data:
-        # Ignore consent column and set every student to 0
-        consent_given = 0
-        student_number = record['Person ID']
         # PLACEHOLDER: Do we need unitID for students???
         unit = 'CITS3000'
 
+        student_number = record['Person ID']
         if student_exists(student_number):
             print(f"Duplicate found: {record['Given Names']} {record['Surname']} (ID: {student_number}) - Skipping import.")
             continue
 
-        new_student = Student(
+        # Call the AddStudent function from database.py
+        AddStudent(
+            studentID=None,  # Assuming None so the database auto-generates this
             studentNumber=record['Person ID'],
             firstName=record['Given Names'],
             lastName=record['Surname'],
             title=record['Title'],
             preferredName=record['Preferred Given Name'],
-            consent=consent_given,
-            unitID=unit
-
+            unitID=unit,  # Assuming a default unit ID, replace as needed
+            consent=0  # Setting consent to 0 as per your requirements
         )
-        db.session.add(new_student)
-        print(f"Added student: {new_student.firstName} {new_student.lastName} (ID: {new_student.studentNumber})")
-
-    db.session.commit()
+        print(f"Added student: {record['Given Names']} {record['Surname']} (ID: {student_number})")
 
 # Process a .csv file by reading and then importing into "student" table.
 def process_csv(file_path):
@@ -67,14 +63,6 @@ def process_csv(file_path):
         if data:
             # Import the data to the database
             import_student_in_db(data)
-
-# Return the current Perth time
-def get_perth_time():
-    utc_time = datetime.utcnow()
-    perth_tz = pytz.timezone('Australia/Perth')
-    perth_time = pytz.utc.localize(utc_time).astimezone(perth_tz)
-
-    return perth_time
 
 # For testing purposes. Remove when integrating into main application
 if __name__ == "__main__":
