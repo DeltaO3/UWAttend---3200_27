@@ -48,6 +48,19 @@
             <a href="{{ url_for('home') }}" class="btn btn-danger col">Cancel</a>
         </div>
     </form>
+
+    <!-- Remove From Session-->
+    <form id="remove_from_session_form" method="POST" action="{{ url_for('remove_from_session') }}">
+        <div class="mx-4 mt-3 mx-md-5">
+            <button type="submit" id="remove_from_session" class="btn btn-danger">Remove From Session</button>
+            <a href="{{ url_for('remove_from_session') }}"></a>
+        </div>
+        <div>
+            <input type="hidden" name="student_id" value="{{ student.id }}">
+        </div>
+    </form>
+    {% include 'removeStudent.html'%}
 </div>
 
+<script src="{{url_for('static', filename='js/removeStudent.js')}}"></script>
 {% endblock %}

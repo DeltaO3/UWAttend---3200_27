@@ -80,7 +80,7 @@ def admin():
     return flask.render_template('admin.html')
 
 # STUDENT - /student/
-@app.route('/student', methods=['GET'])
+@app.route('/student', methods=['GET', 'POST'])
 def student():
     alex = {
         "name": "alex",
@@ -89,6 +89,13 @@ def student():
         "photo": "no"
     }
     return flask.render_template('student.html', student=alex)
+
+@app.route('/remove_from_session', methods=['POST'])
+def remove_from_session():
+    # Access form data
+    student_id = flask.request.form.get('student_id')
+    print("Student ID: " + student_id)
+    return flask.redirect('home')
 	
 # LOGIN - /login/ 
 @app.route('/login', methods=['GET', 'POST'])
