@@ -37,6 +37,14 @@ class AddUnitForm(FlaskForm):
     studentfile = FileField('Student List CSV Upload:', validators=[DataRequired()])
     facilitatorfile = FileField('Facilitator List CSV Upload:')
     consentcheck = BooleanField('Photo Consent Required?')
+    sessionnames = StringField('Session Names:', validators=[DataRequired()])
+    sessionoccurence = SelectField(
+        'Session Occurence',
+        choices=[('Morning','Morning'), ('Afternoon', 'Afternoon')
+        ])
+    assessmentcheck = BooleanField('Sessions Assessed?')
+    commentsenabled = BooleanField('Student Comments Enabled?')
+    commentsuggestions = StringField('Comment Suggestions:')
     submit = SubmitField('Add Unit')
     
 class StudentSignInForm(FlaskForm):

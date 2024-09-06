@@ -89,10 +89,24 @@ def admin():
         consent_required = form.consentcheck.data
         student_file = form.studentfile.data
         facilitator_file = form.facilitatorfile.data
+        sessionname = form.sessionnames.data
+        sessionoccurence = form.sessionoccurence.data
+        assessmentcheck = form.assessmentcheck.data
+        commentsenabled = form.commentsenabled.data
+        commentsuggestions = form.commentsuggestions.data
 
         #something here to save the csv files somewhere
 
         #something here to upload csv fiels to database using utilities.py
+
+        print(f"Unit Code: {newunit_code}")
+        print(f"Semester: {semester}")
+        print(f"Consent: {consent_required}")
+        print(f"Session Names: {sessionname}")
+        print(f"Occurences: {sessionoccurence}")
+        print(f"Assessment Check: {assessmentcheck}")
+        print(f"Comments Check: {commentsenabled}")
+        print(f"Suggestions: {commentsuggestions}")
         
         # Redirect back to home page when done should lead back to admin page when implemented
         return flask.redirect(flask.url_for('home'))
