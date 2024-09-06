@@ -7,7 +7,7 @@ import zipfile
 from io import StringIO
 from app import app, db
 from app.models import Student, User, Attendance, Session, Unit
-from app.database import AddStudent
+from app.database import AddStudent, student_exists
 from app.helpers import get_perth_time
 
 # Set of functions used to read and populate students into the database from a csv file.
@@ -28,10 +28,6 @@ def read_csv_file(file_path):
     else:
         print(f"The file {file_path} does not exist.")
     return data
-
-# Checks for duplicate students
-def student_exists(student_number):
-    return db.session.query(Student).filter_by(studentNumber=student_number).first() is not None
 
 # Imports students into the database given a .csv file
 def import_student_in_db(data):
