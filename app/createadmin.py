@@ -16,8 +16,9 @@ type=os.getenv("USERTYPE")
 
 with app.app_context():
 	if(not GetUser(userID=id)):
-		print("adding env to database")
+		print("adding admin to database")
 		AddUser(id, uwaID, firstname, lastname, password, type)
-		print(f"{GetUser(userID=id)} is now in database")
+		admin = GetUser(userID=id)
+		print(f"{admin[0].firstName} {admin[0].lastName} is now in database")
 	else:
 		print("user already in database")
