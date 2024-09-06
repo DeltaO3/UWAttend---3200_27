@@ -5,3 +5,4 @@
 /app.db
 migrations/__pycache__
 migrations/versions/__pycache__
+.env
