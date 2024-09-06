@@ -7,7 +7,7 @@ import zipfile
 from io import StringIO
 from app import app, db
 from app.models import Student, User, Attendance, Session, Unit
-from app.database import AddStudent, student_exists
+from app.database import AddStudent, GetStudent, GetAttendance, GetSession, GetUser, GetUnit, student_exists
 from app.helpers import get_perth_time
 
 # Set of functions used to read and populate students into the database from a csv file.
@@ -63,9 +63,9 @@ def process_csv(file_path):
             import_student_in_db(data)
 
 # Export a single table's data to a CSV format and return it as a string
-def export_table_to_csv(model):
+def export_table_to_csv(fetch_function):
     # Query all records from the model's table
-    records = db.session.query(model).all()
+    records = fetch_function()
 
     if records:
         # Get the column names from the model's attributes
@@ -82,7 +82,7 @@ def export_table_to_csv(model):
 
         return csvfile.getvalue()
     else:
-        print(f"No data found for {model.__tablename__}")
+        print("No data found")
         return None
 
 # Export all tables to a single ZIP file containing multiple CSV files
@@ -90,31 +90,31 @@ def export_all_to_zip(zip_filename):
     with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
 
         # Export the Student table
-        student_csv = export_table_to_csv(Student)
+        student_csv = export_table_to_csv(GetStudent)
         if student_csv:
             zipf.writestr('students.csv', student_csv)
             print("Exported students.csv")
 
         # Export the User table
-        user_csv = export_table_to_csv(User)
+        user_csv = export_table_to_csv(GetUser)
         if user_csv:
             zipf.writestr('users.csv', user_csv)
             print("Exported users.csv")
 
         # Export the Attendance table
-        attendance_csv = export_table_to_csv(Attendance)
+        attendance_csv = export_table_to_csv(GetAttendance)
         if attendance_csv:
             zipf.writestr('attendance.csv', attendance_csv)
             print("Exported attendance.csv")
 
         # Export the Session table
-        session_csv = export_table_to_csv(Session)
+        session_csv = export_table_to_csv(GetSession)
         if session_csv:
             zipf.writestr('sessions.csv', session_csv)
             print("Exported sessions.csv")
 
         # Export the Unit table
-        unit_csv = export_table_to_csv(Unit)
+        unit_csv = export_table_to_csv(GetUnit)
         if unit_csv:
             zipf.writestr('units.csv', unit_csv)
             print("Exported units.csv")
