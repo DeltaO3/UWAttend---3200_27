@@ -99,6 +99,7 @@ def admin():
 
         #something here to upload csv fiels to database using utilities.py
 
+        #Printing for Debugging
         print(f"Unit Code: {newunit_code}")
         print(f"Semester: {semester}")
         print(f"Consent: {consent_required}")
