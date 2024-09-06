@@ -1,8 +1,23 @@
 from dotenv import load_dotenv
+from flask import Flask
+from config import Config
 import os
-from database import *
+from app import app, db
+from app.database import AddUser, GetUser
 
 load_dotenv()
 
 id=os.getenv("ID")
-print(f"adminID {id}")
+uwaID=os.getenv("UWAID")
+firstname=os.getenv("FIRSTNAME")
+lastname=os.getenv("LASTNAME")
+password=os.getenv("PASSWORD")
+type=os.getenv("USERTYPE")
+
+with app.app_context():
+	if(not GetUser(userID=id)):
+		print("adding env to database")
+		AddUser(id, uwaID, firstname, lastname, password, type)
+		print(f"{GetUser(userID=id)} is now in database")
+	else:
+		print("user already in database")
