@@ -75,9 +75,14 @@ def session():
 
     return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
 
-#should be add unit routing
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
+    
+    return flask.render_template('admin.html')
+
+#should be add unit routing
+@app.route('/addunit', methods=['GET', 'POST'])
+def addunit():
     form = AddUnitForm()
 
 
@@ -110,8 +115,8 @@ def admin():
         print(f"Suggestions: {commentsuggestions}")
         
         # Redirect back to home page when done should lead back to admin page when implemented
-        return flask.redirect(flask.url_for('home'))
-    return flask.render_template('admin.html', form=form)
+        return flask.redirect(flask.url_for('admin'))
+    return flask.render_template('addunit.html', form=form)
 
 # STUDENT - /student/
 @app.route('/student', methods=['GET'])
