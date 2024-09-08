@@ -2,7 +2,7 @@ import flask
 from datetime import datetime
 from app import app
 from app.forms import LoginForm, SessionForm, StudentSignInForm, AddUnitForm
-from app.utilities import get_perth_time
+from app.helpers import get_perth_time
 
 # HOME -   /home/
 @app.route('/', methods=['GET'])

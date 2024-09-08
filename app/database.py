@@ -1,9 +1,9 @@
 import flask
 from app import app
 from app import db
-from .models import db, Student, User, Attendance, Session
+from .models import db, Student, User, Attendance, Session, Unit
 from datetime import datetime
-from .utilities import get_perth_time
+from app.helpers import get_perth_time
 
 # sql
 from flask_sqlalchemy import SQLAlchemy
@@ -29,6 +29,10 @@ def SignOut(studentID, sessionID):
         print(f"SignOutTime updated ")
     else:
         print(f"No attendance record found ")
+
+# Helper to check for duplicate students
+def student_exists(student_number):
+    return db.session.query(Student).filter_by(studentNumber=student_number).first() is not None
 
 def AddStudent(studentID, studentNumber, firstName, lastName, title, preferredName, unitID, consent):    
    
@@ -158,7 +162,7 @@ def GetAttendance(attendanceID = None, input_sessionID = None, studentID = None)
         query = query.filter(Attendance.studentID == studentID)
     else:
         # no parameters were supplied.
-        print("You did not submit a parameter to use so returning all records")
+        print("You did not submit a parameter to use so returning all attendence records")
 
     
     attendance_records = query.all()
@@ -177,7 +181,7 @@ def GetSession(sessionID = None, unitID = None):
         query = query.filter(Session.unitID == unitID)
     else:
         # no parameters were supplied.
-        print("You did not submit a parameter to use so returning all records")
+        print("You did not submit a parameter to use so returning all session records")
 
     
     attendance_records = query.all()
@@ -197,7 +201,7 @@ def GetStudent(unitID = None, studentID = None, studentNumber = None):
         query = query.filter(Student.studentNumber == studentNumber)
     else:
         # no parameters were supplied.
-        print("You did not submit a parameter to use so returning all records")
+        print("You did not submit a parameter to use so returning all student records")
 
     
     attendance_records = query.all()
@@ -217,10 +221,29 @@ def GetUser(userID = None, uwaID = None, userType = None):
         query = query.filter(User.userType == userType)
     else:
         # no parameters were supplied.
-        print("You did not submit a parameter to use so returning all records")
+        print("You did not submit a parameter to use so returning all user records")
 
     
     attendance_records = query.all()
     
     return attendance_records
 
+def GetUnit(unitID = None, unitCode = None, studyPeriod = None):
+
+    query = db.session.query(Unit)
+
+    # handle the optional arguements, only one can be used
+    if unitID is not None:
+        query = query.filter(Unit.unitID == unitID)
+    elif unitCode is not None:
+        query = query.filter(Unit.unitCode == unitCode)
+    elif studyPeriod is not None:
+        query = query.filter(Unit.studyPeriod == studyPeriod)
+    else:
+        # no parameters were supplied.
+        print("You did not submit a parameter to use so returning all unit records")
+
+
+    unit_records = query.all()
+
+    return unit_records
