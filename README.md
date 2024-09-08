@@ -106,8 +106,8 @@ flask db downgrade
 # Testing `utilities.py`
 Currently the only functionality of `utilities.py` is to read and print out a `csv` file. This will change once database has been configured and frontend is developed.
 
-To test functionality:
+To test functionality, be on the project root and run:
 
 ``` shell
-python utilites.py
+python -m app.utilities
 ```

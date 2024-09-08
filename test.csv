@@ -1,7 +1,7 @@
-Unit Code,Student Number,Title,Last Name,Given Name,Preferred Name
-CITS3200,12345678,Mr,Smith,Johnathan,John
-CITS3200,87654321,Ms,Johnson,Elizabeth,Liz
-CITS2200,11223344,Mr,Brown,Michael,Mike
-CITS2200,44332211,Ms,Davis,Jessica,Jess
-CITS1200,55667788,Mr,Wilson,Alexander,Alex
-CITS1200,88776655,Ms,Taylor,Katherine,Kate
+Person ID,Surname,Title,Given Names,Preferred Given Name,Consent
+12345678,Duck,Mr,Daffy,Will,yes
+22345678,Roger,Mr.,Rabbit,Damian,yes
+32345678,Bunny,Dr.,Buggs,Asddddd,no
+12345652,Fffyffed,Mr,Fffffgg,Fffffgg,no
+12345653,aaa,Mr,Fffffgg,Fffffgg,no
+12345654,bbb,Mr,Fffffgg,Fffffgg,no
