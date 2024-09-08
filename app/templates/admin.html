@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-
-<h2>Admin Page</h2>
+<div class="container-fluid mt-2 mx-md-5 mx-2">
+    <h2>Admin Page</h2>
+    <br>
+    <a href="{{ url_for('addunit') }}" class="btn btn-primary">Add Unit</a>
+</div>
 
 {% endblock %}
