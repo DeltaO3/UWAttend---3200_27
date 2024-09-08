@@ -8,7 +8,6 @@ from io import StringIO
 from app import app, db
 from app.models import Student, User, Attendance, Session, Unit
 from app.database import AddStudent, GetStudent, GetAttendance, GetSession, GetUser, GetUnit, student_exists
-from app.helpers import get_perth_time
 
 # Set of functions used to read and populate students into the database from a csv file.
 # Checklist for future
