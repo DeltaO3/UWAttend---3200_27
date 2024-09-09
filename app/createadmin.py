@@ -5,20 +5,20 @@ import os
 from app import app, db
 from app.database import AddUser, GetUser
 
-load_dotenv()
+load_dotenv(override=True)
 
-id=os.getenv("ID")
 uwaID=os.getenv("UWAID")
 firstname=os.getenv("FIRSTNAME")
 lastname=os.getenv("LASTNAME")
 password=os.getenv("PASSWORD")
 type=os.getenv("USERTYPE")
 
+#uses uwaID as that is unique.
 with app.app_context():
-	if(not GetUser(userID=id)):
+	if(not GetUser(uwaID=uwaID)):
 		print("adding admin to database")
-		AddUser(id, uwaID, firstname, lastname, password, type)
-		admin = GetUser(userID=id)
-		print(f"{admin[0].firstName} {admin[0].lastName} is now in database")
+		AddUser(uwaID, firstname, lastname, password, type)
+		admin = GetUser(uwaID=uwaID)
+		print(f"{admin[0].firstName} {admin[0].lastName} {admin[0].userID} is now in database")
 	else:
 		print("user already in database")
