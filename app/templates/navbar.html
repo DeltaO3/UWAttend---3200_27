@@ -24,10 +24,10 @@
 			</div>
 			<!-- Right side -->
 			<div class="navbar-nav d-flex justify-content-end col-md-6">
-				<span class="navbar-text fw-bold text-truncate me-3 d-none d-md-block ">
-					Username
+				<span class="navbar-text fw-bold text-truncate me-3 d-none d-md-block">
+					{{ current_user.uwaID }}
 				</span>
-				<button class="btn btn-danger">Logout</button>
+				<a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
 			</div>
 		</div>
 	</div>
