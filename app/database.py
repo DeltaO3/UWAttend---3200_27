@@ -34,11 +34,10 @@ def SignOut(studentID, sessionID):
 def student_exists(student_number):
     return db.session.query(Student).filter_by(studentNumber=student_number).first() is not None
 
-def AddStudent(studentID, studentNumber, firstName, lastName, title, preferredName, unitID, consent):    
+def AddStudent(studentNumber, firstName, lastName, title, preferredName, unitID, consent):    
    
     try:
         StudentEntry = Student(
-            studentID       = studentID,
             studentNumber   = studentNumber,
             firstName       = firstName,
             lastName        = lastName,
@@ -56,11 +55,10 @@ def AddStudent(studentID, studentNumber, firstName, lastName, title, preferredNa
 
    
 
-def AddSession(sessionID, unitID, sessionName, sessionTime, sessionDate):
+def AddSession(unitID, sessionName, sessionTime, sessionDate):
     
     try:
         SessionEntry = Session(
-            sessionID   = sessionID,
             unitID      = unitID,
             sessionName = sessionName,
             sessionTime = sessionTime,
@@ -75,13 +73,12 @@ def AddSession(sessionID, unitID, sessionName, sessionTime, sessionDate):
 
    
 
-def AddAttendance(attendanceID, sessionID, studentID, signOutTime=None, facilitatorID=None, marks=None, comments=None, consent_given=None):
+def AddAttendance(sessionID, studentID, signOutTime=None, facilitatorID=None, marks=None, comments=None, consent_given=None):
 
     new_signInTime = get_perth_time().time()
     
     try:
         AttendanceEntry = Attendance(
-            attendanceID    = attendanceID,
             sessionID       = sessionID,
             studentID       = studentID,
             signInTime      = new_signInTime,
@@ -101,11 +98,10 @@ def AddAttendance(attendanceID, sessionID, studentID, signOutTime=None, facilita
 
     
 
-def AddUser(userID, uwaID, firstName, lastName, passwordHash, userType):
+def AddUser(uwaID, firstName, lastName, passwordHash, userType):
 
     try:
         UserEntry = User(
-            userID      = userID,
             uwaID       = uwaID,
             firstName   = firstName,
             lastName    = lastName,
@@ -121,11 +117,10 @@ def AddUser(userID, uwaID, firstName, lastName, passwordHash, userType):
 
     
 
-def AddUnit(unitID, unitCode, unitName, studyPeriod, active, startDate, endDate, sessionNames, sessionTimes, comments, marks, consent, commentSuggestions):
+def AddUnit(unitCode, unitName, studyPeriod, active, startDate, endDate, sessionNames, sessionTimes, comments, marks, consent, commentSuggestions):
 
     try:
         UnitEntry   = Unit(
-            unitID       = unitID,
             unitCode     = unitCode,
             unitName     = unitName,
             studyPeriod  = studyPeriod,
@@ -147,7 +142,7 @@ def AddUnit(unitID, unitCode, unitName, studyPeriod, active, startDate, endDate,
         db.session.rollback()
         print(f'An error occurred: {e}')
 
-   
+#Do get functions need primary key IDs?
 
 def GetAttendance(attendanceID = None, input_sessionID = None, studentID = None):
 
