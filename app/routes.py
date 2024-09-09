@@ -3,10 +3,15 @@ from datetime import datetime
 from app import app
 from app.forms import LoginForm, SessionForm, StudentSignInForm, AddUnitForm
 from app.helpers import get_perth_time
+from app.models import User
+import sqlalchemy as sa
+from app import database
+from flask_login import current_user, login_user, logout_user, login_required
 
 # HOME -   /home/
 @app.route('/', methods=['GET'])
 @app.route('/home', methods=['GET'])
+@login_required
 def home():
 
     form = StudentSignInForm()
@@ -39,7 +44,10 @@ def home():
 	
 # CONFIGURATION - /session/ /admin/
 @app.route('/session', methods=['GET', 'POST'])
+@login_required
 def session():
+
+    logout_user()
     form = SessionForm()
 
     # Get perth time
@@ -77,7 +85,11 @@ def session():
 
 #should be add unit routing
 @app.route('/admin', methods=['GET', 'POST'])
+@login_required
 def admin():
+    if current_user.userType != 1:
+        return flask.redirect('home')
+    
     form = AddUnitForm()
 
 
@@ -127,15 +139,21 @@ def student():
 # LOGIN - /login/ 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # placeholder values for testing
-    test_username = "u1"
-    test_password = "p1"
-
+    
+    if current_user.is_authenticated:
+        print("authenitcated")
+        return flask.redirect('home')
+    
     form = LoginForm()
+    if form.validate_on_submit():
+        user = database.GetUser(uwaID = form.username.data)                
 
-    if flask.request.method == 'POST' and form.validate_on_submit() :
-        if form.username.data == test_username and form.password.data == test_password :
-            return(flask.redirect(flask.url_for('session')))
+        if user is None or not database.CheckPassword(form.username.data, form.password.data):
+            flash('Invalid username or password')
+            return flask.redirect('login')
+        
+        login_user(user, remember=form.remember_me.data)
+        return flask.redirect('home')
 
     return flask.render_template('login.html', form=form)
 
