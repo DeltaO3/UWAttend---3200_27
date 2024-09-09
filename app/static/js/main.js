@@ -41,7 +41,7 @@ function updateDatabaseName() {
     const currentMonth = new Date().getMonth() + 1;
     let semester = "SEM2";
     if (currentMonth <= 6) {
-        semester = "SEM1":
+        semester = "SEM1";
     }
 
     if (unitCode && sessionName) {

@@ -14,10 +14,12 @@
   }
 }
 
+}
 .table-element {
   cursor: pointer;
   transition: background-color 0.3s ease-in-out;
 }
+
 
 .table-element:hover {
   background-color: var(--bs-primary);
