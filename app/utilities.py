@@ -41,7 +41,6 @@ def import_student_in_db(data):
 
         # Call the AddStudent function from database.py
         AddStudent(
-            studentID=None,  # Assuming None so the database auto-generates this
             studentNumber=record['Person ID'],
             firstName=record['Given Names'],
             lastName=record['Surname'],

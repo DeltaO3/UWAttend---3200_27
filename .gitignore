@@ -7,3 +7,4 @@ migrations/__pycache__
 migrations/versions/__pycache__
 .env
 database.zip
+.env
