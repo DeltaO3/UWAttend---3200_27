@@ -47,7 +47,7 @@ def home():
 @login_required
 def session():
 
-    logout_user()
+    
     form = SessionForm()
 
     # Get perth time
@@ -185,3 +185,10 @@ def add_student():
 
         # Redirect back to home page when done
         return flask.redirect(flask.url_for('home'))
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return flask.redirect(flask.url_for('login'))
