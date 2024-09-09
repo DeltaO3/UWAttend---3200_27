@@ -101,11 +101,10 @@ def AddAttendance(attendanceID, sessionID, studentID, signOutTime=None, facilita
 
     
 
-def AddUser(userID, uwaID, firstName, lastName, passwordHash, userType):
+def AddUser(uwaID, firstName, lastName, passwordHash, userType):
 
     try:
         UserEntry = User(
-            userID      = userID,
             uwaID       = uwaID,
             firstName   = firstName,
             lastName    = lastName,
