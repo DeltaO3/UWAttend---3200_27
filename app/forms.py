@@ -36,10 +36,16 @@ class MultiCheckboxField(SelectMultipleField):
     widget = widgets.ListWidget(prefix_label=False)
     option_widget = widgets.CheckboxInput()
 
+def validate_sessionoccurence(form, field):
+    if not field.data:
+        print("reached here")
+        raise ValidationError("Select at least one occurence")
+        
+    
 class AddUnitForm(FlaskForm):
     unitcode = StringField('Unit Code:', validators=[DataRequired()])
     semester = StringField('Semester:', validators=[DataRequired()])
-    stardate = DateField('Start Date', validators=[DataRequired()])
+    startdate = DateField('Start Date', validators=[DataRequired()])
     enddate = DateField('End Date', validators=[DataRequired()])
     #Need to add custom validators to check if files uploaded end in csv
     facilitatorlist = StringField('Facilitator IDs', validators=[DataRequired()], render_kw={"placeholder":"seperate with |"})
@@ -49,7 +55,8 @@ class AddUnitForm(FlaskForm):
     sessionoccurence = MultiCheckboxField(
         'Session Occurence',
         choices=[('Morning','Morning'), ('Afternoon', 'Afternoon')
-        ])
+        ],
+        validators=[validate_sessionoccurence])
     assessmentcheck = BooleanField('Sessions Assessed?')
     commentsenabled = BooleanField('Student Comments Enabled?')
     commentsuggestions = StringField('Comment Suggestions:', render_kw={"placeholder":"Optional; seperate with |"})

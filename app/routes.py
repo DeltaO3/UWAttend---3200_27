@@ -88,7 +88,7 @@ def admin():
 def addunit():
     form = AddUnitForm()
 
-    if form.validate_on_submit():
+    if form.validate_on_submit() and flask.request.method == 'POST':
         #Form data held here
         newunit_code = form.unitcode.data
         semester = form.semester.data
@@ -96,7 +96,7 @@ def addunit():
         start_date = form.startdate.data
         end_date = form.enddate.data
         student_file = form.studentfile.data
-        facilitator_file = form.facilitatorfile.data
+        facilitator_list = form.facilitatorlist.data
         sessionnames = form.sessionnames.data
         sessionoccurence = form.sessionoccurence.data
         assessmentcheck = form.assessmentcheck.data
@@ -119,8 +119,9 @@ def addunit():
         print(f"start: {start_date}")
         print(f"end: {end_date}")
         print(f"Consent: {consent_required}")
+        print(f"Facilitators: {facilitator_list}")
         print(f"Session Names: {sessionnames}")
-        print(f"Occurences: {sessionoccurence}")
+        print(f"Occurences (IMPORTANT): {sessionoccurence}")
         print(f"Assessment Check: {assessmentcheck}")
         print(f"Comments Check: {commentsenabled}")
         print(f"Suggestions: {commentsuggestions}")
