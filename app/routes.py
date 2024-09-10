@@ -78,7 +78,10 @@ def session():
 
 #ADMIM - /admin/
 @app.route('/admin', methods=['GET', 'POST'])
+@login_required
 def admin():
+    if current_user.userType != 1:
+        return flask.redirect('home')
     # I (James) do not know what to add here so for now it is blank
 
 
