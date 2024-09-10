@@ -45,18 +45,14 @@ def home():
 # CONFIGURATION - /session/ /admin/
 @app.route('/session', methods=['GET', 'POST'])
 @login_required
-def session():
-
-    
+def session():    
     form = SessionForm()
-
     # Get perth time
     perth_time = get_perth_time()
     humanreadable_perth_time = perth_time.strftime('%B %d, %Y, %H:%M:%S %Z')
 
     # For JS formatting
     formatted_perth_time = perth_time.isoformat()
-
 
     if form.validate_on_submit():
         # Handle form submission
@@ -67,7 +63,6 @@ def session():
         # Determine the semester based on the current month
         current_month = perth_time.month
         semester = "SEM1" if current_month <= 6 else "SEM2"
-
         # Create Database
         database_name = f"{unit_code}_{semester}_{current_year}"
 
@@ -89,7 +84,43 @@ def admin():
     # I (James) do not know what to add here so for now it is blank
     return flask.render_template('admin.html')
 
+# ADDUNIT - /addunit/ /admin/
+@app.route('/addunit', methods=['GET', 'POST'])
+def addunit():
+    form = AddUnitForm()
 
+
+    if form.validate_on_submit():
+
+        #Form data held here
+        newunit_code = form.unitcode.data
+        semester = form.semester.data
+        consent_required = form.consentcheck.data
+        student_file = form.studentfile.data
+        facilitator_file = form.facilitatorfile.data
+        sessionname = form.sessionnames.data
+        sessionoccurence = form.sessionoccurence.data
+        assessmentcheck = form.assessmentcheck.data
+        commentsenabled = form.commentsenabled.data
+        commentsuggestions = form.commentsuggestions.data
+
+        #something here to save the csv files somewhere
+
+        #something here to upload csv fiels to database using utilities.py
+
+        #Printing for Debugging
+        print(f"Unit Code: {newunit_code}")
+        print(f"Semester: {semester}")
+        print(f"Consent: {consent_required}")
+        print(f"Session Names: {sessionname}")
+        print(f"Occurences: {sessionoccurence}")
+        print(f"Assessment Check: {assessmentcheck}")
+        print(f"Comments Check: {commentsenabled}")
+        print(f"Suggestions: {commentsuggestions}")
+        
+        return flask.redirect(flask.url_for('admin'))
+    return flask.render_template('addunit.html', form=form)
+	
 # STUDENT - /student/
 @app.route('/student', methods=['GET'])
 def student():
