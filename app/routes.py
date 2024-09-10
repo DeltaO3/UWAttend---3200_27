@@ -13,9 +13,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 @app.route('/home', methods=['GET'])
 @login_required
 def home():
-
-    form = StudentSignInForm()
-    
+    form = StudentSignInForm()    
     #placeholder data for table
     students = []
     alex = {
@@ -72,7 +70,6 @@ def session():
         print(f"Semester: {semester}")
         print(f"Database Name: {database_name}")
         print(f"Current Date/Time: {humanreadable_perth_time}")
-
         # Redirect back to home page when done
         return flask.redirect(flask.url_for('home'))
 
@@ -116,8 +113,10 @@ def addunit():
         print(f"Suggestions: {commentsuggestions}")
         
         return flask.redirect(flask.url_for('admin'))
+	    
     return flask.render_template('addunit.html', form=form)
-	
+
+
 # STUDENT - /student/
 @app.route('/student', methods=['GET'])
 def student():
