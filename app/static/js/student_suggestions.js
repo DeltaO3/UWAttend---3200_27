@@ -50,3 +50,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 });
+
+function redirectToStudent(studentId) {
+    // Find the form for the specific student and submit it
+    document.getElementById('studentForm_' + studentId).submit();
+}

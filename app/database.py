@@ -150,7 +150,9 @@ def GetAttendance(attendanceID = None, input_sessionID = None, studentID = None)
     query = db.session.query(Attendance)
     
     # handle the optional arguements, only one can be used 
-    if attendanceID is not None:
+    if studentID is not None and input_sessionID is not None:
+        query = query.filter(Attendance.studentID == studentID, Attendance.sessionID == input_sessionID)
+    elif attendanceID is not None:
         query = query.filter(Attendance.attendanceID == attendanceID)
     elif input_sessionID is not None:
         query = query.filter(Attendance.sessionID == input_sessionID)

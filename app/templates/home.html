@@ -53,8 +53,11 @@ endwith %}
 			<span class="col">Login</span>
 			<span class="col">Photo</span>
 		</div>
-		{% for student in students%}
-		<div class="row table-element text-center my-2 py-2 rounded border border-primary">
+		{% for student in students%} <!-- onlick re-route to student page for this specific student -->
+		<div class="row table-element text-center my-2 py-2 rounded border border-primary" onclick="redirectToStudent('{{ student.id }}')">
+			<form id="studentForm_{{ student.id }}" action="/student" method="POST" style="display:none;">
+				<input type="hidden" name="student_id" value="{{ student.id }}">
+			</form>
 			<span class="col-md col-6">{{student.name}}</span>
 			<span class="col-md col-6">{{student.id}}</span>
 			<span class="d-none d-md-inline col-md">{{student.login}}</span>

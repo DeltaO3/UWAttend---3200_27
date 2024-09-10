@@ -5,35 +5,26 @@ from app import app
 from .forms import LoginForm, SessionForm, StudentSignInForm
 from .utilities import get_perth_time
 from .models import db, Student, Session, Attendance
-from .database import GetStudent, AddAttendance, GetSession
+from .database import GetStudent, AddAttendance, GetSession, GetAttendance
 
 # HOME -   /home/
 @app.route('/', methods=['GET'])
 @app.route('/home', methods=['GET'])
 def home():
-
     form = StudentSignInForm()
 
     # will need to be replaced with actual session logic later 
-    current_session = db.session.query(Session).filter_by(sessionID=1).first()  
-
-    print("session id (should be 1)", current_session.sessionID)
+    current_session = GetSession(sessionID=1)[0]
 
     # get students who have signed in for this session
-    attendance_records = db.session.query(Attendance).filter_by(sessionID=current_session.sessionID).all()
-
-    print("attendance records", attendance_records)
+    # attendance_records = db.session.query(Attendance).filter_by(sessionID=current_session.sessionID).all()
+    attendance_records = GetAttendance(input_sessionID=current_session.sessionID)
 
     # get student IDs from the attendance records
     logged_in_student_ids = [str(record.studentID) for record in attendance_records]
 
-    print("logged in student ids", logged_in_student_ids)
-    # print(type(logged_in_student_ids[0]))
-
     # get only the students who have logged in
     students = db.session.query(Student).filter(Student.studentID.in_(logged_in_student_ids)).all()
-
-    print("students", students)
 
     student_list = []
     signed_in_count = 0
@@ -48,15 +39,17 @@ def home():
 
         signed_in_count = signed_in_count + 1 if login_status == "yes" else signed_in_count
 
-        print("consent", student.consent)
-
         student_info = {
             "name": f"{student.preferredName} {student.lastName}",
-            "id": student.studentNumber,
+            "number": student.studentNumber,
+            "id": student.studentID,
             "login": login_status,  
-            "photo": "yes" if student.consent == 1 else "no" 
+            "photo": "yes" if student.consent == 1 else "no",
+            "time": attendance_record.signInTime
         }
         student_list.append(student_info)
+
+    student_list.sort(key=lambda x: x['time'], reverse=True)
 
     return flask.render_template('home.html', form=form, students=student_list, session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=1)
 	
@@ -103,15 +96,33 @@ def admin():
     return flask.render_template('admin.html')
 
 # STUDENT - /student/
-@app.route('/student', methods=['GET'])
+@app.route('/student', methods=['POST'])
 def student():
-    alex = {
-        "name": "alex",
-        "id": "12345678",
-        "login": "yes",
-        "photo": "no"
+    student_id = flask.request.form['student_id']
+
+    student = GetStudent(studentID=student_id)[0]
+
+    # will need to be replaced with actual session logic later
+    current_session = GetSession(sessionID=1)[0]
+
+    attendance_record = GetAttendance(input_sessionID=current_session.sessionID, studentID=student_id)[0]
+
+    login_status = "no" if attendance_record.signOutTime else "yes"
+
+    if not student:
+        flask.flash("Error - Student not found")
+        return flask.redirect(flask.url_for('home'))
+    
+    student_info = {
+        "name": f"{student.preferredName} {student.lastName}",
+        "number": student.studentNumber,
+        "id": student.studentID,
+        "login": login_status,  
+        "photo": "yes" if student.consent == 1 else "no",
+        "time": attendance_record.signInTime
     }
-    return flask.render_template('student.html', student=alex)
+
+    return flask.render_template('student.html', student=student_info)
 	
 # LOGIN - /login/ 
 @app.route('/login', methods=['GET', 'POST'])
@@ -158,12 +169,13 @@ def add_student():
         # Update student info in database (login/consent)
         # student = GetStudent(studentID=int(studentID))
         
-        student = db.session.query(Student).filter_by(studentID=int(studentID)).first()
+        student = GetStudent(studentID=studentID)[0]
 
         print(student)
         if student:
 
-            existing_attendance = db.session.query(Attendance).filter_by(studentID=studentID, sessionID=sessionID).first()
+            existing_attendance = db.session.query(Attendance).filter_by(studentID=studentID, sessionID=sessionID).first() # should there be a database function for this?
+
             if existing_attendance:
                 flask.flash("User already signed in", category='error')
                 return flask.redirect(flask.url_for('home'))
@@ -191,7 +203,7 @@ def student_suggestions():
     query = flask.request.args.get('q', '').strip().lower()
 
     # will need to be replaced with actual session logic later 
-    current_session = GetSession(sessionID=1)[0]  # 
+    current_session = GetSession(sessionID=1)[0] 
 
     # get students in the unit associated with the session
     students = GetStudent(unitID=current_session.unitID)
