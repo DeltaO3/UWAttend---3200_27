@@ -88,13 +88,6 @@ def admin():
 @app.route('/addunit', methods=['GET', 'POST'])
 def addunit():
     form = AddUnitForm()
-
-
-
-# ADDUNIT - /addunit/ /admin/
-@app.route('/addunit', methods=['GET', 'POST'])
-def addunit():
-    form = AddUnitForm()
     if form.validate_on_submit():
         #Form data held here
         newunit_code = form.unitcode.data
