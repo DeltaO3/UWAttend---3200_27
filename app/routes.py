@@ -3,7 +3,7 @@ from datetime import datetime
 
 from app import app
 from .forms import LoginForm, SessionForm, StudentSignInForm, AddUnitForm
-from .utilities import get_perth_time
+from .helpers import get_perth_time
 from .models import db, Student, User, Attendance, Session, Unit
 from .database import GetStudent, AddAttendance, GetSession, GetAttendance
 
