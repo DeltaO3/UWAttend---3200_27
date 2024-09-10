@@ -150,13 +150,16 @@ def student():
         flask.flash("Error - Student not found")
         return flask.redirect(flask.url_for('home'))
     
+    print("Sign in time: " + str(attendance_record.signInTime))
+    
     student_info = {
         "name": f"{student.preferredName} {student.lastName}",
         "number": student.studentNumber,
         "id": student.studentID,
         "login": login_status,  
         "photo": "yes" if student.consent == 1 else "no",
-        "time": attendance_record.signInTime
+        "signInTime": str(attendance_record.signInTime).split('.')[0], # this is because when I included the microseconds html's input type="time" wasn't formatting properly
+        "signOutTime": attendance_record.signOutTime,
     }
 
     return flask.render_template('student.html', student=student_info, attendance=attendance_record)

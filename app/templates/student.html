@@ -12,14 +12,12 @@
                 <strong>Student ID:</strong> {{ student.id }}
             </div>
             <div class="mb-3">
-                <label for="sign_in_time" class="form-check-label">Sign in time/date:</label> 
-                <input type="date" name="dateIn" id="dateIn" value="{{ attendance.signInDate }}" class="form-control">
-                <input type="time" name="timeIn" id="timeIn" value="{{ attendance.signInTime }}" class="form-control">
+                <label for="sign_in_time" class="form-check-label">Sign in time:</label> 
+                <input type="time" name="timeIn" id="timeIn" value="{{ student.signInTime }}" class="form-control">
             </div>
             <div class="mb-3">
-                <label for="sign_out_time" class="form-check-label">Sign out time/date:</label>
-                <input type="date" name="dateOut" id="dateOut" value="{{ attendance.signOutDate }}" class="form-control">
-                <input type="time" name="dateOut" id="dateOut" value="{{ attendance.signOutTime }}" class="form-control">
+                <label for="sign_out_time" class="form-check-label">Sign out time:</label>
+                <input type="time" name="dateOut" id="dateOut" value="{{ student.signOutTime }}" class="form-control">
             </div>
         </div>
         <div class="mx-4 mt-3 mx-md-5">
@@ -52,14 +50,16 @@
             <textarea name="comment" id="comment" rows="4" class="form-control"></textarea>
         </div>
 
+        <!-- <form id="remove_from_session_form" method="POST" action="{{ url_for('remove_from_session') }}" class="col">
+            <button type="submit" id="remove_from_session" class="btn btn-danger">Remove From Session</button>
+            <input type="hidden" name="student_id" value="{{ student.id }}">
+        </form> -->
+
         <!-- Action Buttons -->
         <div class="fixed-bottom row pb-2 bg-body">
+            <a href="{{ url_for('home') }}" class="btn btn-secondary col">Cancel</a>
             <button type="submit" class="btn btn-success col">Save Changes</button>
-            <a href="{{ url_for('home') }}" class="btn btn-danger col">Cancel</a>
-            <form id="remove_from_session_form" method="POST" action="{{ url_for('remove_from_session') }}" class="col">
-                <button type="submit" id="remove_from_session" class="btn btn-danger w-100">Remove From Session</button>
-                <input type="hidden" name="student_id" value="{{ student.id }}">
-            </form>
+            <button type="button" class="btn btn-danger col" data-bs-toggle="modal" data-bs-target="#removeStudentModal">Remove Student</button>
         </div>
     </form>
     {% include 'removeStudent.html'%}
