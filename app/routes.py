@@ -80,8 +80,16 @@ def session():
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     # I (James) do not know what to add here so for now it is blank
-	
+
+
     return flask.render_template('admin.html')
+
+# ADDUNIT - /addunit/ /admin/
+@app.route('/addunit', methods=['GET', 'POST'])
+def addunit():
+    form = AddUnitForm()
+
+
 
 # ADDUNIT - /addunit/ /admin/
 @app.route('/addunit', methods=['GET', 'POST'])
@@ -117,7 +125,6 @@ def addunit():
         return flask.redirect(flask.url_for('admin'))
 	    
     return flask.render_template('addunit.html', form=form)
-
 
 # STUDENT - /student/
 @app.route('/student', methods=['GET'])
