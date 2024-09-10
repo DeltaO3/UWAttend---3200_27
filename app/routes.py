@@ -149,7 +149,7 @@ def login():
         user = database.GetUser(uwaID = form.username.data)                
 
         if user is None or not database.CheckPassword(form.username.data, form.password.data):
-            flash('Invalid username or password')
+            flask.flash('Invalid username or password')
             return flask.redirect('login')
         
         login_user(user, remember=form.remember_me.data)
