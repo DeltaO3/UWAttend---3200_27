@@ -3,6 +3,8 @@ from datetime import datetime
 from app import app
 from app.forms import LoginForm, SessionForm, StudentSignInForm, AddUnitForm
 from app.helpers import get_perth_time
+from app.utilities import process_csv
+from app.database import *
 
 # HOME -   /home/
 @app.route('/', methods=['GET'])
@@ -86,9 +88,7 @@ def admin():
 def addunit():
     form = AddUnitForm()
 
-
     if form.validate_on_submit():
-
         #Form data held here
         newunit_code = form.unitcode.data
         semester = form.semester.data
@@ -101,9 +101,14 @@ def addunit():
         commentsenabled = form.commentsenabled.data
         commentsuggestions = form.commentsuggestions.data
 
+        AddUnit(newunit_code, "placeholder", semester, 1, "start date", "enddate", 
+                "session names","sessiontimes", commentsenabled , assessmentcheck, consent_required, "comment suggestions" )
+
         #something here to save the csv files somewhere
 
-        #something here to upload csv fiels to database using utilities.py
+        #upload csv file to database
+        process_csv(student_file)
+
 
         #Printing for Debugging
         print(f"Unit Code: {newunit_code}")
