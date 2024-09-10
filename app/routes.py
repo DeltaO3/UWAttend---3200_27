@@ -111,17 +111,13 @@ def addunit():
         if student_file.filename != '':
             student_file.save(student_file.filename)
         filename = student_file.filename
-        print(student_file, filename)
         process_csv(filename)
 
-        #AddUnit(newunit_code, "placeholdername", semester, 1, start_date, end_date, 
-        #        sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
+        AddUnit(newunit_code, "placeholdername", semester, 1, start_date, end_date, 
+                sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
         
-        #something here to save the csv files somewhere
+        #TODO: handle setting up new users/facilitators, and assign them to the units, and email. I can do this in this issue later if wanted, no time rn
 
-        #upload csv file to database
-       
-        
         
         return flask.redirect(flask.url_for('admin'))
     return flask.render_template('addunit.html', form=form)
