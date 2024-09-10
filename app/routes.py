@@ -103,28 +103,25 @@ def addunit():
         commentsenabled = form.commentsenabled.data
         commentsuggestions = form.commentsuggestions.data
 
+        #convert session occurences to a | string
+        occurences = ""
+        for time in sessionoccurence:
+            occurences += time + "|"
+        occurences = occurences[:-1]
+        if student_file.filename != '':
+            student_file.save(student_file.filename)
+        filename = student_file.filename
+        print(student_file, filename)
+        process_csv(filename)
 
         #AddUnit(newunit_code, "placeholdername", semester, 1, start_date, end_date, 
-        #       sessionnames, sessionoccurence, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
-
+        #        sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
+        
         #something here to save the csv files somewhere
 
         #upload csv file to database
-        #process_csv(student_file)
-
-
-        #Printing for Debugging
-        print(f"Unit Code: {newunit_code}")
-        print(f"Semester: {semester}")
-        print(f"start: {start_date}")
-        print(f"end: {end_date}")
-        print(f"Consent: {consent_required}")
-        print(f"Facilitators: {facilitator_list}")
-        print(f"Session Names: {sessionnames}")
-        print(f"Occurences (IMPORTANT): {sessionoccurence}")
-        print(f"Assessment Check: {assessmentcheck}")
-        print(f"Comments Check: {commentsenabled}")
-        print(f"Suggestions: {commentsuggestions}")
+       
+        
         
         return flask.redirect(flask.url_for('admin'))
     return flask.render_template('addunit.html', form=form)
