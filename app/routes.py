@@ -71,6 +71,7 @@ def session():
         print(f"Database Name: {database_name}")
         print(f"Current Date/Time: {humanreadable_perth_time}")
         # Redirect back to home page when done
+	    
         return flask.redirect(flask.url_for('home'))
 
     return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
@@ -79,6 +80,7 @@ def session():
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     # I (James) do not know what to add here so for now it is blank
+	
     return flask.render_template('admin.html')
 
 # ADDUNIT - /addunit/ /admin/
