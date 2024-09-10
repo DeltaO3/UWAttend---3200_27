@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid mt-2 mx-md-5 mx-2">
+<h2>Add a Unit</h2>
+<form method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3" style="max-width: 500px;">
+        {{ form.unitcode.label(class="form-label") }}
+        {{ form.unitcode(class="form-control") }}
+    </div>
+
+    <div class="mb-3" style="max-width: 500px;">
+        {{ form.semester.label(class="form-label") }}
+        {{ form.semester(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.studentfile.label(class="form-label") }}
+        {{ form.studentfile(class="form-control-file") }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.facilitatorfile.label(class="form-label") }}
+        {{ form.facilitatorfile(class="form-control-file") }}
+    </div>
+
+    <div class="mb-3" style="max-width: 500px;">
+        {{ form.sessionnames.label(class="form-label") }}
+        {{ form.sessionnames(class="form-control") }}
+    </div>
+
+    <div class="mb-3" style="max-width: 500px;">
+        {{ form.sessionoccurence.label(class="form-label") }}
+        {{ form.sessionoccurence(class="form-select") }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.assessmentcheck.label(class="form-label") }}
+        {{ form.assessmentcheck(class="form-check-input") }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.commentsenabled.label(class="form-label") }}
+        {{ form.commentsenabled(class="form-check-input") }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.consentcheck.label(class="form-label") }}
+        {{ form.consentcheck(class="form-check-input") }}
+    </div>
+
+    <div class="mb-3" style="max-width: 500px;">
+        {{ form.commentsuggestions.label(class="form-label") }}
+        {{ form.commentsuggestions(class="form-control") }}
+    </div>
+
+    <br/>
+    {{ form.submit(class="btn btn-primary") }}
+</form>
+</div>
+{% endblock %}

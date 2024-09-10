@@ -2,9 +2,9 @@ import flask
 from datetime import datetime
 
 from app import app
-from .forms import LoginForm, SessionForm, StudentSignInForm
+from .forms import LoginForm, SessionForm, StudentSignInForm, AddUnitForm
 from .utilities import get_perth_time
-from .models import db, Student, Session, Attendance
+from .models import db, Student, User, Attendance, Session, Unit
 from .database import GetStudent, AddAttendance, GetSession, GetAttendance
 
 # HOME -   /home/
@@ -91,9 +91,48 @@ def session():
 
     return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
 
-@app.route('/admin', methods=['GET'])
+#ADMIM - /admin/
+@app.route('/admin', methods=['GET', 'POST'])
 def admin():
+    # I (James) do not know what to add here so for now it is blank
     return flask.render_template('admin.html')
+
+# ADDUNIT - /addunit/ /admin/
+@app.route('/addunit', methods=['GET', 'POST'])
+def addunit():
+    form = AddUnitForm()
+
+
+    if form.validate_on_submit():
+
+        #Form data held here
+        newunit_code = form.unitcode.data
+        semester = form.semester.data
+        consent_required = form.consentcheck.data
+        student_file = form.studentfile.data
+        facilitator_file = form.facilitatorfile.data
+        sessionname = form.sessionnames.data
+        sessionoccurence = form.sessionoccurence.data
+        assessmentcheck = form.assessmentcheck.data
+        commentsenabled = form.commentsenabled.data
+        commentsuggestions = form.commentsuggestions.data
+
+        #something here to save the csv files somewhere
+
+        #something here to upload csv fiels to database using utilities.py
+
+        #Printing for Debugging
+        print(f"Unit Code: {newunit_code}")
+        print(f"Semester: {semester}")
+        print(f"Consent: {consent_required}")
+        print(f"Session Names: {sessionname}")
+        print(f"Occurences: {sessionoccurence}")
+        print(f"Assessment Check: {assessmentcheck}")
+        print(f"Comments Check: {commentsenabled}")
+        print(f"Suggestions: {commentsuggestions}")
+        
+        return flask.redirect(flask.url_for('admin'))
+    return flask.render_template('addunit.html', form=form)
 
 # STUDENT - /student/
 @app.route('/student', methods=['POST'])

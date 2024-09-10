@@ -78,6 +78,7 @@ flask run -p port_number
 ```
 
 # Modifying database schema
+
 If you have modified the database schema and want to update the database:
 
 - Create a migration
@@ -102,12 +103,23 @@ To revert changes:
 flask db downgrade
 ```
 
+# Initialising admin user
+
+Create a .env file in the project root, populated with the required values.
+
+In the root of the directory, run:
+
+```
+python -m app.createadmin
+```
+
+And the admin account should be added to the database.
 
 # Testing `utilities.py`
 Currently the only functionality of `utilities.py` is to read and print out a `csv` file. This will change once database has been configured and frontend is developed.
 
-To test functionality:
+To test functionality, be on the project root and run:
 
 ``` shell
-python utilites.py
+python -m app.utilities
 ```
