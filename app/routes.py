@@ -13,24 +13,22 @@ from .database import GetStudent, AddAttendance, GetSession, GetAttendance
 def home():
     form = StudentSignInForm()
 
-    # will need to be replaced with actual session logic later 
+    # TODO will need to be replaced with actual session logic later 
     current_session = GetSession(sessionID=1)[0]
 
     # get students who have signed in for this session
-    # attendance_records = db.session.query(Attendance).filter_by(sessionID=current_session.sessionID).all()
     attendance_records = GetAttendance(input_sessionID=current_session.sessionID)
 
     # get student IDs from the attendance records
     logged_in_student_ids = [str(record.studentID) for record in attendance_records]
 
     # get only the students who have logged in
-    students = db.session.query(Student).filter(Student.studentID.in_(logged_in_student_ids)).all()
+    students = db.session.query(Student).filter(Student.studentID.in_(logged_in_student_ids)).all() # TODO should there be a database function for this?
 
     student_list = []
     signed_in_count = 0
 
     for student in students:
-        
         # find the student's attendance record 
         attendance_record = next((record for record in attendance_records if record.studentID == student.studentID), None)
 
@@ -51,7 +49,7 @@ def home():
 
     student_list.sort(key=lambda x: x['time'], reverse=True)
 
-    return flask.render_template('home.html', form=form, students=student_list, session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=1)
+    return flask.render_template('home.html', form=form, students=student_list, session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=current_session.sessionID) 
 	
 # CONFIGURATION - /session/ /admin/
 @app.route('/session', methods=['GET', 'POST'])
@@ -141,10 +139,10 @@ def student():
 
     student = GetStudent(studentID=student_id)[0]
 
-    # will need to be replaced with actual session logic later
+    # TODO will need to be replaced with actual session logic later
     current_session = GetSession(sessionID=1)[0]
 
-    attendance_record = GetAttendance(input_sessionID=current_session.sessionID, studentID=student_id)[0]
+    attendance_record = GetAttendance(input_sessionID=current_session.sessionID, studentID=student_id)[0] 
 
     login_status = "no" if attendance_record.signOutTime else "yes"
 
@@ -199,21 +197,11 @@ def add_student():
         studentID = form.studentID.data
         consent_status = form.consent_status.data
         sessionID = form.session_id.data
-
-        # Printing for debugging
-        print(f"Student ID: {studentID}")
-        print(f"Consent Status: {consent_status}")
-        print(f"Session ID: {sessionID}")
-
-        # Update student info in database (login/consent)
-        # student = GetStudent(studentID=int(studentID))
         
         student = GetStudent(studentID=studentID)[0]
 
-        print(student)
         if student:
-
-            existing_attendance = db.session.query(Attendance).filter_by(studentID=studentID, sessionID=sessionID).first() # should there be a database function for this?
+            existing_attendance = db.session.query(Attendance).filter_by(studentID=studentID, sessionID=sessionID).first() # TODO should there be a database function for this?
 
             if existing_attendance:
                 flask.flash("User already signed in", category='error')
@@ -225,8 +213,7 @@ def add_student():
             db.session.commit()
 
             # Add attendance for the current session
-            AddAttendance(attendanceID=None, sessionID=sessionID, studentID=studentID, consent_given=1, facilitatorID=1)
-            print(f"Student {studentID} consent status updated to {consent_status}")
+            AddAttendance(sessionID=sessionID, studentID=studentID, consent_given=1, facilitatorID=1) # TODO need to be replaced with actual facilitator ID logic
 
             return flask.redirect(flask.url_for('home'))
 
@@ -241,7 +228,7 @@ def student_suggestions():
     # get the search query from the request
     query = flask.request.args.get('q', '').strip().lower()
 
-    # will need to be replaced with actual session logic later 
+    # TODO will need to be replaced with actual session logic later 
     current_session = GetSession(sessionID=1)[0] 
 
     # get students in the unit associated with the session
