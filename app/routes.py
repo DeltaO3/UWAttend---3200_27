@@ -160,10 +160,14 @@ def add_student():
         
         student = db.session.query(Student).filter_by(studentID=int(studentID)).first()
 
-        # TODO add check for if student is already signed in
-
         print(student)
         if student:
+
+            existing_attendance = db.session.query(Attendance).filter_by(studentID=studentID, sessionID=sessionID).first()
+            if existing_attendance:
+                flask.flash("User already signed in", category='error')
+                return flask.redirect(flask.url_for('home'))
+            
             consent_int = 1 if consent_status == "yes" else 0
 
             student.consent = consent_int
@@ -195,9 +199,17 @@ def student_suggestions():
     # filter students based on the query (by name or student number)
     suggestions = []
     for student in students:
-        if query in student.firstName.lower() or query in student.lastName.lower() or query in student.preferredName.lower() or query in str(student.studentNumber):
+        first_last_name = f"{student.firstName} {student.lastName}"
+        preferred_last_name = f"{student.preferredName} {student.lastName}"
+        if query in student.lastName.lower() or query in student.preferredName.lower() or query in preferred_last_name.lower() or query in str(student.studentNumber):
             suggestions.append({
                 'name': f"{student.preferredName} {student.lastName}",
+                'id': student.studentID,
+                'number': student.studentNumber
+            })
+        elif query in student.firstName.lower() or query in first_last_name.lower():
+            suggestions.append({
+                'name': f"{student.firstName} {student.lastName}",
                 'id': student.studentID,
                 'number': student.studentNumber
             })
