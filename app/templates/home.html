@@ -4,22 +4,24 @@
 <div class="container-fluid">
 	<div class="row mt-2 mx-md-5 mx-2">
 		<div class="d-flex justify-content-center align-items-center col-md-4 order-md-2">
-			<h4>Unit-Session-Day/time</h4>
+			<h4>{{ session.unitID }}-{{ session.sessionName }}-{{ session.sessionDate }}/{{ session.sessionTime }}</h4>
 		</div>
 		<div class="col-md-8 order-md-1">
 			<h2>
-				0 signed in of 0
+				{{ signed_in }} signed in of {{ total_students }}
 			</h2>
 			<!-- Use Flask forms?-->
 			<form id="attendanceForm" method="POST" action="{{ url_for('add_student') }}">
 				{{ form.hidden_tag() }}
 				<div class="input-group">
 					<label for="studentSignIn" class="form-label visually-hidden">{{ form.student_sign_in.label }}</label>
+					{{ form.studentID(id='studentID') }}
 					{{ form.student_sign_in(id='student_search', class="form-control", placeholder="Enter name or ID...") }}
 					<button type="submit" class="btn btn-primary">Submit</button>
 				</div>
 				<div id="suggestions_container" class="list-group mt-2"></div>
 				{{ form.consent_status(id="consentStatus", type="hidden") }}
+				{{ form.session_id(id="session_id", value=session['sessionID'] ) }}
 			</form>
 			{% include 'photoConsent.html'%}
 		</div>
@@ -28,6 +30,7 @@
 
 	<!-- Table element -->
 	<div class="mx-4 mt-3 mx-md-5" id="classTable">
+		{% if total_students > 0 %}
 		<div class="row d-none d-md-flex text-center lead bg-dark-subtle rounded">
 			<span class="col">Name</span>
 			<span class="col">ID</span>
@@ -42,6 +45,7 @@
 			<span class="d-none d-md-inline col-md">{{student.photo}}</span>
 		</div>
 		{% endfor %}
+		{% endif %}
 	</div>
 
 	<div class="fixed-bottom row pb-2 bg-body">

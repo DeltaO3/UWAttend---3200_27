@@ -3,26 +3,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const suggestionsContainer = document.getElementById('suggestions_container');
     
     if (studentInput) {
-        // Placeholder data
-        const students = [
-            { name: "alex", id: "12345678" },
-            { name: "bob", id: "87654321" },
-            { name: "cathy", id: "22224444" },
-            { name: "catherine", id: "33335555" },
-            { name: "charlie", id: "44446666" },
-            { name: "caterina", id: "55557777" },
-            { name: "grace", id: "66668888" },
-            { name: "harry", id: "77779999" },
-        ];
 
         studentInput.addEventListener('input', function () {
             const query = studentInput.value.trim().toLowerCase();
             
             if (query.length > 0) {
-                const filteredStudents = students.filter(student => 
-                    student.name.toLowerCase().includes(query) || student.id.includes(query)
-                );
-                displaySuggestions(filteredStudents);
+                // Send an AJAX request to the server to get student suggestions
+                fetch(`/student_suggestions?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        displaySuggestions(data);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching student suggestions:', error);
+                    });
             } else {
                 clearSuggestions();
             }
@@ -33,11 +27,17 @@ document.addEventListener('DOMContentLoaded', function () {
         
             suggestions.forEach(suggestion => {
                 const suggestionItem = document.createElement('a');
-                suggestionItem.classList.add('list-group-item', 'list-group-item-action');
-                suggestionItem.textContent = `${suggestion.name} (${suggestion.id})`;
+                suggestionItem.classList.add('list-group-item', 'list-group-item-action', 'suggestion-item');
+                suggestionItem.textContent = `${suggestion.name} (${suggestion.number})`;
+                suggestionItem.setAttribute('data-student-id', suggestion.number);  // Store student ID
         
                 suggestionItem.addEventListener('click', function () {
+                    // Set the student ID and name when a suggestion is clicked
+                    document.getElementById('studentID').value = suggestion.id;
+                    document.getElementById('session_id').value = 1;
+                    
                     studentInput.value = suggestion.name;
+
                     clearSuggestions();
                 });
         
