@@ -93,16 +93,19 @@ def addunit():
         newunit_code = form.unitcode.data
         semester = form.semester.data
         consent_required = form.consentcheck.data
+        start_date = form.startdate.data
+        end_date = form.enddate.data
         student_file = form.studentfile.data
         facilitator_file = form.facilitatorfile.data
-        sessionname = form.sessionnames.data
+        sessionnames = form.sessionnames.data
         sessionoccurence = form.sessionoccurence.data
         assessmentcheck = form.assessmentcheck.data
         commentsenabled = form.commentsenabled.data
         commentsuggestions = form.commentsuggestions.data
 
-        AddUnit(newunit_code, "placeholdername", semester, 1, "start date", "enddate", 
-                "session names","sessiontimes", commentsenabled , assessmentcheck, consent_required, "comment suggestions" )
+
+        #AddUnit(newunit_code, "placeholdername", semester, 1, start_date, end_date, 
+        #       sessionnames, sessionoccurence, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
 
         #something here to save the csv files somewhere
 
@@ -113,8 +116,10 @@ def addunit():
         #Printing for Debugging
         print(f"Unit Code: {newunit_code}")
         print(f"Semester: {semester}")
+        print(f"start: {start_date}")
+        print(f"end: {end_date}")
         print(f"Consent: {consent_required}")
-        print(f"Session Names: {sessionname}")
+        print(f"Session Names: {sessionnames}")
         print(f"Occurences: {sessionoccurence}")
         print(f"Assessment Check: {assessmentcheck}")
         print(f"Comments Check: {commentsenabled}")

@@ -15,13 +15,19 @@
 
             {% elif field.type == "FileField" %}
             <div class="mb-3">
-                {{ form.studentfile.label(class="form-label") }}
-                {{ form.studentfile(class="form-control-file") }}
+                {{ field.label(class="form-label") }}
+                {{ field(class="form-control-file") }}
             </div>
             {% elif field.type == "BooleanField" %}
             <div class="mb-3">
-                {{ form.consentcheck.label(class="form-label") }}
-                {{ form.consentcheck(class="form-check-input") }}
+                {{ field.label(class="form-label") }}
+                {{ field(class="form-check-input") }}
+            </div>
+
+            {% elif field.type == "MultiCheckboxField" %}
+            <div class="mb-3">
+                {{ field.label(class=" form-label") }}
+                {{ field(style="list-style-type: none;") }}
             </div>
 
             {% endif %}
