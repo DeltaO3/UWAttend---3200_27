@@ -1,9 +1,9 @@
 import flask
 from app import app
 from app import db
-from .models import db, Student, User, Attendance, Session
+from .models import db, Student, User, Attendance, Session, Unit
 from datetime import datetime
-from .utilities import get_perth_time
+from app.helpers import get_perth_time
 
 # sql
 from flask_sqlalchemy import SQLAlchemy
@@ -30,11 +30,14 @@ def SignOut(studentID, sessionID):
     else:
         print(f"No attendance record found ")
 
-def AddStudent(studentID, studentNumber, firstName, lastName, title, preferredName, unitID, consent):    
+# Helper to check for duplicate students
+def student_exists(student_number):
+    return db.session.query(Student).filter_by(studentNumber=student_number).first() is not None
+
+def AddStudent(studentNumber, firstName, lastName, title, preferredName, unitID, consent):    
    
     try:
         StudentEntry = Student(
-            studentID       = studentID,
             studentNumber   = studentNumber,
             firstName       = firstName,
             lastName        = lastName,
@@ -52,11 +55,10 @@ def AddStudent(studentID, studentNumber, firstName, lastName, title, preferredNa
 
    
 
-def AddSession(sessionID, unitID, sessionName, sessionTime, sessionDate):
+def AddSession(unitID, sessionName, sessionTime, sessionDate):
     
     try:
         SessionEntry = Session(
-            sessionID   = sessionID,
             unitID      = unitID,
             sessionName = sessionName,
             sessionTime = sessionTime,
@@ -71,13 +73,12 @@ def AddSession(sessionID, unitID, sessionName, sessionTime, sessionDate):
 
    
 
-def AddAttendance(attendanceID, sessionID, studentID, signOutTime=None, facilitatorID=None, marks=None, comments=None, consent_given=None):
+def AddAttendance(sessionID, studentID, signOutTime=None, facilitatorID=None, marks=None, comments=None, consent_given=None):
 
     new_signInTime = get_perth_time().time()
     
     try:
         AttendanceEntry = Attendance(
-            attendanceID    = attendanceID,
             sessionID       = sessionID,
             studentID       = studentID,
             signInTime      = new_signInTime,
@@ -97,11 +98,10 @@ def AddAttendance(attendanceID, sessionID, studentID, signOutTime=None, facilita
 
     
 
-def AddUser(userID, uwaID, firstName, lastName, passwordHash, userType):
+def AddUser(uwaID, firstName, lastName, passwordHash, userType):
 
     try:
         UserEntry = User(
-            userID      = userID,
             uwaID       = uwaID,
             firstName   = firstName,
             lastName    = lastName,
@@ -117,11 +117,10 @@ def AddUser(userID, uwaID, firstName, lastName, passwordHash, userType):
 
     
 
-def AddUnit(unitID, unitCode, unitName, studyPeriod, active, startDate, endDate, sessionNames, sessionTimes, comments, marks, consent, commentSuggestions):
+def AddUnit(unitCode, unitName, studyPeriod, active, startDate, endDate, sessionNames, sessionTimes, comments, marks, consent, commentSuggestions):
 
     try:
         UnitEntry   = Unit(
-            unitID       = unitID,
             unitCode     = unitCode,
             unitName     = unitName,
             studyPeriod  = studyPeriod,
@@ -143,14 +142,16 @@ def AddUnit(unitID, unitCode, unitName, studyPeriod, active, startDate, endDate,
         db.session.rollback()
         print(f'An error occurred: {e}')
 
-   
+#Do get functions need primary key IDs?
 
 def GetAttendance(attendanceID = None, input_sessionID = None, studentID = None):
 
     query = db.session.query(Attendance)
     
     # handle the optional arguements, only one can be used 
-    if attendanceID is not None:
+    if studentID is not None and input_sessionID is not None:
+        query = query.filter(Attendance.studentID == studentID, Attendance.sessionID == input_sessionID)
+    elif attendanceID is not None:
         query = query.filter(Attendance.attendanceID == attendanceID)
     elif input_sessionID is not None:
         query = query.filter(Attendance.sessionID == input_sessionID)
@@ -158,7 +159,7 @@ def GetAttendance(attendanceID = None, input_sessionID = None, studentID = None)
         query = query.filter(Attendance.studentID == studentID)
     else:
         # no parameters were supplied.
-        print("You did not submit a parameter to use so returning all records")
+        print("You did not submit a parameter to use so returning all attendence records")
 
     
     attendance_records = query.all()
@@ -177,7 +178,7 @@ def GetSession(sessionID = None, unitID = None):
         query = query.filter(Session.unitID == unitID)
     else:
         # no parameters were supplied.
-        print("You did not submit a parameter to use so returning all records")
+        print("You did not submit a parameter to use so returning all session records")
 
     
     attendance_records = query.all()
@@ -197,7 +198,7 @@ def GetStudent(unitID = None, studentID = None, studentNumber = None):
         query = query.filter(Student.studentNumber == studentNumber)
     else:
         # no parameters were supplied.
-        print("You did not submit a parameter to use so returning all records")
+        print("You did not submit a parameter to use so returning all student records")
 
     
     attendance_records = query.all()
@@ -217,10 +218,29 @@ def GetUser(userID = None, uwaID = None, userType = None):
         query = query.filter(User.userType == userType)
     else:
         # no parameters were supplied.
-        print("You did not submit a parameter to use so returning all records")
+        print("You did not submit a parameter to use so returning all user records")
 
     
     attendance_records = query.all()
     
     return attendance_records
 
+def GetUnit(unitID = None, unitCode = None, studyPeriod = None):
+
+    query = db.session.query(Unit)
+
+    # handle the optional arguements, only one can be used
+    if unitID is not None:
+        query = query.filter(Unit.unitID == unitID)
+    elif unitCode is not None:
+        query = query.filter(Unit.unitCode == unitCode)
+    elif studyPeriod is not None:
+        query = query.filter(Unit.studyPeriod == studyPeriod)
+    else:
+        # no parameters were supplied.
+        print("You did not submit a parameter to use so returning all unit records")
+
+
+    unit_records = query.all()
+
+    return unit_records
