@@ -101,13 +101,13 @@ def addunit():
         commentsenabled = form.commentsenabled.data
         commentsuggestions = form.commentsuggestions.data
 
-        AddUnit(newunit_code, "placeholder", semester, 1, "start date", "enddate", 
+        AddUnit(newunit_code, "placeholdername", semester, 1, "start date", "enddate", 
                 "session names","sessiontimes", commentsenabled , assessmentcheck, consent_required, "comment suggestions" )
 
         #something here to save the csv files somewhere
 
         #upload csv file to database
-        process_csv(student_file)
+        #process_csv(student_file)
 
 
         #Printing for Debugging
