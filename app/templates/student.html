@@ -56,17 +56,10 @@
         <div class="fixed-bottom row pb-2 bg-body">
             <button type="submit" class="btn btn-success col">Save Changes</button>
             <a href="{{ url_for('home') }}" class="btn btn-danger col">Cancel</a>
-        </div>
-    </form>
-
-    <!-- Remove From Session-->
-    <form id="remove_from_session_form" method="POST" action="{{ url_for('remove_from_session') }}">
-        <div class="mx-4 mt-3 mx-md-5">
-            <button type="submit" id="remove_from_session" class="btn btn-danger">Remove From Session</button>
-            <a href="{{ url_for('remove_from_session') }}"></a>
-        </div>
-        <div>
-            <input type="hidden" name="student_id" value="{{ student.id }}">
+            <form id="remove_from_session_form" method="POST" action="{{ url_for('remove_from_session') }}" class="col">
+                <button type="submit" id="remove_from_session" class="btn btn-danger w-100">Remove From Session</button>
+                <input type="hidden" name="student_id" value="{{ student.id }}">
+            </form>
         </div>
     </form>
     {% include 'removeStudent.html'%}

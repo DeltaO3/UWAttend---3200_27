@@ -3,7 +3,7 @@ from datetime import datetime
 
 from app import app
 from .forms import LoginForm, SessionForm, StudentSignInForm, AddUnitForm
-from .utilities import get_perth_time
+from .helpers import get_perth_time
 from .models import db, Student, User, Attendance, Session, Unit
 from .database import GetStudent, AddAttendance, GetSession, GetAttendance
 
@@ -159,7 +159,14 @@ def student():
         "time": attendance_record.signInTime
     }
 
-    return flask.render_template('student.html', student=student_info)
+    return flask.render_template('student.html', student=student_info, attendance=attendance_record)
+
+@app.route('/remove_from_session', methods=['POST'])
+def remove_from_session():
+    # Access form data
+    student_id = flask.request.form.get('student_id')
+    print("Student ID: " + student_id)
+    return flask.redirect('home')
 	
 # LOGIN - /login/ 
 @app.route('/login', methods=['GET', 'POST'])
