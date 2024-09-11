@@ -91,7 +91,10 @@ def admin():
 
 # ADDUNIT - /addunit/ /admin/
 @app.route('/addunit', methods=['GET', 'POST'])
+@login_required
 def addunit():
+    if current_user.userType != 1:
+        return flask.redirect('home')
     form = AddUnitForm()
 
     if form.validate_on_submit() and flask.request.method == 'POST':
@@ -131,6 +134,7 @@ def addunit():
 
 # STUDENT - /student/
 @app.route('/student', methods=['GET'])
+@login_required
 def student():
     alex = {
         "name": "alex",
