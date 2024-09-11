@@ -54,7 +54,8 @@ def session():
 
         # Handle form submission
         session_name = form.session_name.data
-        unit_code = form.unit_code.data
+        unit_id = form.unit_code.data
+        session_time = form.session_occurrence.data
         current_year = perth_time.year
 
         # Determine the semester based on the current month
@@ -62,16 +63,21 @@ def session():
         semester = "SEM1" if current_month <= 6 else "SEM2"
 
         # Create Database
-        database_name = f"{unit_code}_{semester}_{current_year}"
+        database_name = f"{unit_id}_{semester}_{current_year}"
 
         # Printing for debugging
         print(f"Session Name: {session_name}")
-        print(f"Unit Code: {unit_code}")
+        print(f"Unit Code: {unit_id}")
         print(f"Semester: {semester}")
         print(f"Database Name: {database_name}")
         print(f"Current Date/Time: {humanreadable_perth_time}")
 
-        # check if the session already exists
+        # Check if the session already exists
+        if CheckSessionExists(unit_id, session_name, session_time, perth_time) :
+            print("Session already exists.")
+        else :
+            print("Session doesn't exist... creating new session.")
+            AddSession(unit_id, session_name, session_time, perth_time)
 
         # Redirect back to home page when done
         return flask.redirect(flask.url_for('home'))
