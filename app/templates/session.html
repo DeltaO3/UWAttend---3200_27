@@ -6,16 +6,16 @@
 <form method="POST" action="{{ url_for('session') }}">
     {{ form.hidden_tag() }}
 
-    <!-- Session Name -->
-    <div class="mb-3">
-        {{ form.session_name.label(class="form-label") }}
-        {{ form.session_name(class="form-select", onchange="updateDatabaseName()") }}
-    </div>
-
     <!-- Unit Code -->
     <div class="mb-3">
         {{ form.unit_code.label(class="form-label") }}
         {{ form.unit_code(class="form-select", onchange="updateDatabaseName()") }}
+    </div>
+
+    <!-- Session Name -->
+    <div class="mb-3">
+        {{ form.session_name.label(class="form-label") }}
+        {{ form.session_name(class="form-select", onchange="updateDatabaseName()") }}
     </div>
 
     <!-- Session Time -->
@@ -39,4 +39,5 @@
         <button type="button" class="btn btn-secondary" onclick="window.history.back()">Back</button>
     </div>
 </form>
+<script src="{{url_for('static', filename='js/session_config.js')}}"></script>
 {% endblock %}

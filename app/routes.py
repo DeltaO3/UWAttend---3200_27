@@ -3,6 +3,7 @@ from datetime import datetime
 from app import app
 from app.forms import LoginForm, SessionForm, StudentSignInForm, AddUnitForm
 from app.helpers import get_perth_time
+from app.database import *
 
 # HOME -   /home/
 @app.route('/', methods=['GET'])
@@ -41,6 +42,16 @@ def home():
 @app.route('/session', methods=['GET', 'POST'])
 def session():
     form = SessionForm()
+    
+    # should be changed to current_user
+    currentUser = GetUser(userID=1)
+
+    units = currentUser[0].unitsFacilitate
+    unit_choices = []
+    for unit in units :
+        unit_choices.append((unit.unitID, unit.unitCode))
+
+    form.unit_code.choices = unit_choices
 
     # Get perth time
     perth_time = get_perth_time()
@@ -69,6 +80,9 @@ def session():
         print(f"Semester: {semester}")
         print(f"Database Name: {database_name}")
         print(f"Current Date/Time: {humanreadable_perth_time}")
+
+
+        # check if the session already exists
 
         # Redirect back to home page when done
         return flask.redirect(flask.url_for('home'))
@@ -172,3 +186,15 @@ def add_student():
 
         # Redirect back to home page when done
         return flask.redirect(flask.url_for('home'))
+
+@app.route('/get_session_details/<unitID>')
+def get_session_details(unitID) :
+    unit = GetUnit(unitID=unitID)
+    
+    session_names = unit[0].sessionNames.split('|')
+    session_choices = []
+
+    for name in session_names :
+        session_choices.append(name)
+
+    return flask.jsonify({'session_choices':session_choices})

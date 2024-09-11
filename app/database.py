@@ -142,6 +142,19 @@ def AddUnit(unitCode, unitName, studyPeriod, active, startDate, endDate, session
         db.session.rollback()
         print(f'An error occurred: {e}')
 
+def CheckSessionExists(unitID, sessionName, sessionTime, sessionDate):
+
+    session = db.session.query(Session.sessionID).filter(Session.unitID == unitID and
+                                             Session.sessionName == sessionName and
+                                             Session.sessionTime == sessionTime and
+                                             Session.sessionDate == sessionDate
+                                             ).first()
+    
+    if (session is not None) :
+        return True
+    else :
+        return False
+    
 #Do get functions need primary key IDs?
 
 def GetAttendance(attendanceID = None, input_sessionID = None, studentID = None):
