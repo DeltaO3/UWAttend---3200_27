@@ -42,19 +42,8 @@ def home():
 @app.route('/session', methods=['GET', 'POST'])
 def session():
     form = SessionForm()
-
-
-
-    #if flask.request.method == 'POST' :
-    #    session_name = form.session_name.data
-     #   unit_id = form.unit_code.data
-    #    session_time = form.session_occurrence.data
-
-      ##  print(f"Session Name: {session_name}")
-     #   print(f"Unit Id: {unit_id}")
-      #  print(f"Session Time: {session_time}")
         
-        # Get perth time
+    # Get perth time
     perth_time = get_perth_time()
     humanreadable_perth_time = perth_time.strftime('%B %d, %Y, %H:%M:%S %Z')
 
@@ -87,8 +76,10 @@ def session():
         # Redirect back to home page when done
         return flask.redirect(flask.url_for('home'))
     
+    else :
+        print(form.errors)
 
-    # should be changed to current_user
+    # TODO: should be changed to current_user
     currentUser = GetUser(userID=1)
 
     units = currentUser[0].unitsFacilitate

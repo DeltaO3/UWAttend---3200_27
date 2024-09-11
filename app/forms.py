@@ -12,19 +12,22 @@ class SessionForm(FlaskForm):
     session_name = SelectField(
         'Session Name',
         choices=[],
-        validators=[DataRequired()]
+        validators=[DataRequired()],
+        validate_choice=False
     )
 
     unit_code = SelectField(
         'Unit Code',
         choices=[],
-        validators=[DataRequired()]
+        validators=[DataRequired()],
+        validate_choice=False
     )
 
     session_occurrence = SelectField(
         'Session Occurrence',
         choices=[],
-        validators=[DataRequired()]
+        validators=[DataRequired()],
+        validate_choice=False
     )
 
     submit = SubmitField('Update')
