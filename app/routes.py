@@ -112,7 +112,7 @@ def addunit():
         commentsenabled = form.commentsenabled.data
         commentsuggestions = form.commentsuggestions.data
 
-
+        #Ensure is a new unit being added, QUESTION - is start date to be used?
         if unit_exists(newunit_code, start_date):
             error = "Unit and start date combo already exist in db"
             return flask.render_template('addunit.html', form=form, error=error)
@@ -122,22 +122,25 @@ def addunit():
         for time in sessionoccurence:
             occurences += time + "|"
         occurences = occurences[:-1]
+
+        #add to database
+        unitID = AddUnit(newunit_code, "placeholdername", semester, 1, start_date, end_date, 
+                sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
+        
+         #read CSV file
         if student_file.filename != '':
             student_file.save(student_file.filename)
         filename = student_file.filename
-        process_csv(filename, newunit_code)
-
-        AddUnit(newunit_code, "placeholdername", semester, 1, start_date, end_date, 
-                sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
+        process_csv(filename, unitID)
         
-        #TODO: handle setting up new users/facilitators, and assign them to the units, and email. I can do this in this issue later if wanted, no time rn
-        #Currently has to take apart the facilitator string, in the future will hopefully be unnecessary
+        #Handle facilitators
+        #TODO: handle emailing facilitators, handle differentiating between facilitator and coordinator
         facilitators = facilitator_list.split('|')
         for facilitator in facilitators:
             if(not GetUser(uwaID=facilitator)):
                 AddUser(int(facilitator), "placeholder", "placeholder", facilitator, 3) #Do we assign coordinators?
             #add this unit to facilator
-            AddUnitToFacilitator(facilitator, newunit_code, start_date)
+            AddUnitToFacilitator(facilitator, unitID)
         
         return flask.redirect(flask.url_for('admin'))
 	    

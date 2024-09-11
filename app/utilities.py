@@ -29,13 +29,11 @@ def read_csv_file(file_path):
     return data
 
 # Imports students into the database given a .csv file
-def import_student_in_db(data, unit_code):
+def import_student_in_db(data, unit_id):
     for record in data:
-        # PLACEHOLDER: Do we need unitID for students???
-        unit = unit_code
 
         student_number = record['Person ID']
-        if student_exists(student_number, unit_code):
+        if student_exists(student_number, unit_id):
             print(f"Duplicate found: {record['Given Names']} {record['Surname']} (ID: {student_number}) - Skipping import.")
             continue
 
@@ -46,19 +44,19 @@ def import_student_in_db(data, unit_code):
             lastName=record['Surname'],
             title=record['Title'],
             preferredName=record['Preferred Given Name'],
-            unitID=unit,  # Assuming a default unit ID, replace as needed
+            unitID=unit_id,  # Assuming a default unit ID, replace as needed
             consent=0  # Setting consent to 0 as per your requirements
         )
         print(f"Added student: {record['Given Names']} {record['Surname']} (ID: {student_number})")
 
 # Process a .csv file by reading and then importing into "student" table.
-def process_csv(file_path, unit_code):
+def process_csv(file_path, unit_id):
     with app.app_context():
         # Read the data from the CSV file
         data = read_csv_file(file_path)
         if data:
             # Import the data to the database
-            import_student_in_db(data, unit_code)
+            import_student_in_db(data, unit_id)
 
 # Export a single table's data to a CSV format and return it as a string
 def export_table_to_csv(fetch_function):

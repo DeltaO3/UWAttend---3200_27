@@ -139,14 +139,16 @@ def AddUnit(unitCode, unitName, studyPeriod, active, startDate, endDate, session
 
         db.session.add(UnitEntry)       # add the changes 
         db.session.commit()             # save the changes
+
+        return db.session.query(Unit).filter_by(unitcode=unitCode, startDate=startDate).first().unitID
     
     except IntegrityError as e:
         db.session.rollback()
         print(f'An error occurred: {e}')
 
-def AddUnitToFacilitator(userID, unitCode, startDate):
+def AddUnitToFacilitator(userID, unitID):
     user = db.session.query(User).filter_by(uwaID=userID).first()
-    unit = db.session.query(Unit).filter_by(unitCode=unitCode, startDate=startDate).first()
+    unit = db.session.query(Unit).filter_by(unitID=unitID).first()
     user.unitsFacilitate.append(unit) #is this right
     unit.facilitators.append(user)
     db.session.commit()
