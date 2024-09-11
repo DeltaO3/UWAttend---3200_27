@@ -6,6 +6,12 @@
         <form method="POST" enctype="multipart/form-data" novalidate>
             {{ form.hidden_tag() }}
 
+            {% if error %}
+            <div class="alert alert-danger">
+                {{error}}
+            </div>
+            {% endif %}
+
             {% for field in form %}
             {% if field.type == "StringField" or field.type =="DateField" %}
             <div class="mb-3">

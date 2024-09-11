@@ -34,6 +34,9 @@ def SignOut(studentID, sessionID):
 def student_exists(student_number, unit_code):
     return db.session.query(Student).filter_by(studentNumber=student_number, unitID=unit_code).first() is not None
 
+def unit_exists(unit_code, start_date):
+    return db.session.query(Unit).filter_by(unitCode=unit_code, startDate=start_date).first() is not None
+
 def AddStudent(studentNumber, firstName, lastName, title, preferredName, unitID, consent):    
    
     try:
@@ -115,7 +118,6 @@ def AddUser(uwaID, firstName, lastName, passwordHash, userType):
         db.session.rollback()
         print(f'An error occurred: {e}')
 
-    
 
 def AddUnit(unitCode, unitName, studyPeriod, active, startDate, endDate, sessionNames, sessionTimes, comments, marks, consent, commentSuggestions):
 

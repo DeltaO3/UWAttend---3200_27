@@ -112,6 +112,11 @@ def addunit():
         commentsenabled = form.commentsenabled.data
         commentsuggestions = form.commentsuggestions.data
 
+
+        if unit_exists(newunit_code, start_date):
+            error = "Unit and start date combo already exist in db"
+            return flask.render_template('addunit.html', form=form, error=error)
+
         #convert session occurences to a | string
         occurences = ""
         for time in sessionoccurence:
