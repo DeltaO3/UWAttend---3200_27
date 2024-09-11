@@ -144,6 +144,13 @@ def AddUnit(unitCode, unitName, studyPeriod, active, startDate, endDate, session
         db.session.rollback()
         print(f'An error occurred: {e}')
 
+def AddUnitToFacilitator(userID, unitCode, startDate):
+    user = db.session.query(User).filter_by(uwaID=userID).first()
+    unit = db.session.query(Unit).filter_by(unitCode=unitCode, startDate=startDate).first()
+    user.unitsFacilitate.append(unit) #is this right
+    unit.facilitators.append(user)
+    db.session.commit()
+
 #Do get functions need primary key IDs?
 
 def GetAttendance(attendanceID = None, input_sessionID = None, studentID = None):

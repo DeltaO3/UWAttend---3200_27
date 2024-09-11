@@ -131,7 +131,13 @@ def addunit():
                 sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
         
         #TODO: handle setting up new users/facilitators, and assign them to the units, and email. I can do this in this issue later if wanted, no time rn
-
+        #Currently has to take apart the facilitator string, in the future will hopefully be unnecessary
+        facilitators = facilitator_list.split('|')
+        for facilitator in facilitators:
+            if(not GetUser(uwaID=facilitator)):
+                AddUser(int(facilitator), "placeholder", "placeholder", facilitator, 3) #Do we assign coordinators?
+            #add this unit to facilator
+            AddUnitToFacilitator(facilitator, newunit_code, start_date)
         
         return flask.redirect(flask.url_for('admin'))
 	    
