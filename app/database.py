@@ -225,7 +225,6 @@ def GetUser(userID = None, uwaID = None, userType = None):
 
 # Used for exporting to csv. Required because can't change GetUser() to return query.all() instead of query.first()
 def GetAllUsers():
-
     query = db.session.query(User)
 
     return query.all()

@@ -64,8 +64,6 @@ def process_csv(file_path):
 def export_table_to_csv(fetch_function):
     # Query all records from the model's table
     records = fetch_function()
-    print("This is the records:")
-    print(records)
 
     if records:
         # Get the column names from the model's attributes

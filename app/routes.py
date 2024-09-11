@@ -128,6 +128,7 @@ def addunit():
 @app.route('/export', methods=['GET'])
 @login_required
 def export_data():
+    print("Attempting to Export Database...")
     zip_filename = 'database.zip'
 
     # Get database.zip filepath
@@ -142,7 +143,7 @@ def export_data():
         # Serve the zip file for download
         response = send_file(zip_path, as_attachment=True)
         os.remove(zip_path)
-        print("Successfully exported database")
+        print("Admin Successfully Exported Database")
         return response
 
     else:
