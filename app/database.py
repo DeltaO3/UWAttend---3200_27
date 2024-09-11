@@ -146,10 +146,17 @@ def AddUnit(unitCode, unitName, studyPeriod, active, startDate, endDate, session
         db.session.rollback()
         print(f'An error occurred: {e}')
 
+def AddUnitToCoordinator(userID, unitID):
+    user = db.session.query(User).filter_by(uwaID=userID).first()
+    unit = db.session.query(Unit).filter_by(unitID=unitID).first()
+    user.unitsCoordinate.append(unit)
+    unit.coordinators.append(user)
+    db.session.commit()
+
 def AddUnitToFacilitator(userID, unitID):
     user = db.session.query(User).filter_by(uwaID=userID).first()
     unit = db.session.query(Unit).filter_by(unitID=unitID).first()
-    user.unitsFacilitate.append(unit) #is this right
+    user.unitsFacilitate.append(unit)
     unit.facilitators.append(user)
     db.session.commit()
 

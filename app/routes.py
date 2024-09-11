@@ -141,6 +141,7 @@ def addunit():
                 AddUser(int(facilitator), "placeholder", "placeholder", facilitator, 3) #Do we assign coordinators?
             #add this unit to facilator
             AddUnitToFacilitator(facilitator, unitID)
+        AddUnitToCoordinator(current_user.uwaID, unitID)
         
         return flask.redirect(flask.url_for('admin'))
 	    
