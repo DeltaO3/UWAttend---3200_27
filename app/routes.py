@@ -42,26 +42,27 @@ def home():
 @app.route('/session', methods=['GET', 'POST'])
 def session():
     form = SessionForm()
-    
-    # should be changed to current_user
-    currentUser = GetUser(userID=1)
 
-    units = currentUser[0].unitsFacilitate
-    unit_choices = []
-    for unit in units :
-        unit_choices.append((unit.unitID, unit.unitCode))
 
-    form.unit_code.choices = unit_choices
 
-    # Get perth time
+    #if flask.request.method == 'POST' :
+    #    session_name = form.session_name.data
+     #   unit_id = form.unit_code.data
+    #    session_time = form.session_occurrence.data
+
+      ##  print(f"Session Name: {session_name}")
+     #   print(f"Unit Id: {unit_id}")
+      #  print(f"Session Time: {session_time}")
+        
+        # Get perth time
     perth_time = get_perth_time()
     humanreadable_perth_time = perth_time.strftime('%B %d, %Y, %H:%M:%S %Z')
 
     # For JS formatting
     formatted_perth_time = perth_time.isoformat()
 
-
     if form.validate_on_submit():
+
         # Handle form submission
         session_name = form.session_name.data
         unit_code = form.unit_code.data
@@ -81,12 +82,21 @@ def session():
         print(f"Database Name: {database_name}")
         print(f"Current Date/Time: {humanreadable_perth_time}")
 
-
         # check if the session already exists
 
         # Redirect back to home page when done
         return flask.redirect(flask.url_for('home'))
+    
 
+    # should be changed to current_user
+    currentUser = GetUser(userID=1)
+
+    units = currentUser[0].unitsFacilitate
+    unit_choices = []
+    for unit in units :
+        unit_choices.append((unit.unitID, unit.unitCode))
+
+    form.unit_code.choices = unit_choices
     return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
 
 #ADMIM - /admin/
