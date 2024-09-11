@@ -5,14 +5,17 @@ from app.forms import LoginForm, SessionForm, StudentSignInForm, AddUnitForm
 from app.helpers import get_perth_time
 from app.utilities import process_csv
 from app.database import *
+from app.models import User
+import sqlalchemy as sa
+from app import database
+from flask_login import current_user, login_user, logout_user, login_required
 
 # HOME -   /home/
 @app.route('/', methods=['GET'])
 @app.route('/home', methods=['GET'])
+@login_required
 def home():
-
-    form = StudentSignInForm()
-    
+    form = StudentSignInForm()    
     #placeholder data for table
     students = []
     alex = {
@@ -41,16 +44,15 @@ def home():
 	
 # CONFIGURATION - /session/ /admin/
 @app.route('/session', methods=['GET', 'POST'])
-def session():
+@login_required
+def session():    
     form = SessionForm()
-
     # Get perth time
     perth_time = get_perth_time()
     humanreadable_perth_time = perth_time.strftime('%B %d, %Y, %H:%M:%S %Z')
 
     # For JS formatting
     formatted_perth_time = perth_time.isoformat()
-
 
     if form.validate_on_submit():
         # Handle form submission
@@ -61,7 +63,6 @@ def session():
         # Determine the semester based on the current month
         current_month = perth_time.month
         semester = "SEM1" if current_month <= 6 else "SEM2"
-
         # Create Database
         database_name = f"{unit_code}_{semester}_{current_year}"
 
@@ -71,16 +72,21 @@ def session():
         print(f"Semester: {semester}")
         print(f"Database Name: {database_name}")
         print(f"Current Date/Time: {humanreadable_perth_time}")
-
         # Redirect back to home page when done
+	    
         return flask.redirect(flask.url_for('home'))
 
     return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
 
 #ADMIM - /admin/
 @app.route('/admin', methods=['GET', 'POST'])
+@login_required
 def admin():
+    if current_user.userType != 1:
+        return flask.redirect('home')
     # I (James) do not know what to add here so for now it is blank
+
+
     return flask.render_template('admin.html')
 
 # ADDUNIT - /addunit/ /admin/
@@ -120,6 +126,7 @@ def addunit():
 
         
         return flask.redirect(flask.url_for('admin'))
+	    
     return flask.render_template('addunit.html', form=form)
 
 # STUDENT - /student/
@@ -136,15 +143,21 @@ def student():
 # LOGIN - /login/ 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # placeholder values for testing
-    test_username = "u1"
-    test_password = "p1"
-
+    
+    if current_user.is_authenticated:
+        print("authenitcated")
+        return flask.redirect('home')
+    
     form = LoginForm()
+    if form.validate_on_submit():
+        user = database.GetUser(uwaID = form.username.data)                
 
-    if flask.request.method == 'POST' and form.validate_on_submit() :
-        if form.username.data == test_username and form.password.data == test_password :
-            return(flask.redirect(flask.url_for('session')))
+        if user is None or not database.CheckPassword(form.username.data, form.password.data):
+            flask.flash('Invalid username or password')
+            return flask.redirect('login')
+        
+        login_user(user, remember=form.remember_me.data)
+        return flask.redirect('home')
 
     return flask.render_template('login.html', form=form)
 
@@ -176,3 +189,10 @@ def add_student():
 
         # Redirect back to home page when done
         return flask.redirect(flask.url_for('home'))
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return flask.redirect(flask.url_for('login'))
