@@ -1,5 +1,5 @@
 import flask
-from datetime import datetime
+from datetime import datetime, date
 from app import app
 from app.forms import LoginForm, SessionForm, StudentSignInForm, AddUnitForm
 from app.helpers import get_perth_time
@@ -73,7 +73,7 @@ def session():
         print(f"Current Date/Time: {humanreadable_perth_time}")
 
         # Check if the session already exists
-        if CheckSessionExists(unit_id, session_name, session_time, perth_time) :
+        if CheckSessionExists(unit_id, session_name, session_time, perth_time.date()) :
             print("Session already exists.")
         else :
             print("Session doesn't exist... creating new session.")

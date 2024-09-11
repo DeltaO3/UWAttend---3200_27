@@ -2,12 +2,12 @@ import flask
 from app import app
 from app import db
 from .models import db, Student, User, Attendance, Session, Unit
-from datetime import datetime
+from datetime import datetime, date
 from app.helpers import get_perth_time
 
 # sql
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import and_
+from sqlalchemy import and_, func
 from sqlalchemy.exc import IntegrityError
 
 def SignOut(studentID, sessionID):
@@ -144,10 +144,10 @@ def AddUnit(unitCode, unitName, studyPeriod, active, startDate, endDate, session
 
 def CheckSessionExists(unitID, sessionName, sessionTime, sessionDate):
 
-    session = db.session.query(Session.sessionID).filter(Session.unitID == unitID and
-                                             Session.sessionName == sessionName and
-                                             Session.sessionTime == sessionTime and
-                                             Session.sessionDate == sessionDate
+    session = db.session.query(Session.sessionID).filter(Session.unitID == unitID,
+                                             Session.sessionName == sessionName,
+                                             Session.sessionTime == sessionTime,
+                                             func.DATE(Session.sessionDate) == sessionDate
                                              ).first()
     
     if (session is not None) :
