@@ -190,7 +190,9 @@ def GetStudent(unitID = None, studentID = None, studentNumber = None):
     query = db.session.query(Student)
     
     # handle the optional arguements, only one can be used 
-    if unitID is not None:
+    if studentID is not None and unitID is not None:
+        query = query.filter(Student.unitID == unitID, Student.studentID == studentID)
+    elif unitID is not None:
         query = query.filter(Student.unitID == unitID)
     elif studentID is not None:
         query = query.filter(Student.studentID == studentID)

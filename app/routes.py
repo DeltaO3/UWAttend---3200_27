@@ -190,18 +190,20 @@ def save_changes():
 @app.route('/add_student', methods=['POST'])
 def add_student():
     form = StudentSignInForm()
-    print("here")
-
+    
     if form.validate_on_submit():
         # Handle form submission
         studentID = form.studentID.data
         consent_status = form.consent_status.data
         sessionID = form.session_id.data
+
+        session = GetSession(sessionID=sessionID)[0]
+        unitID = session.unitID
         
-        student = GetStudent(studentID=studentID)[0]
+        student = GetStudent(studentID=studentID, unitID=unitID)[0]
 
         if student:
-            existing_attendance = db.session.query(Attendance).filter_by(studentID=studentID, sessionID=sessionID).first() # TODO should there be a database function for this?
+            existing_attendance = GetAttendance(input_sessionID=sessionID, studentID=studentID)
 
             if existing_attendance:
                 flask.flash("User already signed in", category='error')
@@ -218,7 +220,7 @@ def add_student():
             return flask.redirect(flask.url_for('home'))
 
         else:
-            print(f"No student found with ID {studentID}")
+            flask.flash(f"No student found with ID {studentID}", 'error')
 
     # Redirect back to home page when done
     return flask.redirect(flask.url_for('home'))

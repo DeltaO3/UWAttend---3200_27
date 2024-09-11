@@ -5,6 +5,7 @@ $("#attendanceForm").submit(function (e) {
 	//addAttendance()
 	//TODO: else (no consent), open modal
 	$("#consentModal").modal('show');
+	
 	return false;
 });
 
