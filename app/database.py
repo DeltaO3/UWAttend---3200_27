@@ -219,7 +219,7 @@ def GetUser(userID = None, uwaID = None, userType = None):
         print("You did not submit a parameter to use so returning all user records")
 
     
-    attendance_records = query.all()
+    attendance_records = query.first()
     
     return attendance_records
 
@@ -242,3 +242,37 @@ def GetUnit(unitID = None, unitCode = None, studyPeriod = None):
     unit_records = query.all()
 
     return unit_records
+
+
+def CheckPassword(uwaID, password):
+
+    query = db.session.query(User)
+    
+    if uwaID is not None:
+        query = query.filter(User.uwaID == uwaID)
+    else:
+        print("You did not submit a uwaID parameter.")
+        return False
+
+    # Retrieve the user record
+    user_record = query.first()
+
+    # If a record is found, check the password
+    if user_record and user_record.passwordHash == password:
+        return True
+    else:
+        return False
+
+def SetPassword(uwaID, newPassword):
+    
+    user = db.session.query(User).filter(User.uwaID == uwaID).first()
+    
+    if user is None:
+        raise ValueError("User not found")    
+
+    # Set the new password hash
+    user.passwordHash = newPassword
+    
+    # Commit the changes to the database
+    db.session.commit()
+
