@@ -21,6 +21,12 @@ class SessionForm(FlaskForm):
         validators=[DataRequired()]
     )
 
+    session_occurrence = SelectField(
+        'Session Occurrence',
+        choices=[],
+        validators=[DataRequired()]
+    )
+
     submit = SubmitField('Update')
 
 class AddUnitForm(FlaskForm):

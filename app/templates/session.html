@@ -18,6 +18,12 @@
         {{ form.session_name(class="form-select", onchange="updateDatabaseName()") }}
     </div>
 
+    <!-- Session Occurrence (e.g. "Morning") -->
+    <div class="mb-3">
+        {{ form.session_occurrence.label(class="form-label") }}
+        {{ form.session_occurrence(class="form-select") }}
+    </div>    
+
     <!-- Session Time -->
     <div>
         <label for="session_time_display" class="form-label">Current Time:</label>

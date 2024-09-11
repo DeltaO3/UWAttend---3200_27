@@ -192,9 +192,15 @@ def get_session_details(unitID) :
     unit = GetUnit(unitID=unitID)
     
     session_names = unit[0].sessionNames.split('|')
-    session_choices = []
+    session_name_choices = []
 
     for name in session_names :
-        session_choices.append(name)
+        session_name_choices.append(name)
 
-    return flask.jsonify({'session_choices':session_choices})
+    session_times = unit[0].sessionTimes.split('|')
+    session_time_choices = []
+
+    for time in session_times :
+        session_time_choices.append(time)
+
+    return flask.jsonify({'session_name_choices': session_name_choices, 'session_occurrence_choices': session_time_choices})
