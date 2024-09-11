@@ -31,8 +31,8 @@ def SignOut(studentID, sessionID):
         print(f"No attendance record found ")
 
 # Helper to check for duplicate students
-def student_exists(student_number):
-    return db.session.query(Student).filter_by(studentNumber=student_number).first() is not None
+def student_exists(student_number, unit_code):
+    return db.session.query(Student).filter_by(studentNumber=student_number, unitID=unit_code).first() is not None
 
 def AddStudent(studentNumber, firstName, lastName, title, preferredName, unitID, consent):    
    

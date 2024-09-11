@@ -48,10 +48,10 @@ class AddUnitForm(FlaskForm):
     startdate = DateField('Start Date', validators=[DataRequired()])
     enddate = DateField('End Date', validators=[DataRequired()])
     #Need to add custom validators to check if files uploaded end in csv
-    facilitatorlist = StringField('Facilitator IDs', validators=[DataRequired()], render_kw={"placeholder":"seperate with |"})
+    facilitatorlist = StringField('Facilitator IDs', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
     studentfile = FileField('Student List CSV Upload:', validators=[DataRequired()])
     consentcheck = BooleanField('Photo Consent Required?')
-    sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"seperate with |"})
+    sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
     sessionoccurence = MultiCheckboxField(
         'Session Occurence',
         choices=[('Morning','Morning'), ('Afternoon', 'Afternoon')
@@ -59,7 +59,7 @@ class AddUnitForm(FlaskForm):
         validators=[validate_sessionoccurence])
     assessmentcheck = BooleanField('Sessions Assessed?')
     commentsenabled = BooleanField('Student Comments Enabled?')
-    commentsuggestions = StringField('Comment Suggestions:', render_kw={"placeholder":"Optional; seperate with |"})
+    commentsuggestions = StringField('Comment Suggestions:', render_kw={"placeholder":"Optional; separate with |"})
     submit = SubmitField('Add Unit')
     
 class StudentSignInForm(FlaskForm):

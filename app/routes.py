@@ -120,7 +120,7 @@ def addunit():
         if student_file.filename != '':
             student_file.save(student_file.filename)
         filename = student_file.filename
-        process_csv(filename)
+        process_csv(filename, newunit_code)
 
         AddUnit(newunit_code, "placeholdername", semester, 1, start_date, end_date, 
                 sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
