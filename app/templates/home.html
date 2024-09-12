@@ -72,6 +72,7 @@ endwith %}
 	<div class="fixed-bottom row pb-2 bg-body">
 		<button class="btn col-md-3 col">Sync</button>
 		<button id="signOutButton" class="btn btn-danger col">Sign All Out</button>
+		<input type="hidden" id="session_id" value="{{ session.sessionID }}">
 		<button class="btn col-md-3 col">Download</button>
 	</div>
 	{% include 'signOut.html'%}
