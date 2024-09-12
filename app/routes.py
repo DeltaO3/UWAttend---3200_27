@@ -369,8 +369,8 @@ def sign_all_out():
     current_time = get_perth_time().time() # did this so that they all have an identical sign out time
     
     for record in attendance_records:
-        # print(record.signInTime)
-        record.signOutTime = current_time
+        if not record.signOutTime:
+            record.signOutTime = current_time
 
     db.session.commit()
         
