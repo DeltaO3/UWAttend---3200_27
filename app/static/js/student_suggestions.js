@@ -30,6 +30,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 suggestionItem.classList.add('list-group-item', 'list-group-item-action', 'suggestion-item');
                 suggestionItem.textContent = `${suggestion.name} (${suggestion.number})`;
                 suggestionItem.setAttribute('data-student-id', suggestion.number);  // Store student ID
+
+                document.getElementById('hidden_consent_indicator').value = "no";
+                document.getElementById('studentID').value = false;
         
                 suggestionItem.addEventListener('click', function () {
                     // Set the student ID and name when a suggestion is clicked
