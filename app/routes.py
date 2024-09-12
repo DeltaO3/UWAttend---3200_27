@@ -4,6 +4,7 @@ from datetime import datetime
 from app import app
 from app.forms import LoginForm, SessionForm, StudentSignInForm, AddUnitForm
 from app.helpers import get_perth_time
+from app.database import *
 from app.utilities import process_csv, export_all_to_zip
 from app.models import User
 import sqlalchemy as sa
@@ -92,34 +93,68 @@ def admin():
 
 # ADDUNIT - /addunit/ /admin/
 @app.route('/addunit', methods=['GET', 'POST'])
+@login_required
 def addunit():
+    if current_user.userType != 1:
+        return flask.redirect('home')
     form = AddUnitForm()
-    if form.validate_on_submit():
+
+    if form.validate_on_submit() and flask.request.method == 'POST':
         #Form data held here
         newunit_code = form.unitcode.data
         semester = form.semester.data
         consent_required = form.consentcheck.data
+        start_date = form.startdate.data
+        end_date = form.enddate.data
         student_file = form.studentfile.data
-        facilitator_file = form.facilitatorfile.data
-        sessionname = form.sessionnames.data
+        facilitator_list = form.facilitatorlist.data
+        sessionnames = form.sessionnames.data
         sessionoccurence = form.sessionoccurence.data
         assessmentcheck = form.assessmentcheck.data
         commentsenabled = form.commentsenabled.data
         commentsuggestions = form.commentsuggestions.data
 
-        #something here to save the csv files somewhere
+        #Ensure is a new unit being added, QUESTION - is start date to be used?
+        if unit_exists(newunit_code, start_date):
+            error = "Unit and start date combo already exist in db"
+            return flask.render_template('addunit.html', form=form, error=error)
+        
+        #Ensure end date is after start date
+        if start_date > end_date:
+            error = "Start date must be after end date"
+            return flask.render_template('addunit.html', form=form, error=error)
+        
 
-        #something here to upload csv fiels to database using utilities.py
+        #convert session occurences to a | string
+        occurences = ""
+        for time in sessionoccurence:
+            occurences += time + "|"
+        occurences = occurences[:-1]
+        print(f"session occurence string: {occurences}")
 
-        #Printing for Debugging
-        print(f"Unit Code: {newunit_code}")
-        print(f"Semester: {semester}")
-        print(f"Consent: {consent_required}")
-        print(f"Session Names: {sessionname}")
-        print(f"Occurences: {sessionoccurence}")
-        print(f"Assessment Check: {assessmentcheck}")
-        print(f"Comments Check: {commentsenabled}")
-        print(f"Suggestions: {commentsuggestions}")
+        #add to database
+        unitID = AddUnit(newunit_code, "placeholdername", semester, 1, start_date, end_date, 
+                sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
+        
+         #read CSV file
+        if student_file.filename != '':
+            student_file.save(student_file.filename)
+            filename = student_file.filename
+            process_csv(filename, unitID)
+        else:
+            print("Submitted no file, probable error.")
+        
+        #Handle facilitators
+        #TODO: handle emailing facilitators, handle differentiating between facilitator and coordinator
+        facilitators = facilitator_list.split('|')
+        for facilitator in facilitators:
+            if(not GetUser(uwaID=facilitator)):
+                print(f"Adding new user: {facilitator}")
+                AddUser(facilitator, "placeholder", "placeholder", facilitator, 3) #Do we assign coordinators?
+            #add this unit to facilator
+            print(f"Adding unit {unitID} to facilitator {facilitator}")
+            AddUnitToFacilitator(facilitator, unitID)
+        AddUnitToCoordinator(current_user.uwaID, unitID)
         
         return flask.redirect(flask.url_for('admin'))
 	    
@@ -161,6 +196,7 @@ def export_data():
 
 # STUDENT - /student/
 @app.route('/student', methods=['GET'])
+@login_required
 def student():
     alex = {
         "name": "alex",
