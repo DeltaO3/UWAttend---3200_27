@@ -54,7 +54,7 @@ def session():
 
         # Handle form submission
         session_name = form.session_name.data
-        unit_id = form.unit_code.data
+        unit_id = form.unit.data
         session_time = form.session_time.data
         current_year = perth_time.year
 
@@ -67,7 +67,7 @@ def session():
 
         # Printing for debugging
         print(f"Session Name: {session_name}")
-        print(f"Unit Code: {unit_id}")
+        print(f"Unit Id: {unit_id}")
         print(f"Semester: {semester}")
         print(f"Database Name: {database_name}")
         print(f"Current Date/Time: {humanreadable_perth_time}")
@@ -93,7 +93,7 @@ def session():
     for unit in units :
         unit_choices.append((unit.unitID, unit.unitCode))
 
-    form.unit_code.choices = unit_choices
+    form.unit.choices = unit_choices
     return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
 
 #ADMIM - /admin/
@@ -209,5 +209,7 @@ def get_session_details(unitID) :
 
     for time in session_times :
         session_time_choices.append(time)
+
+    print(f"Sending session details for {unit[0].unitCode}")
 
     return flask.jsonify({'session_name_choices': session_name_choices, 'session_time_choices': session_time_choices})

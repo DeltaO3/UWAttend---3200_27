@@ -16,7 +16,8 @@ class SessionForm(FlaskForm):
         validate_choice=False
     )
 
-    unit_code = SelectField(
+    # for each select option, value is unit_id, option is unit_code (what user sees)
+    unit = SelectField(
         'Unit Code',
         choices=[],
         validators=[DataRequired()],

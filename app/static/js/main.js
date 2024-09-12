@@ -25,7 +25,7 @@ function updateTime() {
 
 // Function to update the database name dynamically
 function updateDatabaseName() {
-    const unitCodeInput = document.getElementById('unit_code');
+    const unitCodeInput = document.getElementById('unit');
     // const semesterInput = document.getElementById('semester');
 
     // UpperCase handling for unit code and semester
