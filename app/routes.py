@@ -2,7 +2,7 @@ import flask
 from datetime import datetime, date
 from app import app
 from app.forms import LoginForm, SessionForm, StudentSignInForm, AddUnitForm
-from app.helpers import get_perth_time
+from app.helpers import get_perth_time, set_session_form_select_options
 from app.database import *
 
 # HOME -   /home/
@@ -88,13 +88,8 @@ def session():
     # TODO: should be changed to use current_user (rather than getting a user)
     currentUser = GetUser(userID=1)
 
-    # gets units for facilitator
-    units = currentUser[0].unitsFacilitate
-    unit_choices = []
-    for unit in units :
-        unit_choices.append((unit.unitID, unit.unitCode))
-
-    form.unit.choices = unit_choices
+    # set session form select field options
+    set_session_form_select_options(currentUser, form)
     return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
 
 #ADMIM - /admin/
