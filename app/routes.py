@@ -1,5 +1,5 @@
 import flask
-from flask import send_file, redirect, url_for
+from flask import send_file, redirect, url_for, after_this_request
 from datetime import datetime
 from app import app
 from app.forms import LoginForm, SessionForm, StudentSignInForm, AddUnitForm
@@ -140,9 +140,17 @@ def export_data():
 
     # Check if the file was created successfully
     if os.path.exists(zip_path):
+        @after_this_request
+        def delete_database(response):
+            try:
+                os.remove(zip_path)
+                print("Temporary Database Deleted")
+            except Exception as e:
+                print(f"Error removing Temporary Database: {e}")
+            return response
+
         # Serve the zip file for download
         response = send_file(zip_path, as_attachment=True)
-        os.remove(zip_path)
         print("Admin Successfully Exported Database")
         return response
 
