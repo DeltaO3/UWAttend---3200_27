@@ -1,48 +1,62 @@
 import flask
 from flask import send_file, redirect, url_for, after_this_request
-from datetime import datetime
-from app import app
-from app.forms import LoginForm, SessionForm, StudentSignInForm, AddUnitForm
-from app.helpers import get_perth_time
-from app.database import *
-from app.utilities import process_csv, export_all_to_zip
-from app.models import User
-import sqlalchemy as sa
-from app import database
 from flask_login import current_user, login_user, logout_user, login_required
 import os
+from datetime import datetime
+import sqlalchemy as sa
+
+from app import app
+from .forms import *
+from .helpers import *
+from .models import *
+from .database import *
+from .utilities import *
+from app import database
 
 # HOME -   /home/
 @app.route('/', methods=['GET'])
 @app.route('/home', methods=['GET'])
 @login_required
 def home():
-    form = StudentSignInForm()    
-    #placeholder data for table
-    students = []
-    alex = {
-        "name": "alex",
-        "id": "12345678",
-        "login": "yes",
-        "photo": "yes"
-    }
-    bob = {
-        "name": "bob",
-        "id": "87654321",
-        "login": "no",
-        "photo": "yes"
-    }
-    cathy = {
-        "name": "cathy",
-        "id": "22224444",
-        "login": "yes",
-        "photo": "no"
-    }
-    
-    students.append(alex)
-    students.append(bob)
-    students.append(cathy)
-    return flask.render_template('home.html', form=form, students=students)
+    form = StudentSignInForm()
+
+    # TODO will need to be replaced with actual session logic later 
+    current_session = GetSession(sessionID=1)[0]
+
+    # get students who have signed in for this session
+    attendance_records = GetAttendance(input_sessionID=current_session.sessionID)
+
+    # get student IDs from the attendance records
+    logged_in_student_ids = [str(record.studentID) for record in attendance_records]
+
+    # get only the students who have logged in
+    students = db.session.query(Student).filter(Student.studentID.in_(logged_in_student_ids)).all() # TODO should there be a database function for this?
+
+    student_list = []
+    signed_in_count = 0
+
+    for student in students:
+        # find the student's attendance record 
+        attendance_record = next((record for record in attendance_records if record.studentID == student.studentID), None)
+
+        # set login status based on whether the student has a time marked where they logged out
+        login_status = "no" if attendance_record.signOutTime else "yes"
+
+        signed_in_count = signed_in_count + 1 if login_status == "yes" else signed_in_count
+
+        student_info = {
+            "name": f"{student.preferredName} {student.lastName}",
+            "number": student.studentNumber,
+            "id": student.studentID,
+            "login": login_status,  
+            "photo": "yes" if student.consent == 1 else "no",
+            "time": attendance_record.signInTime
+        }
+        student_list.append(student_info)
+
+    student_list.sort(key=lambda x: x['time'], reverse=True)
+
+    return flask.render_template('home.html', form=form, students=student_list, session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=current_session.sessionID) 
 	
 # CONFIGURATION - /session/ /admin/
 @app.route('/session', methods=['GET', 'POST'])
@@ -195,16 +209,33 @@ def export_data():
 
 
 # STUDENT - /student/
-@app.route('/student', methods=['GET'])
-@login_required
+@app.route('/student', methods=['POST'])
 def student():
-    alex = {
-        "name": "alex",
-        "id": "12345678",
-        "login": "yes",
-        "photo": "no"
+    student_id = flask.request.form['student_id']
+
+    student = GetStudent(studentID=student_id)[0]
+
+    # TODO will need to be replaced with actual session logic later
+    current_session = GetSession(sessionID=1)[0]
+
+    attendance_record = GetAttendance(input_sessionID=current_session.sessionID, studentID=student_id)[0] 
+
+    login_status = "no" if attendance_record.signOutTime else "yes"
+
+    if not student:
+        flask.flash("Error - Student not found")
+        return flask.redirect(flask.url_for('home'))
+    
+    student_info = {
+        "name": f"{student.preferredName} {student.lastName}",
+        "number": student.studentNumber,
+        "id": student.studentID,
+        "login": login_status,  
+        "photo": "yes" if student.consent == 1 else "no",
+        "time": attendance_record.signInTime
     }
-    return flask.render_template('student.html', student=alex)
+
+    return flask.render_template('student.html', student=student_info)
 	
 # LOGIN - /login/ 
 @app.route('/login', methods=['GET', 'POST'])
@@ -240,22 +271,81 @@ def save_changes():
 
 @app.route('/add_student', methods=['POST'])
 def add_student():
-    form = StudentSignInForm()
+    form = StudentSignInForm() # TODO still need a front-end prevention method for false sign ins 
 
     if form.validate_on_submit():
         # Handle form submission
-        student_name = form.student_sign_in.data
+        studentID = form.studentID.data
         consent_status = form.consent_status.data
+        sessionID = form.sessionID.data
 
-        # Printing for debugging
-        print(f"Student Name: {student_name}")
-        print(f"Consent Status: {consent_status}")
+        session = GetSession(sessionID=sessionID)[0]
+        unitID = session.unitID
+        
+        student = GetStudent(studentID=studentID, unitID=unitID)
 
-        # Update student info in database (login/consent)
+        if student:
+            student=student[0]
+            existing_attendance = GetAttendance(input_sessionID=sessionID, studentID=studentID)
 
-        # Redirect back to home page when done
-        return flask.redirect(flask.url_for('home'))
+            if existing_attendance:
+                flask.flash("User already signed in", category='error')
+                return flask.redirect(flask.url_for('home'))
+            
+            consent_int = 1 if consent_status == "yes" else 0
 
+            student.consent = consent_int
+            db.session.commit()
+
+            # Add attendance for the current session
+            AddAttendance(sessionID=sessionID, studentID=studentID, consent_given=1, facilitatorID=1) # TODO need to be replaced with actual facilitator ID logic
+            print(f"Logged {student.firstName} {student.lastName} in")
+
+            return flask.redirect(flask.url_for('home'))
+
+        else:
+            flask.flash(f"Invalid student information", 'error')
+
+    # Redirect back to home page when done
+    return flask.redirect(flask.url_for('home'))
+    
+@app.route('/student_suggestions', methods=['GET'])
+def student_suggestions(): 
+    # get the search query from the request
+    query = flask.request.args.get('q', '').strip().lower()
+
+    # TODO will need to be replaced with actual session logic later 
+    current_session = GetSession(sessionID=1)[0] 
+
+    # get students in the unit associated with the session
+    students = GetStudent(unitID=current_session.unitID)
+
+    # filter students based on the query (by name or student number)
+    suggestions = []
+    for student in students:
+        existing_attendance = GetAttendance(input_sessionID=current_session.sessionID, studentID=student.studentID)
+
+        if existing_attendance:
+            continue
+
+        first_last_name = f"{student.firstName} {student.lastName}"
+        preferred_last_name = f"{student.preferredName} {student.lastName}"
+        if query in student.lastName.lower() or query in student.preferredName.lower() or query in preferred_last_name.lower() or query in str(student.studentNumber):
+            suggestions.append({
+                'name': f"{student.preferredName} {student.lastName}",
+                'id': student.studentID,
+                'number': student.studentNumber,
+                'consentNeeded': student.consent
+            })
+        elif query in student.firstName.lower() or query in first_last_name.lower():
+            suggestions.append({
+                'name': f"{student.firstName} {student.lastName}",
+                'id': student.studentID,
+                'number': student.studentNumber,
+                'consentNeeded': student.consent
+            })
+
+    return flask.jsonify(suggestions)
 
 @app.route('/logout')
 @login_required

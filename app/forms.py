@@ -65,3 +65,5 @@ class AddUnitForm(FlaskForm):
 class StudentSignInForm(FlaskForm):
     student_sign_in = StringField('Sign in Student', validators=[DataRequired()])
     consent_status = HiddenField('Consent Status', default="none")
+    studentID = HiddenField('Student ID')  
+    sessionID = StringField('Session ID')  
