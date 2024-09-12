@@ -36,6 +36,7 @@ endwith %}
 					{{ form.student_sign_in(id='student_search', class="form-control", placeholder="Enter name or ID...") }}
 					{{ form.consent_status(id="consentStatus", type="hidden") }}
 					{{ form.sessionID(id="sessionID", type="hidden", value=session.sessionID) }}
+					<input type="hidden" id="hidden_consent_indicator" value="no">
 					<button id="student_sign_in_button" type="submit" class="btn btn-primary">Submit</button>
 				</div>
 				<div id="suggestions_container" class="list-group mt-2"></div>

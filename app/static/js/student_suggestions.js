@@ -34,6 +34,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 suggestionItem.addEventListener('click', function () {
                     // Set the student ID and name when a suggestion is clicked
                     document.getElementById('studentID').value = suggestion.id;
+
+                    if (suggestion.consentNeeded == 1) {
+                        document.getElementById('hidden_consent_indicator').value = "no";
+                    } else {
+                        document.getElementById('hidden_consent_indicator').value = "yes";}
                     
                     studentInput.value = suggestion.name;
 

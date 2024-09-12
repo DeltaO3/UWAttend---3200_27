@@ -279,10 +279,6 @@ def add_student():
         consent_status = form.consent_status.data
         sessionID = form.sessionID.data
 
-        print("Consent Status: ", consent_status)
-        print("Session ID: ", sessionID)
-        print("Student ID: ", studentID)
-
         session = GetSession(sessionID=sessionID)[0]
         unitID = session.unitID
         
@@ -303,6 +299,7 @@ def add_student():
 
             # Add attendance for the current session
             AddAttendance(sessionID=sessionID, studentID=studentID, consent_given=1, facilitatorID=1) # TODO need to be replaced with actual facilitator ID logic
+            print(f"Logged {student.firstName} {student.lastName} in")
 
             return flask.redirect(flask.url_for('home'))
 
@@ -337,13 +334,15 @@ def student_suggestions():
             suggestions.append({
                 'name': f"{student.preferredName} {student.lastName}",
                 'id': student.studentID,
-                'number': student.studentNumber
+                'number': student.studentNumber,
+                'consentNeeded': student.consent
             })
         elif query in student.firstName.lower() or query in first_last_name.lower():
             suggestions.append({
                 'name': f"{student.firstName} {student.lastName}",
                 'id': student.studentID,
-                'number': student.studentNumber
+                'number': student.studentNumber,
+                'consentNeeded': student.consent
             })
 
     return flask.jsonify(suggestions)

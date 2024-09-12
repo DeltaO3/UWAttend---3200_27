@@ -4,8 +4,14 @@ $("#attendanceForm").submit(function (e) {
 	//TODO: add conditional to check - if consent already given, then run the function:
 	//addAttendance()
 	//TODO: else (no consent), open modal
-	$("#consentModal").modal('show');
-	
+	//get value of id='hidden_consent_indicator'
+
+	if ($("#hidden_consent_indicator").val() == "yes") {
+		$("#consentModal").modal('show');
+		document.getElementById('hidden_consent_indicator').value = "no";
+	} else {
+		addAttendance();
+	}
 	return false;
 });
 
