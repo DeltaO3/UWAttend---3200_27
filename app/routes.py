@@ -116,12 +116,19 @@ def addunit():
         if unit_exists(newunit_code, start_date):
             error = "Unit and start date combo already exist in db"
             return flask.render_template('addunit.html', form=form, error=error)
+        
+        #Ensure end date is after start date
+        if start_date > end_date:
+            error = "Start date must be after end date"
+            return flask.render_template('addunit.html', form=form, error=error)
+        
 
         #convert session occurences to a | string
         occurences = ""
         for time in sessionoccurence:
             occurences += time + "|"
         occurences = occurences[:-1]
+        print(f"session occurence string: {occurences}")
 
         #add to database
         unitID = AddUnit(newunit_code, "placeholdername", semester, 1, start_date, end_date, 
@@ -130,16 +137,20 @@ def addunit():
          #read CSV file
         if student_file.filename != '':
             student_file.save(student_file.filename)
-        filename = student_file.filename
-        process_csv(filename, unitID)
+            filename = student_file.filename
+            process_csv(filename, unitID)
+        else:
+            print("Submitted no file, probable error.")
         
         #Handle facilitators
         #TODO: handle emailing facilitators, handle differentiating between facilitator and coordinator
         facilitators = facilitator_list.split('|')
         for facilitator in facilitators:
             if(not GetUser(uwaID=facilitator)):
-                AddUser(int(facilitator), "placeholder", "placeholder", facilitator, 3) #Do we assign coordinators?
+                print(f"Adding new user: {facilitator}")
+                AddUser(facilitator, "placeholder", "placeholder", facilitator, 3) #Do we assign coordinators?
             #add this unit to facilator
+            print(f"Adding unit {unitID} to facilitator {facilitator}")
             AddUnitToFacilitator(facilitator, unitID)
         AddUnitToCoordinator(current_user.uwaID, unitID)
         
