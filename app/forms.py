@@ -51,4 +51,4 @@ class StudentSignInForm(FlaskForm):
     student_sign_in = StringField('Sign in Student', validators=[DataRequired()])
     consent_status = HiddenField('Consent Status', default="none")
     studentID = HiddenField('Student ID')  
-    session_id = HiddenField('Session ID')  
+    sessionID = StringField('Session ID')  

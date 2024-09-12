@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 suggestionItem.addEventListener('click', function () {
                     // Set the student ID and name when a suggestion is clicked
                     document.getElementById('studentID').value = suggestion.id;
-                    document.getElementById('session_id').value = 1; // TODO Add proper session id logic here 
                     
                     studentInput.value = suggestion.name;
 

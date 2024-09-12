@@ -22,6 +22,7 @@ endwith %}
 		<div class="d-flex justify-content-center align-items-center col-md-4 order-md-2">
 			<h4>{{ session.unitID }}-{{ session.sessionName }}-{{ session.sessionDate }}/{{ session.sessionTime }}</h4>
 		</div>
+		
 		<div class="col-md-8 order-md-1">
 			<h2>
 				{{ signed_in }} signed in of {{ total_students }}
@@ -33,11 +34,11 @@ endwith %}
 					<label for="studentSignIn" class="form-label visually-hidden">{{ form.student_sign_in.label }}</label>
 					{{ form.studentID(id='studentID') }}
 					{{ form.student_sign_in(id='student_search', class="form-control", placeholder="Enter name or ID...") }}
-					<button id="student_sign_in_button" type="submit" class="btn btn-primary" style="display">Submit</button>
+					{{ form.consent_status(id="consentStatus", type="hidden") }}
+					{{ form.sessionID(id="sessionID", type="hidden", value=session.sessionID) }}
+					<button id="student_sign_in_button" type="submit" class="btn btn-primary">Submit</button>
 				</div>
 				<div id="suggestions_container" class="list-group mt-2"></div>
-				{{ form.consent_status(id="consentStatus", type="hidden") }}
-				{{ form.session_id(id="session_id", value=session['sessionID'] ) }}
 			</form>
 			{% include 'photoConsent.html'%}
 		</div>
@@ -59,7 +60,7 @@ endwith %}
 				<input type="hidden" name="student_id" value="{{ student.id }}">
 			</form>
 			<span class="col-md col-6">{{student.name}}</span>
-			<span class="col-md col-6">{{student.id}}</span>
+			<span class="col-md col-6">{{student.number}}</span>
 			<span class="d-none d-md-inline col-md">{{student.login}}</span>
 			<span class="d-none d-md-inline col-md">{{student.photo}}</span>
 		</div>

@@ -2,10 +2,10 @@ import flask
 from datetime import datetime
 
 from app import app
-from .forms import LoginForm, SessionForm, StudentSignInForm, AddUnitForm
-from .helpers import get_perth_time
-from .models import db, Student, User, Attendance, Session, Unit
-from .database import GetStudent, AddAttendance, GetSession, GetAttendance
+from .forms import *
+from .helpers import *
+from .models import *
+from .database import *
 
 # HOME -   /home/
 @app.route('/', methods=['GET'])
@@ -189,20 +189,25 @@ def save_changes():
 
 @app.route('/add_student', methods=['POST'])
 def add_student():
-    form = StudentSignInForm()
-    
+    form = StudentSignInForm() # TODO still need a front-end prevention method for false sign ins 
+
     if form.validate_on_submit():
         # Handle form submission
         studentID = form.studentID.data
         consent_status = form.consent_status.data
-        sessionID = form.session_id.data
+        sessionID = form.sessionID.data
+
+        print("Consent Status: ", consent_status)
+        print("Session ID: ", sessionID)
+        print("Student ID: ", studentID)
 
         session = GetSession(sessionID=sessionID)[0]
         unitID = session.unitID
         
-        student = GetStudent(studentID=studentID, unitID=unitID)[0]
+        student = GetStudent(studentID=studentID, unitID=unitID)
 
         if student:
+            student=student[0]
             existing_attendance = GetAttendance(input_sessionID=sessionID, studentID=studentID)
 
             if existing_attendance:
@@ -220,7 +225,7 @@ def add_student():
             return flask.redirect(flask.url_for('home'))
 
         else:
-            flask.flash(f"No student found with ID {studentID}", 'error')
+            flask.flash(f"Invalid student information", 'error')
 
     # Redirect back to home page when done
     return flask.redirect(flask.url_for('home'))
