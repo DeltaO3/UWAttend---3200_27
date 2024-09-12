@@ -223,6 +223,12 @@ def GetUser(userID = None, uwaID = None, userType = None):
     
     return attendance_records
 
+# Used for exporting to csv. Required because can't change GetUser() to return query.all() instead of query.first()
+def GetAllUsers():
+    query = db.session.query(User)
+
+    return query.all()
+
 def GetUnit(unitID = None, unitCode = None, studyPeriod = None):
 
     query = db.session.query(Unit)

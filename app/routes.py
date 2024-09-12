@@ -1,12 +1,15 @@
 import flask
+from flask import send_file, redirect, url_for, after_this_request
 from datetime import datetime
 from app import app
 from app.forms import LoginForm, SessionForm, StudentSignInForm, AddUnitForm
 from app.helpers import get_perth_time
+from app.utilities import process_csv, export_all_to_zip
 from app.models import User
 import sqlalchemy as sa
 from app import database
 from flask_login import current_user, login_user, logout_user, login_required
+import os
 
 # HOME -   /home/
 @app.route('/', methods=['GET'])
@@ -121,6 +124,40 @@ def addunit():
         return flask.redirect(flask.url_for('admin'))
 	    
     return flask.render_template('addunit.html', form=form)
+
+@app.route('/export', methods=['GET'])
+@login_required
+def export_data():
+    print("Attempting to Export Database...")
+    zip_filename = 'database.zip'
+
+    # Get database.zip filepath
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    zip_path = os.path.join(project_root, zip_filename)
+
+    # Call the function to export all data to the 'database.zip'
+    export_all_to_zip(zip_filename)
+
+    # Check if the file was created successfully
+    if os.path.exists(zip_path):
+        @after_this_request
+        def delete_database(response):
+            try:
+                os.remove(zip_path)
+                print("Temporary Database Deleted")
+            except Exception as e:
+                print(f"Error removing Temporary Database: {e}")
+            return response
+
+        # Serve the zip file for download
+        response = send_file(zip_path, as_attachment=True)
+        print("Admin Successfully Exported Database")
+        return response
+
+    else:
+        # Handle the error if the zip file doesn't exist
+        return "Error: Could not export the data.", 500
+
 
 # STUDENT - /student/
 @app.route('/student', methods=['GET'])
