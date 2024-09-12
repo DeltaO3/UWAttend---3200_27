@@ -375,6 +375,5 @@ def sign_all_out():
     db.session.commit()
         
 
-
     print("Successfully signed out all users")
     return flask.redirect(flask.url_for('home'))
