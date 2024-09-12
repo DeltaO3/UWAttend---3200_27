@@ -85,9 +85,10 @@ def session():
     else :
         print(form.errors)
 
-    # TODO: should be changed to current_user
+    # TODO: should be changed to use current_user (rather than getting a user)
     currentUser = GetUser(userID=1)
 
+    # gets units for facilitator
     units = currentUser[0].unitsFacilitate
     unit_choices = []
     for unit in units :
@@ -196,14 +197,18 @@ def add_student():
 
 @app.route('/get_session_details/<unitID>')
 def get_session_details(unitID) :
+
+    # get unit by unitID
     unit = GetUnit(unitID=unitID)
     
+    # get session names for unit
     session_names = unit[0].sessionNames.split('|')
     session_name_choices = []
 
     for name in session_names :
         session_name_choices.append(name)
 
+    # get session times for unit
     session_times = unit[0].sessionTimes.split('|')
     session_time_choices = []
 
@@ -212,4 +217,5 @@ def get_session_details(unitID) :
 
     print(f"Sending session details for {unit[0].unitCode}")
 
+    # send session details
     return flask.jsonify({'session_name_choices': session_name_choices, 'session_time_choices': session_time_choices})
