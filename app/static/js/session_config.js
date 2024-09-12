@@ -9,18 +9,18 @@ function getSessionDetails() {
     fetch('/get_session_details/' + unitCodeInputValue).then(function(response) {
         response.json().then(function(data) {
             let session_name_optionHTML = '';
-            let session_occurrence_optionHTML = '';
+            let session_time_optionHTML = '';
 
             for (let session_name of data.session_name_choices) {
                 session_name_optionHTML += `<option value="${session_name}">${session_name}</option>`
             }
             
-            for (let session_occurrence of data.session_occurrence_choices) {
-                session_occurrence_optionHTML += `<option value="${session_occurrence}">${session_occurrence}</option>`
+            for (let session_time of data.session_time_choices) {
+                session_time_optionHTML += `<option value="${session_time}">${session_time}</option>`
             }
 
             document.getElementById('session_name').innerHTML = session_name_optionHTML;
-            document.getElementById('session_occurrence').innerHTML = session_occurrence_optionHTML;
+            document.getElementById('session_time').innerHTML = session_time_optionHTML;
 
         })
     })

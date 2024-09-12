@@ -23,8 +23,8 @@ class SessionForm(FlaskForm):
         validate_choice=False
     )
 
-    session_occurrence = SelectField(
-        'Session Occurrence',
+    session_time = SelectField(
+        'Session Time',
         choices=[],
         validators=[DataRequired()],
         validate_choice=False

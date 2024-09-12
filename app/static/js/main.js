@@ -1,9 +1,9 @@
 // Function to update the current time
 function updateTime() {
     // Time displayed on webpage
-    const timeElementDisplay = document.getElementById('session_time_display');
+    const timeElementDisplay = document.getElementById('current_time_display');
     // Time for backend
-    const timeElementHidden = document.getElementById('session_time');
+    const timeElementHidden = document.getElementById('current_time');
     // Retrieve current Perth time string from the data attribute
     let perthTimeStr = timeElementDisplay.getAttribute('data-perth-time');
 

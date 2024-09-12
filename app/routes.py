@@ -55,7 +55,7 @@ def session():
         # Handle form submission
         session_name = form.session_name.data
         unit_id = form.unit_code.data
-        session_time = form.session_occurrence.data
+        session_time = form.session_time.data
         current_year = perth_time.year
 
         # Determine the semester based on the current month
@@ -210,4 +210,4 @@ def get_session_details(unitID) :
     for time in session_times :
         session_time_choices.append(time)
 
-    return flask.jsonify({'session_name_choices': session_name_choices, 'session_occurrence_choices': session_time_choices})
+    return flask.jsonify({'session_name_choices': session_name_choices, 'session_time_choices': session_time_choices})

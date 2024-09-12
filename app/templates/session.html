@@ -18,19 +18,19 @@
         {{ form.session_name(class="form-select", onchange="updateDatabaseName()") }}
     </div>
 
-    <!-- Session Occurrence (e.g. "Morning") -->
+    <!-- Session Time (e.g. "Morning") -->
     <div class="mb-3">
-        {{ form.session_occurrence.label(class="form-label") }}
-        {{ form.session_occurrence(class="form-select") }}
+        {{ form.session_time.label(class="form-label") }}
+        {{ form.session_time(class="form-select") }}
     </div>    
 
-    <!-- Session Time -->
+    <!-- Current Time -->
     <div>
-        <label for="session_time_display" class="form-label">Current Time:</label>
-        <div id="session_time_display" data-perth-time="{{ perth_time }}">Loading...</div>
+        <label for="current_time_display" class="form-label">Current Time:</label>
+        <div id="current_time_display" data-perth-time="{{ perth_time }}">Loading...</div>
 
         <!-- Hidden input to store current time for backend -->
-        <input type="hidden" id="session_time" name="session_time">
+        <input type="hidden" id="current_time" name="current_time">
     </div>
 
     <!-- Display Generated Database Name -->
