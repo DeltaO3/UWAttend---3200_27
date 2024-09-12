@@ -313,7 +313,7 @@ def add_student():
     return flask.redirect(flask.url_for('home'))
     
 @app.route('/student_suggestions', methods=['GET'])
-def student_suggestions():
+def student_suggestions(): 
     # get the search query from the request
     query = flask.request.args.get('q', '').strip().lower()
 
@@ -326,6 +326,11 @@ def student_suggestions():
     # filter students based on the query (by name or student number)
     suggestions = []
     for student in students:
+        existing_attendance = GetAttendance(input_sessionID=current_session.sessionID, studentID=student.studentID)
+
+        if existing_attendance:
+            continue
+
         first_last_name = f"{student.firstName} {student.lastName}"
         preferred_last_name = f"{student.preferredName} {student.lastName}"
         if query in student.lastName.lower() or query in student.preferredName.lower() or query in preferred_last_name.lower() or query in str(student.studentNumber):
