@@ -2,7 +2,7 @@ import flask
 from datetime import datetime
 
 from app import app
-from .forms import LoginForm, SessionForm, StudentSignInForm, AddUnitForm
+from .forms import LoginForm, SessionForm, StudentSignInForm, AddUnitForm, AttendanceChangesForm
 from .helpers import get_perth_time
 from .models import db, Student, User, Attendance, Session, Unit
 from .database import GetStudent, AddAttendance, GetSession, GetAttendance
@@ -135,6 +135,8 @@ def addunit():
 # STUDENT - /student/
 @app.route('/student', methods=['POST'])
 def student():
+    form = AttendanceChangesForm()
+
     student_id = flask.request.form['student_id']
 
     student = GetStudent(studentID=student_id)[0]
@@ -150,8 +152,6 @@ def student():
         flask.flash("Error - Student not found")
         return flask.redirect(flask.url_for('home'))
     
-    print("Sign in time: " + str(attendance_record.signInTime))
-    
     student_info = {
         "name": f"{student.preferredName} {student.lastName}",
         "number": student.studentNumber,
@@ -159,10 +159,10 @@ def student():
         "login": login_status,  
         "photo": "yes" if student.consent == 1 else "no",
         "signInTime": str(attendance_record.signInTime).split('.')[0], # this is because when I included the microseconds html's input type="time" wasn't formatting properly
-        "signOutTime": attendance_record.signOutTime,
+        "signOutTime": str(attendance_record.signOutTime).split('.')[0],
     }
 
-    return flask.render_template('student.html', student=student_info, attendance=attendance_record)
+    return flask.render_template('student.html', form=form, student=student_info, attendance=attendance_record)
 
 @app.route('/remove_from_session', methods=['POST'])
 def remove_from_session():
@@ -188,10 +188,28 @@ def login():
 
 @app.route('/save_changes', methods=['POST'])
 def save_changes():
-    # Access form data 
-    grade = flask.request.form.get('grade')
-    comment = flask.request.form.get('comment')
-    photo = flask.request.form.get('photo')
+
+    form = AttendanceChangesForm()
+
+    if form.validate_on_submit():
+
+        # Handle form submission
+        signInTime = form.signInTime.data
+        signOutTime = form.signOutTime.data
+        login = form.login.data
+        consent = form.consent.data
+        grade = form.grade.data
+        comment = form.comment.data
+
+        # print all info
+        print(signInTime)
+        print(signOutTime)
+        print(login)
+        print(consent)
+        print(grade)
+        print(comment)
+
+        
 
     # Process form data here (save changes to db)
 

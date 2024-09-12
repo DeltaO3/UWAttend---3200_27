@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, HiddenField, FileField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, HiddenField, FileField, TextAreaField
 from wtforms.validators import DataRequired, ValidationError
 
 class LoginForm(FlaskForm):
@@ -52,3 +52,12 @@ class StudentSignInForm(FlaskForm):
     consent_status = HiddenField('Consent Status', default="none")
     studentID = HiddenField('Student ID')  
     session_id = HiddenField('Session ID')  
+
+class AttendanceChangesForm(FlaskForm):
+    signInTime = StringField('Sign in time')
+    signOutTime = StringField('Sign out time')
+    login = BooleanField('Login')
+    consent = BooleanField('Photo Consent')
+    grade = StringField('Grade')
+    comment = TextAreaField('Comment')
+    

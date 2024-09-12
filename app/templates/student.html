@@ -4,20 +4,21 @@
 <div class="container-fluid">
     <!-- Form element -->
     <form method="POST" action="{{ url_for('save_changes') }}">
+        {{ form.hidden_tag() }}
         <div class="mx-4 mt-3 mx-md-5">
             <div class="mb-3">
                 <strong>Student name:</strong> {{ student.name }}
             </div>
             <div class="mb-3">
-                <strong>Student ID:</strong> {{ student.id }}
+                <strong>Student ID:</strong> {{ student.number }}
             </div>
             <div class="mb-3">
                 <label for="sign_in_time" class="form-check-label">Sign in time:</label> 
-                <input type="time" name="timeIn" id="timeIn" value="{{ student.signInTime }}" class="form-control">
+                {{ form.signInTime(class="form-control", type="time", value=student.signInTime) }}
             </div>
             <div class="mb-3">
                 <label for="sign_out_time" class="form-check-label">Sign out time:</label>
-                <input type="time" name="dateOut" id="dateOut" value="{{ student.signOutTime }}" class="form-control">
+                {{ form.signOutTime(class="form-control", type="time", value=student.signOutTime) }}
             </div>
         </div>
         <div class="mx-4 mt-3 mx-md-5">
@@ -33,21 +34,21 @@
             <div style="display:flex; gap: 1em;">
                 <label for="photo" class="form-check-label">Photo:</label>
                 <div class="mb-3 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="photo" id="photo" {% if student.photo == 'yes' %} checked {% endif %}>
+                    <input class="form-check-input" type="checkbox" name="consent" id="consent" {% if student.consent == 'yes' %} checked {% endif %}>
                 </div>
             </div>
 
             <!-- Grade Input -->
             <div class="mb-3">
                 <label for="grade" class="form-label">Grade:</label>
-                <input type="text" name="grade" id="grade" value="{{ student.grade }}" class="form-control">
+                {{ form.grade(class="form-control") }}
             </div>
         </div>
 
         <!-- Comment Section -->
         <div class="mx-4 mt-3 mx-md-5">
             <label for="comment" class="form-label">Leave a Comment:</label>
-            <textarea name="comment" id="comment" rows="4" class="form-control"></textarea>
+            {{ form.comment(class="form-control", rows="3") }}
         </div>
 
         <!-- <form id="remove_from_session_form" method="POST" action="{{ url_for('remove_from_session') }}" class="col">
