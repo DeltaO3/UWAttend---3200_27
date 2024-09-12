@@ -1,15 +1,22 @@
 import flask
+from flask import send_file, redirect, url_for, after_this_request
+from flask_login import current_user, login_user, logout_user, login_required
+import os
 from datetime import datetime
+import sqlalchemy as sa
 
 from app import app
 from .forms import *
 from .helpers import *
 from .models import *
 from .database import *
+from .utilities import *
+from app import database
 
 # HOME -   /home/
 @app.route('/', methods=['GET'])
 @app.route('/home', methods=['GET'])
+@login_required
 def home():
     form = StudentSignInForm()
 
@@ -53,16 +60,15 @@ def home():
 	
 # CONFIGURATION - /session/ /admin/
 @app.route('/session', methods=['GET', 'POST'])
-def session():
+@login_required
+def session():    
     form = SessionForm()
-
     # Get perth time
     perth_time = get_perth_time()
     humanreadable_perth_time = perth_time.strftime('%B %d, %Y, %H:%M:%S %Z')
 
     # For JS formatting
     formatted_perth_time = perth_time.isoformat()
-
 
     if form.validate_on_submit():
         # Handle form submission
@@ -73,7 +79,6 @@ def session():
         # Determine the semester based on the current month
         current_month = perth_time.month
         semester = "SEM1" if current_month <= 6 else "SEM2"
-
         # Create Database
         database_name = f"{unit_code}_{semester}_{current_year}"
 
@@ -83,54 +88,125 @@ def session():
         print(f"Semester: {semester}")
         print(f"Database Name: {database_name}")
         print(f"Current Date/Time: {humanreadable_perth_time}")
-
         # Redirect back to home page when done
+	    
         return flask.redirect(flask.url_for('home'))
 
     return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
 
 #ADMIM - /admin/
 @app.route('/admin', methods=['GET', 'POST'])
+@login_required
 def admin():
+    if current_user.userType != 1:
+        return flask.redirect('home')
     # I (James) do not know what to add here so for now it is blank
+
+
     return flask.render_template('admin.html')
 
 # ADDUNIT - /addunit/ /admin/
 @app.route('/addunit', methods=['GET', 'POST'])
+@login_required
 def addunit():
+    if current_user.userType != 1:
+        return flask.redirect('home')
     form = AddUnitForm()
 
-
-    if form.validate_on_submit():
-
+    if form.validate_on_submit() and flask.request.method == 'POST':
         #Form data held here
         newunit_code = form.unitcode.data
         semester = form.semester.data
         consent_required = form.consentcheck.data
+        start_date = form.startdate.data
+        end_date = form.enddate.data
         student_file = form.studentfile.data
-        facilitator_file = form.facilitatorfile.data
-        sessionname = form.sessionnames.data
+        facilitator_list = form.facilitatorlist.data
+        sessionnames = form.sessionnames.data
         sessionoccurence = form.sessionoccurence.data
         assessmentcheck = form.assessmentcheck.data
         commentsenabled = form.commentsenabled.data
         commentsuggestions = form.commentsuggestions.data
 
-        #something here to save the csv files somewhere
+        #Ensure is a new unit being added, QUESTION - is start date to be used?
+        if unit_exists(newunit_code, start_date):
+            error = "Unit and start date combo already exist in db"
+            return flask.render_template('addunit.html', form=form, error=error)
+        
+        #Ensure end date is after start date
+        if start_date > end_date:
+            error = "Start date must be after end date"
+            return flask.render_template('addunit.html', form=form, error=error)
+        
 
-        #something here to upload csv fiels to database using utilities.py
+        #convert session occurences to a | string
+        occurences = ""
+        for time in sessionoccurence:
+            occurences += time + "|"
+        occurences = occurences[:-1]
+        print(f"session occurence string: {occurences}")
 
-        #Printing for Debugging
-        print(f"Unit Code: {newunit_code}")
-        print(f"Semester: {semester}")
-        print(f"Consent: {consent_required}")
-        print(f"Session Names: {sessionname}")
-        print(f"Occurences: {sessionoccurence}")
-        print(f"Assessment Check: {assessmentcheck}")
-        print(f"Comments Check: {commentsenabled}")
-        print(f"Suggestions: {commentsuggestions}")
+        #add to database
+        unitID = AddUnit(newunit_code, "placeholdername", semester, 1, start_date, end_date, 
+                sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
+        
+         #read CSV file
+        if student_file.filename != '':
+            student_file.save(student_file.filename)
+            filename = student_file.filename
+            process_csv(filename, unitID)
+        else:
+            print("Submitted no file, probable error.")
+        
+        #Handle facilitators
+        #TODO: handle emailing facilitators, handle differentiating between facilitator and coordinator
+        facilitators = facilitator_list.split('|')
+        for facilitator in facilitators:
+            if(not GetUser(uwaID=facilitator)):
+                print(f"Adding new user: {facilitator}")
+                AddUser(facilitator, "placeholder", "placeholder", facilitator, 3) #Do we assign coordinators?
+            #add this unit to facilator
+            print(f"Adding unit {unitID} to facilitator {facilitator}")
+            AddUnitToFacilitator(facilitator, unitID)
+        AddUnitToCoordinator(current_user.uwaID, unitID)
         
         return flask.redirect(flask.url_for('admin'))
+	    
     return flask.render_template('addunit.html', form=form)
+
+@app.route('/export', methods=['GET'])
+@login_required
+def export_data():
+    print("Attempting to Export Database...")
+    zip_filename = 'database.zip'
+
+    # Get database.zip filepath
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    zip_path = os.path.join(project_root, zip_filename)
+
+    # Call the function to export all data to the 'database.zip'
+    export_all_to_zip(zip_filename)
+
+    # Check if the file was created successfully
+    if os.path.exists(zip_path):
+        @after_this_request
+        def delete_database(response):
+            try:
+                os.remove(zip_path)
+                print("Temporary Database Deleted")
+            except Exception as e:
+                print(f"Error removing Temporary Database: {e}")
+            return response
+
+        # Serve the zip file for download
+        response = send_file(zip_path, as_attachment=True)
+        print("Admin Successfully Exported Database")
+        return response
+
+    else:
+        # Handle the error if the zip file doesn't exist
+        return "Error: Could not export the data.", 500
+
 
 # STUDENT - /student/
 @app.route('/student', methods=['POST'])
@@ -164,15 +240,21 @@ def student():
 # LOGIN - /login/ 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # placeholder values for testing
-    test_username = "u1"
-    test_password = "p1"
-
+    
+    if current_user.is_authenticated:
+        print("authenitcated")
+        return flask.redirect('home')
+    
     form = LoginForm()
+    if form.validate_on_submit():
+        user = database.GetUser(uwaID = form.username.data)                
 
-    if flask.request.method == 'POST' and form.validate_on_submit() :
-        if form.username.data == test_username and form.password.data == test_password :
-            return(flask.redirect(flask.url_for('session')))
+        if user is None or not database.CheckPassword(form.username.data, form.password.data):
+            flask.flash('Invalid username or password')
+            return flask.redirect('login')
+        
+        login_user(user, remember=form.remember_me.data)
+        return flask.redirect('home')
 
     return flask.render_template('login.html', form=form)
 
@@ -260,3 +342,9 @@ def student_suggestions():
             })
 
     return flask.jsonify(suggestions)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return flask.redirect(flask.url_for('login'))

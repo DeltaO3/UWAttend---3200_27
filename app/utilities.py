@@ -7,7 +7,7 @@ import zipfile
 from io import StringIO
 from app import app, db
 from app.models import Student, User, Attendance, Session, Unit
-from app.database import AddStudent, GetStudent, GetAttendance, GetSession, GetUser, GetUnit, student_exists
+from app.database import AddStudent, GetStudent, GetAttendance, GetSession, GetAllUsers, GetUnit, student_exists
 
 # Set of functions used to read and populate students into the database from a csv file.
 # Checklist for future
@@ -29,13 +29,11 @@ def read_csv_file(file_path):
     return data
 
 # Imports students into the database given a .csv file
-def import_student_in_db(data):
+def import_student_in_db(data, unit_id):
     for record in data:
-        # PLACEHOLDER: Do we need unitID for students???
-        unit = 'CITS3000'
 
         student_number = record['Person ID']
-        if student_exists(student_number):
+        if student_exists(student_number, unit_id):
             print(f"Duplicate found: {record['Given Names']} {record['Surname']} (ID: {student_number}) - Skipping import.")
             continue
 
@@ -46,19 +44,19 @@ def import_student_in_db(data):
             lastName=record['Surname'],
             title=record['Title'],
             preferredName=record['Preferred Given Name'],
-            unitID=unit,  # Assuming a default unit ID, replace as needed
+            unitID=unit_id,  # Assuming a default unit ID, replace as needed
             consent=0  # Setting consent to 0 as per your requirements
         )
         print(f"Added student: {record['Given Names']} {record['Surname']} (ID: {student_number})")
 
 # Process a .csv file by reading and then importing into "student" table.
-def process_csv(file_path):
+def process_csv(file_path, unit_id):
     with app.app_context():
         # Read the data from the CSV file
         data = read_csv_file(file_path)
         if data:
             # Import the data to the database
-            import_student_in_db(data)
+            import_student_in_db(data, unit_id)
 
 # Export a single table's data to a CSV format and return it as a string
 def export_table_to_csv(fetch_function):
@@ -94,7 +92,7 @@ def export_all_to_zip(zip_filename):
             print("Exported students.csv")
 
         # Export the User table
-        user_csv = export_table_to_csv(GetUser)
+        user_csv = export_table_to_csv(GetAllUsers)
         if user_csv:
             zipf.writestr('users.csv', user_csv)
             print("Exported users.csv")
