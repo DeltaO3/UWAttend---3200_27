@@ -352,3 +352,28 @@ def student_suggestions():
 def logout():
     logout_user()
     return flask.redirect(flask.url_for('login'))
+
+@app.route('/sign_all_out', methods=['POST'])
+def sign_all_out():
+    session_id = flask.request.form.get('sessionID')
+    print(session_id)
+
+    session = GetSession(sessionID=session_id)
+    if not session:
+        flask.flash('Failed to sign out all users - invalid session key')
+
+    attendance_records = GetAttendance(input_sessionID=session_id)
+    if not attendance_records:
+        flask.flash('Failed to sign out all users - no users signed in')
+
+    current_time = get_perth_time().time() # did this so that they all have an identical sign out time
+    
+    for record in attendance_records:
+        if not record.signOutTime:
+            record.signOutTime = current_time
+
+    db.session.commit()
+        
+
+    print("Successfully signed out all users")
+    return flask.redirect(flask.url_for('home'))
