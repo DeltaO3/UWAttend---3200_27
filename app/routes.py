@@ -106,11 +106,8 @@ def session():
     else :
         print(form.errors)
 
-    # TODO: should be changed to use current_user (rather than getting a user)
-    currentUser = GetUser(userID=1)
-
     # set session form select field options
-    set_session_form_select_options(currentUser, form)
+    set_session_form_select_options(form)
     return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
 
 #ADMIM - /admin/

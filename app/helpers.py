@@ -1,6 +1,7 @@
 from datetime import datetime
 import pytz
 from app.forms import SessionForm
+from flask_login import current_user
 
 # Return the current Perth time
 def get_perth_time():
@@ -9,10 +10,10 @@ def get_perth_time():
     perth_time = pytz.utc.localize(utc_time).astimezone(perth_tz)
     return perth_time
 
-def set_session_form_select_options(currentUser, form):
+def set_session_form_select_options(form):
 
-    # gets units for facilitator
-    units = currentUser[0].unitsFacilitate
+    # gets units for the facilitator (i.e. the current user)
+    units = current_user.unitsFacilitate
     unit_choices = []
     for unit in units :
         # format with unitID as value, unitCode as option string name
