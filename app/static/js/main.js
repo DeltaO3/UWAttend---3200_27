@@ -23,35 +23,6 @@ function updateTime() {
     timeElementDisplay.setAttribute('data-perth-time', newPerthTimeStr);
 }
 
-// Function to update the database name dynamically
-function updateDatabaseName() {
-    const unitCodeInput = document.getElementById('unit');
-    // const semesterInput = document.getElementById('semester');
-
-    // UpperCase handling for unit code and semester
-    unitCodeInput.value = unitCodeInput.value.toUpperCase();
-    // semesterInput.value = semesterInput.value.toUpperCase();
-
-    const unitCode = unitCodeInput.value;
-    const sessionName = document.getElementById('session_name').value;
-    // const semester = semesterInput.value;
-    const currentYear = new Date().getFullYear();
-
-    // Calculate semester based on the current month
-    const currentMonth = new Date().getMonth() + 1;
-    let semester = "SEM2";
-    if (currentMonth <= 6) {
-        semester = "SEM1";
-    }
-
-    if (unitCode && sessionName) {
-        const databaseName = `${unitCode}_${semester}_${currentYear}`;
-        document.getElementById('database_name_display').textContent = databaseName;
-    } else {
-        document.getElementById('database_name_display').textContent = '';
-    }
-}
-
 // Run code only on /session
 if (window.location.href.indexOf("session") != -1) {
     // Update the time every second

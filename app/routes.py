@@ -74,22 +74,14 @@ def session():
     if form.validate_on_submit():
 
         # Handle form submission
-        session_name = form.session_name.data
         unit_id = form.unit.data
+        session_name = form.session_name.data
         session_time = form.session_time.data
-        current_year = perth_time.year
-
-        # Determine the semester based on the current month
-        current_month = perth_time.month
-        semester = "SEM1" if current_month <= 6 else "SEM2"
-        # Create Database
-        database_name = f"{unit_id}_{semester}_{current_year}"
 
         # Printing for debugging
         print(f"Session Name: {session_name}")
+        print(f"Session Time: {session_time}")
         print(f"Unit Id: {unit_id}")
-        print(f"Semester: {semester}")
-        print(f"Database Name: {database_name}")
         print(f"Current Date/Time: {humanreadable_perth_time}")
 
         # Check if the session already exists
