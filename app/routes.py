@@ -85,11 +85,20 @@ def session():
         print(f"Current Date/Time: {humanreadable_perth_time}")
 
         # Check if the session already exists
-        if CheckSessionExists(unit_id, session_name, session_time, perth_time.date()) :
+        current_session = GetUniqueSession(unit_id, session_name, session_time, perth_time.date())
+
+        if current_session is not None :
             print("Session already exists.")
         else :
             print("Session doesn't exist... creating new session.")
-            AddSession(unit_id, session_name, session_time, perth_time)
+            current_session = AddSession(unit_id, session_name, session_time, perth_time)
+            if current_session is None :
+                print("An error has occurred. The session was not created. Please try again.")
+                return flask.redirect(flask.url_for('home'))
+
+        print("Current session details:")
+        print(f"Session name: {current_session.sessionName}")
+        print(f"Session time: {current_session.sessionTime}")
 
         # Redirect back to home page when done
         return flask.redirect(flask.url_for('home'))

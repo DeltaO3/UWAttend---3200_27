@@ -57,7 +57,7 @@ def AddStudent(studentNumber, firstName, lastName, title, preferredName, unitID,
         print(f'An error occurred: {e}')  
 
    
-
+# returns the session that was just created
 def AddSession(unitID, sessionName, sessionTime, sessionDate):
     
     try:
@@ -73,6 +73,8 @@ def AddSession(unitID, sessionName, sessionTime, sessionDate):
     except IntegrityError as e:
         db.session.rollback()
         print(f'An error occurred: {e}')
+
+    return GetUniqueSession(unitID, sessionName, sessionTime, sessionDate.date())
 
    
 
@@ -146,20 +148,6 @@ def AddUnit(unitCode, unitName, studyPeriod, active, startDate, endDate, session
         db.session.rollback()
         print(f'An error occurred: {e}')
 
-
-def CheckSessionExists(unitID, sessionName, sessionTime, sessionDate):
-
-    session = db.session.query(Session.sessionID).filter(Session.unitID == unitID,
-                                             Session.sessionName == sessionName,
-                                             Session.sessionTime == sessionTime,
-                                             func.DATE(Session.sessionDate) == sessionDate
-                                             ).first()
-    
-    if (session is not None) :
-        return True
-    else :
-        return False
-
 def AddUnitToCoordinator(userID, unitID):
     user = db.session.query(User).filter_by(uwaID=userID).first()
     unit = db.session.query(Unit).filter_by(unitID=unitID).first()
@@ -199,6 +187,17 @@ def GetAttendance(attendanceID = None, input_sessionID = None, studentID = None)
     
     
     return attendance_records
+
+# queries db for a specific (unique) session, all inputs required
+# returns the session (or none if session doesn't exist)
+def GetUniqueSession(unitID, sessionName, sessionTime, sessionDate):
+
+    session = db.session.query(Session).filter(Session.unitID == unitID,
+                                             Session.sessionName == sessionName,
+                                             Session.sessionTime == sessionTime,
+                                             func.DATE(Session.sessionDate) == sessionDate
+                                             ).first()
+    return session
 
 def GetSession(sessionID = None, unitID = None):
 
