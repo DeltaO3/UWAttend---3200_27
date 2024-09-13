@@ -31,8 +31,11 @@ def SignOut(studentID, sessionID):
         print(f"No attendance record found ")
 
 # Helper to check for duplicate students
-def student_exists(student_number):
-    return db.session.query(Student).filter_by(studentNumber=student_number).first() is not None
+def student_exists(student_number, unit_code):
+    return db.session.query(Student).filter_by(studentNumber=student_number, unitID=unit_code).first() is not None
+
+def unit_exists(unit_code, start_date):
+    return db.session.query(Unit).filter_by(unitCode=unit_code, startDate=start_date).first() is not None
 
 def AddStudent(studentNumber, firstName, lastName, title, preferredName, unitID, consent):    
    
@@ -115,7 +118,6 @@ def AddUser(uwaID, firstName, lastName, passwordHash, userType):
         db.session.rollback()
         print(f'An error occurred: {e}')
 
-    
 
 def AddUnit(unitCode, unitName, studyPeriod, active, startDate, endDate, sessionNames, sessionTimes, comments, marks, consent, commentSuggestions):
 
@@ -137,10 +139,13 @@ def AddUnit(unitCode, unitName, studyPeriod, active, startDate, endDate, session
 
         db.session.add(UnitEntry)       # add the changes 
         db.session.commit()             # save the changes
+
+        return db.session.query(Unit).filter_by(unitCode=unitCode, startDate=startDate).first().unitID
     
     except IntegrityError as e:
         db.session.rollback()
         print(f'An error occurred: {e}')
+
 
 def CheckSessionExists(unitID, sessionName, sessionTime, sessionDate):
 
@@ -154,7 +159,22 @@ def CheckSessionExists(unitID, sessionName, sessionTime, sessionDate):
         return True
     else :
         return False
-    
+
+def AddUnitToCoordinator(userID, unitID):
+    user = db.session.query(User).filter_by(uwaID=userID).first()
+    unit = db.session.query(Unit).filter_by(unitID=unitID).first()
+    user.unitsCoordinate.append(unit)
+    unit.coordinators.append(user)
+    db.session.commit()
+
+def AddUnitToFacilitator(userID, unitID):
+    user = db.session.query(User).filter_by(uwaID=userID).first()
+    unit = db.session.query(Unit).filter_by(unitID=unitID).first()
+    user.unitsFacilitate.append(unit)
+    unit.facilitators.append(user)
+    db.session.commit()
+
+
 #Do get functions need primary key IDs?
 
 def GetAttendance(attendanceID = None, input_sessionID = None, studentID = None):
@@ -162,7 +182,9 @@ def GetAttendance(attendanceID = None, input_sessionID = None, studentID = None)
     query = db.session.query(Attendance)
     
     # handle the optional arguements, only one can be used 
-    if attendanceID is not None:
+    if studentID is not None and input_sessionID is not None:
+        query = query.filter(Attendance.studentID == studentID, Attendance.sessionID == input_sessionID)
+    elif attendanceID is not None:
         query = query.filter(Attendance.attendanceID == attendanceID)
     elif input_sessionID is not None:
         query = query.filter(Attendance.sessionID == input_sessionID)
@@ -201,7 +223,9 @@ def GetStudent(unitID = None, studentID = None, studentNumber = None):
     query = db.session.query(Student)
     
     # handle the optional arguements, only one can be used 
-    if unitID is not None:
+    if studentID is not None and unitID is not None:
+        query = query.filter(Student.unitID == unitID, Student.studentID == studentID)
+    elif unitID is not None:
         query = query.filter(Student.unitID == unitID)
     elif studentID is not None:
         query = query.filter(Student.studentID == studentID)
@@ -232,9 +256,15 @@ def GetUser(userID = None, uwaID = None, userType = None):
         print("You did not submit a parameter to use so returning all user records")
 
     
-    attendance_records = query.all()
+    attendance_records = query.first()
     
     return attendance_records
+
+# Used for exporting to csv. Required because can't change GetUser() to return query.all() instead of query.first()
+def GetAllUsers():
+    query = db.session.query(User)
+
+    return query.all()
 
 def GetUnit(unitID = None, unitCode = None, studyPeriod = None):
 
@@ -255,3 +285,37 @@ def GetUnit(unitID = None, unitCode = None, studyPeriod = None):
     unit_records = query.all()
 
     return unit_records
+
+
+def CheckPassword(uwaID, password):
+
+    query = db.session.query(User)
+    
+    if uwaID is not None:
+        query = query.filter(User.uwaID == uwaID)
+    else:
+        print("You did not submit a uwaID parameter.")
+        return False
+
+    # Retrieve the user record
+    user_record = query.first()
+
+    # If a record is found, check the password
+    if user_record and user_record.passwordHash == password:
+        return True
+    else:
+        return False
+
+def SetPassword(uwaID, newPassword):
+    
+    user = db.session.query(User).filter(User.uwaID == uwaID).first()
+    
+    if user is None:
+        raise ValueError("User not found")    
+
+    # Set the new password hash
+    user.passwordHash = newPassword
+    
+    # Commit the changes to the database
+    db.session.commit()
+
