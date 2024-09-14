@@ -325,8 +325,9 @@ def student_suggestions():
     for student in students:
         existing_attendance = GetAttendance(input_sessionID=current_session.sessionID, studentID=student.studentID)
 
+        logged_in = 0
         if existing_attendance:
-            continue
+            logged_in = 1
 
         first_last_name = f"{student.firstName} {student.lastName}"
         preferred_last_name = f"{student.preferredName} {student.lastName}"
@@ -335,14 +336,16 @@ def student_suggestions():
                 'name': f"{student.preferredName} {student.lastName}",
                 'id': student.studentID,
                 'number': student.studentNumber,
-                'consentNeeded': student.consent
+                'consentNeeded': student.consent,
+                'loggedIn': logged_in
             })
         elif query in student.firstName.lower() or query in first_last_name.lower():
             suggestions.append({
                 'name': f"{student.firstName} {student.lastName}",
                 'id': student.studentID,
                 'number': student.studentNumber,
-                'consentNeeded': student.consent
+                'consentNeeded': student.consent,
+                'loggedIn': logged_in
             })
 
     return flask.jsonify(suggestions)
@@ -374,6 +377,5 @@ def sign_all_out():
 
     db.session.commit()
         
-
     print("Successfully signed out all users")
     return flask.redirect(flask.url_for('home'))

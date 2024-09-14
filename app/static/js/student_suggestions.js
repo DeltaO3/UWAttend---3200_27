@@ -31,6 +31,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 suggestionItem.textContent = `${suggestion.name} (${suggestion.number})`;
                 suggestionItem.setAttribute('data-student-id', suggestion.number);  // Store student ID
 
+                if (suggestion.loggedIn == 1) {
+                    suggestionItem.classList.add('bg-danger', 'text-white'); // the colours are so dramatic, but I know there's no point picking better ones if all the colours will be changed anyway 
+                } else {
+                    suggestionItem.classList.add('bg-success', 'text-white');
+                }
+
                 document.getElementById('hidden_consent_indicator').value = "no";
                 document.getElementById('studentID').value = false;
         
