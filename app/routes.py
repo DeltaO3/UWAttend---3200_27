@@ -138,8 +138,7 @@ def admin():
 @app.route('/addunit', methods=['GET', 'POST'])
 @login_required
 def addunit():
-    if current_user.userType != 1:
-        return flask.redirect('home')
+    
     form = AddUnitForm()
 
     if form.validate_on_submit() and flask.request.method == 'POST':
