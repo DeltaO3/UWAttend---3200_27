@@ -11,21 +11,24 @@ class LoginForm(FlaskForm):
 class SessionForm(FlaskForm):
     session_name = SelectField(
         'Session Name',
-        choices=[
-            ('Safety', 'Safety'), ('CAD', 'CAD'), ('Computer', 'Computer'),
-            ('PipeWorks', 'PipeWorks'), ('Measurement', 'Measurement'),
-            ('ReverseEng', 'Reverse Engineering'), ('DataMapping', 'Data Mapping'),
-            ('Soldering', 'Soldering'), ('HandTools', 'Hand Tools')
-        ],
-        validators=[DataRequired()]
+        choices=[],
+        validators=[DataRequired()],
+        validate_choice=False
     )
 
-    unit_code = SelectField(
+    # for each select option, value is unit_id, option is unit_code (what user sees)
+    unit = SelectField(
         'Unit Code',
-        choices=[
-            ('GENG200', 'GENG200'), ('CITS3007', 'CITS3007')
-        ],
-        validators=[DataRequired()]
+        choices=[],
+        validators=[DataRequired()],
+        validate_choice=False
+    )
+
+    session_time = SelectField(
+        'Session Time',
+        choices=[],
+        validators=[DataRequired()],
+        validate_choice=False
     )
 
     submit = SubmitField('Update')

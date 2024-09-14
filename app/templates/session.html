@@ -6,31 +6,28 @@
 <form method="POST" action="{{ url_for('session') }}">
     {{ form.hidden_tag() }}
 
+    <!-- Unit Code -->
+    <div class="mb-3">
+        {{ form.unit.label(class="form-label") }}
+        {{ form.unit(class="form-select", onchange="updateDatabaseName()") }}
+    </div>
+
     <!-- Session Name -->
     <div class="mb-3">
         {{ form.session_name.label(class="form-label") }}
         {{ form.session_name(class="form-select", onchange="updateDatabaseName()") }}
     </div>
 
-    <!-- Unit Code -->
+    <!-- Session Time (e.g. "Morning") -->
     <div class="mb-3">
-        {{ form.unit_code.label(class="form-label") }}
-        {{ form.unit_code(class="form-select", onchange="updateDatabaseName()") }}
-    </div>
+        {{ form.session_time.label(class="form-label") }}
+        {{ form.session_time(class="form-select") }}
+    </div>    
 
-    <!-- Session Time -->
+    <!-- Current Time -->
     <div>
-        <label for="session_time_display" class="form-label">Current Time:</label>
-        <div id="session_time_display" data-perth-time="{{ perth_time }}">Loading...</div>
-
-        <!-- Hidden input to store current time for backend -->
-        <input type="hidden" id="session_time" name="session_time">
-    </div>
-
-    <!-- Display Generated Database Name -->
-    <div class="mb-3">
-        <label for="database_name_display" class="form-label">Database Name:</label>
-        <div id="database_name_display"></div>
+        <label for="current_time_display" class="form-label">Current Time:</label>
+        <div id="current_time_display" data-perth-time="{{ perth_time }}">Loading...</div>
     </div>
 
     <!-- Buttons -->
@@ -39,4 +36,5 @@
         <button type="button" class="btn btn-secondary" onclick="window.history.back()">Back</button>
     </div>
 </form>
+<script src="{{url_for('static', filename='js/session_config.js')}}"></script>
 {% endblock %}

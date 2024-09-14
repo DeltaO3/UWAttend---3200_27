@@ -1,9 +1,4 @@
 import flask
-from flask import send_file, redirect, url_for, after_this_request
-from flask_login import current_user, login_user, logout_user, login_required
-import os
-from datetime import datetime
-import sqlalchemy as sa
 
 from app import app
 from .forms import *
@@ -12,6 +7,11 @@ from .models import *
 from .database import *
 from .utilities import *
 from app import database
+from flask import send_file, redirect, url_for, after_this_request
+from flask_login import current_user, login_user, logout_user, login_required
+import os
+from datetime import datetime, date
+import sqlalchemy as sa
 
 # HOME -   /home/
 @app.route('/', methods=['GET'])
@@ -63,6 +63,7 @@ def home():
 @login_required
 def session():    
     form = SessionForm()
+
     # Get perth time
     perth_time = get_perth_time()
     humanreadable_perth_time = perth_time.strftime('%B %d, %Y, %H:%M:%S %Z')
@@ -71,27 +72,43 @@ def session():
     formatted_perth_time = perth_time.isoformat()
 
     if form.validate_on_submit():
-        # Handle form submission
-        session_name = form.session_name.data
-        unit_code = form.unit_code.data
-        current_year = perth_time.year
 
-        # Determine the semester based on the current month
-        current_month = perth_time.month
-        semester = "SEM1" if current_month <= 6 else "SEM2"
-        # Create Database
-        database_name = f"{unit_code}_{semester}_{current_year}"
+        # Handle form submission
+        unit_id = form.unit.data
+        session_name = form.session_name.data
+        session_time = form.session_time.data
 
         # Printing for debugging
         print(f"Session Name: {session_name}")
-        print(f"Unit Code: {unit_code}")
-        print(f"Semester: {semester}")
-        print(f"Database Name: {database_name}")
+        print(f"Session Time: {session_time}")
+        print(f"Unit Id: {unit_id}")
         print(f"Current Date/Time: {humanreadable_perth_time}")
-        # Redirect back to home page when done
-	    
-        return flask.redirect(flask.url_for('home'))
 
+        # Check if the session already exists
+        current_session = GetUniqueSession(unit_id, session_name, session_time, perth_time.date())
+
+        if current_session is not None :
+            print("Session already exists.")
+        else :
+            print("Session doesn't exist... creating new session.")
+            current_session = AddSession(unit_id, session_name, session_time, perth_time)
+            if current_session is None :
+                print("An error has occurred. The session was not created. Please try again.")
+                return flask.redirect(flask.url_for('home'))
+
+        print("Current session details:")
+        print(f"Session name: {current_session.sessionName}")
+        print(f"Session time: {current_session.sessionTime}")
+
+        # Redirect back to home page when done
+        return flask.redirect(flask.url_for('home'))
+    
+    # print form errors
+    else :
+        print(form.errors)
+
+    # set session form select field options
+    set_session_form_select_options(form)
     return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
 
 #ADMIM - /admin/
@@ -287,7 +304,7 @@ def add_student():
         if student:
             student=student[0]
             existing_attendance = GetAttendance(input_sessionID=sessionID, studentID=studentID)
-
+            
             if existing_attendance:
                 flask.flash("User already signed in", category='error')
                 return flask.redirect(flask.url_for('home'))
@@ -308,7 +325,32 @@ def add_student():
 
     # Redirect back to home page when done
     return flask.redirect(flask.url_for('home'))
+
+@app.route('/get_session_details/<unitID>')
+def get_session_details(unitID) :
+
+    # get unit by unitID
+    unit = GetUnit(unitID=unitID)
     
+    # get session names for unit
+    session_names = unit[0].sessionNames.split('|')
+    session_name_choices = []
+
+    for name in session_names :
+        session_name_choices.append(name)
+
+    # get session times for unit
+    session_times = unit[0].sessionTimes.split('|')
+    session_time_choices = []
+
+    for time in session_times :
+        session_time_choices.append(time)
+
+    print(f"Sending session details for {unit[0].unitCode}")
+
+    # send session details
+    return flask.jsonify({'session_name_choices': session_name_choices, 'session_time_choices': session_time_choices})
+
 @app.route('/student_suggestions', methods=['GET'])
 def student_suggestions(): 
     # get the search query from the request

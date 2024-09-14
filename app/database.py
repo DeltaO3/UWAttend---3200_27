@@ -2,12 +2,12 @@ import flask
 from app import app
 from app import db
 from .models import db, Student, User, Attendance, Session, Unit
-from datetime import datetime
+from datetime import datetime, date
 from app.helpers import get_perth_time
 
 # sql
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import and_
+from sqlalchemy import and_, func
 from sqlalchemy.exc import IntegrityError
 
 def SignOut(studentID, sessionID):
@@ -57,7 +57,7 @@ def AddStudent(studentNumber, firstName, lastName, title, preferredName, unitID,
         print(f'An error occurred: {e}')  
 
    
-
+# returns the session that was just created
 def AddSession(unitID, sessionName, sessionTime, sessionDate):
     
     try:
@@ -73,6 +73,8 @@ def AddSession(unitID, sessionName, sessionTime, sessionDate):
     except IntegrityError as e:
         db.session.rollback()
         print(f'An error occurred: {e}')
+
+    return GetUniqueSession(unitID, sessionName, sessionTime, sessionDate.date())
 
    
 
@@ -160,6 +162,7 @@ def AddUnitToFacilitator(userID, unitID):
     unit.facilitators.append(user)
     db.session.commit()
 
+
 #Do get functions need primary key IDs?
 
 def GetAttendance(attendanceID = None, input_sessionID = None, studentID = None):
@@ -184,6 +187,17 @@ def GetAttendance(attendanceID = None, input_sessionID = None, studentID = None)
     
     
     return attendance_records
+
+# queries db for a specific (unique) session, all inputs required
+# returns the session (or none if session doesn't exist)
+def GetUniqueSession(unitID, sessionName, sessionTime, sessionDate):
+
+    session = db.session.query(Session).filter(Session.unitID == unitID,
+                                             Session.sessionName == sessionName,
+                                             Session.sessionTime == sessionTime,
+                                             func.DATE(Session.sessionDate) == sessionDate
+                                             ).first()
+    return session
 
 def GetSession(sessionID = None, unitID = None):
 
