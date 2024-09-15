@@ -19,13 +19,11 @@ import sqlalchemy as sa
 @login_required
 def home():
     session_id = flask.session.get('session_id')
-    print(f"Session ID as found in home: {session_id}")
 
     current_session = GetSession(session_id) 
     
     if current_session:
         current_session = current_session[0]
-        print(f"Received session ID: {current_session.sessionID}")
         # Use session_id for further processing
 
     if not current_session:
@@ -281,7 +279,7 @@ def student():
 def login():
     
     if current_user.is_authenticated:
-        print("authenitcated")
+        print("authenticated")
         return flask.redirect('home')
     
     form = LoginForm()
@@ -389,12 +387,10 @@ def student_suggestions():
 
     # TODO will need to be replaced with actual session logic later 
     session_id = flask.session.get('session_id')
-    print("Session ID as found in student_suggestions : ", session_id)
     current_session = GetSession(sessionID=session_id)[0] 
 
     # get students in the unit associated with the session
     students = GetStudent(unitID=current_session.unitID)
-    print("students", students)
 
     # filter students based on the query (by name or student number)
     suggestions = []
@@ -431,10 +427,7 @@ def logout():
 
 @app.route('/sign_all_out', methods=['POST'])
 def sign_all_out():
-    # session_id = flask.request.form.get('sessionID')
-    # print(session_id)
     session_id = flask.session.get('session_id')
-    print("Session ID as found in sign_all_out : ", session_id)
 
     session = GetSession(sessionID=session_id)
     if not session:
