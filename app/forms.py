@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, SelectMultipleField, HiddenField, FileField, DateField, widgets
 from wtforms.validators import DataRequired, ValidationError
+from app.database import unit_exists
 
 class LoginForm(FlaskForm):
     username = StringField('Username:', validators=[DataRequired()])
@@ -41,14 +42,22 @@ class MultiCheckboxField(SelectMultipleField):
 
 def validate_sessionoccurence(form, field):
     if not field.data:
-        print("reached here")
         raise ValidationError("Select at least one occurence")
         
+def unit_check(form, field):
+    print(f"checking unit validity, {form.unitcode.data}, {form.startdate.data}")
+    if unit_exists(form.unitcode.data, form.startdate.data):
+       raise ValidationError("Unit and start date combo already exist in db")
+     
+def date_check(form, field):
+	print(f"checking date validity, {form.startdate.data}, {form.enddate.data}")
+	if form.startdate.data > form.enddate.data:
+		raise ValidationError("Start date must be before end date")
     
 class AddUnitForm(FlaskForm):
-	unitcode = StringField('Unit Code:', validators=[DataRequired()])
+	unitcode = StringField('Unit Code:', validators=[DataRequired(), unit_check])
 	semester = StringField('Semester:', validators=[DataRequired()])
-	startdate = DateField('Start Date', validators=[DataRequired()])
+	startdate = DateField('Start Date', validators=[DataRequired(), date_check])
 	enddate = DateField('End Date', validators=[DataRequired()])
 	#Need to add custom validators to check if files uploaded end in csv
 	sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})

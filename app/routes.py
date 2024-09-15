@@ -145,15 +145,7 @@ def addunit():
         commentsenabled = form.commentsenabled.data
         commentsuggestions = form.commentsuggestions.data
 
-        #Ensure is a new unit being added, QUESTION - is start date to be used?
-        if unit_exists(newunit_code, start_date):
-            error = "Unit and start date combo already exist in db"
-            return flask.render_template('addunit.html', form=form, error=error)
-        
-        #Ensure end date is after start date
-        if start_date > end_date:
-            error = "Start date must be after end date"
-            return flask.render_template('addunit.html', form=form, error=error)
+        #Greater validation occurs in flask forms with custom validators
         
 
         #convert session occurences to a | string
