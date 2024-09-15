@@ -160,17 +160,8 @@ def addunit():
         commentsenabled = form.commentsenabled.data
         commentsuggestions = form.commentsuggestions.data
 
-        #Ensure is a new unit being added, QUESTION - is start date to be used?
-        if unit_exists(newunit_code, start_date):
-            error = "Unit and start date combo already exist in db"
-            return flask.render_template('addunit.html', form=form, error=error)
+        #Validation occurs in flask forms with custom validators
         
-        #Ensure end date is after start date
-        if start_date > end_date:
-            error = "Start date must be after end date"
-            return flask.render_template('addunit.html', form=form, error=error)
-        
-
         #convert session occurences to a | string
         occurences = ""
         for time in sessionoccurence:
@@ -189,6 +180,8 @@ def addunit():
             process_csv(filename, unitID)
         else:
             print("Submitted no file, probable error.")
+            error = "No file submitted"
+            return flask.render_template('addunit.html', form=form, error=error)
         
         #Handle facilitators
         #TODO: handle emailing facilitators, handle differentiating between facilitator and coordinator
@@ -198,8 +191,12 @@ def addunit():
                 print(f"Adding new user: {facilitator}")
                 AddUser(facilitator, "placeholder", "placeholder", facilitator, 3) #Do we assign coordinators?
             #add this unit to facilator
+            if(int(facilitator) == current_user.uwaID):
+                print(f"skipping user {facilitator} as it is the currently logged in user.")
+                continue
             print(f"Adding unit {unitID} to facilitator {facilitator}")
             AddUnitToFacilitator(facilitator, unitID)
+        AddUnitToFacilitator(current_user.uwaID, unitID)
         AddUnitToCoordinator(current_user.uwaID, unitID)
         
         return flask.redirect(flask.url_for('unitconfig'))
