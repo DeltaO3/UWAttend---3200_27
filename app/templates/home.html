@@ -35,7 +35,6 @@ endwith %}
 					{{ form.studentID(id='studentID') }}
 					{{ form.student_sign_in(id='student_search', class="form-control", placeholder="Enter name or ID...") }}
 					{{ form.consent_status(id="consentStatus", type="hidden") }}
-					{{ form.sessionID(id="sessionID", type="hidden", value=session.sessionID) }}
 					<input type="hidden" id="hidden_consent_indicator" value="no">
 					<button id="student_sign_in_button" type="submit" class="btn btn-primary">Submit</button>
 				</div>
@@ -72,7 +71,6 @@ endwith %}
 	<div class="fixed-bottom row pb-2 bg-body">
 		<button class="btn col-md-3 col">Sync</button>
 		<button id="signOutButton" class="btn btn-danger col">Sign All Out</button>
-		<input type="hidden" id="session_id" value="{{ session.sessionID }}">
 		<button class="btn col-md-3 col">Download</button>
 	</div>
 	{% include 'signOut.html'%}
