@@ -145,9 +145,8 @@ def addunit():
         commentsenabled = form.commentsenabled.data
         commentsuggestions = form.commentsuggestions.data
 
-        #Greater validation occurs in flask forms with custom validators
+        #Validation occurs in flask forms with custom validators
         
-
         #convert session occurences to a | string
         occurences = ""
         for time in sessionoccurence:
@@ -175,8 +174,12 @@ def addunit():
                 print(f"Adding new user: {facilitator}")
                 AddUser(facilitator, "placeholder", "placeholder", facilitator, 3) #Do we assign coordinators?
             #add this unit to facilator
+            if(int(facilitator) == current_user.uwaID):
+                print(f"skipping user {facilitator} as it is the currently logged in user.")
+                continue
             print(f"Adding unit {unitID} to facilitator {facilitator}")
             AddUnitToFacilitator(facilitator, unitID)
+        AddUnitToFacilitator(current_user.uwaID, unitID)
         AddUnitToCoordinator(current_user.uwaID, unitID)
         
         return flask.redirect(flask.url_for('admin'))
