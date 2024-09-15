@@ -133,5 +133,5 @@ python -m app.utilities
 With an empty db file (delete app.db, create fresh file with `flask db upgrade`), run:
 
 ```
-python - m app.testdb
+python -m app.testdb
 ```
