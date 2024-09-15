@@ -19,10 +19,10 @@
 				</a>
 
 				<!-- Session Config: Visible to admins (1), coordinators (2), and facilitators (3) -->
-				{% if current_user.userType == 1 or current_user.userType == 2 or current_user.userType == 3 %}
-					<a class="nav-link {% if request.path == url_for('session') %}active" aria-current="page{% endif %}"
-						href="{{ url_for('session') }}">Session Config</a>
-				{% endif %}
+				
+				<a class="nav-link {% if request.path == url_for('session') %}active" aria-current="page{% endif %}"
+					href="{{ url_for('session') }}">Session Config</a>
+				
 
 				<!-- Unit Config: Only visible to admins (1) and coordinators (2) -->
 				{% if current_user.userType == 1 or current_user.userType == 2 %}
