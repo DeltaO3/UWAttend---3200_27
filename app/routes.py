@@ -115,6 +115,8 @@ def session():
 @app.route('/unitconfig', methods=['GET', 'POST'])
 @login_required
 def unitconfig():
+    if current_user.userType == 3:
+        return flask.redirect('home')
     
     return flask.render_template('unit.html')
 
@@ -138,6 +140,8 @@ def admin():
 @app.route('/addunit', methods=['GET', 'POST'])
 @login_required
 def addunit():
+    if current_user.userType == 3:
+        return flask.redirect('home')
     
     form = AddUnitForm()
 
