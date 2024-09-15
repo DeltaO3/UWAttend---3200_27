@@ -46,24 +46,24 @@ def validate_sessionoccurence(form, field):
         
     
 class AddUnitForm(FlaskForm):
-    unitcode = StringField('Unit Code:', validators=[DataRequired()])
-    semester = StringField('Semester:', validators=[DataRequired()])
-    startdate = DateField('Start Date', validators=[DataRequired()])
-    enddate = DateField('End Date', validators=[DataRequired()])
-    #Need to add custom validators to check if files uploaded end in csv
-    facilitatorlist = StringField('Facilitator IDs', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
-    studentfile = FileField('Student List CSV Upload:', validators=[DataRequired()])
-    consentcheck = BooleanField('Photo Consent Required?')
-    sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
-    sessionoccurence = MultiCheckboxField(
-        'Session Occurence',
-        choices=[('Morning','Morning'), ('Afternoon', 'Afternoon')
-        ],
-        validators=[validate_sessionoccurence])
-    assessmentcheck = BooleanField('Sessions Assessed?')
-    commentsenabled = BooleanField('Student Comments Enabled?')
-    commentsuggestions = StringField('Comment Suggestions:', render_kw={"placeholder":"Optional; separate with |"})
-    submit = SubmitField('Add Unit')
+	unitcode = StringField('Unit Code:', validators=[DataRequired()])
+	semester = StringField('Semester:', validators=[DataRequired()])
+	startdate = DateField('Start Date', validators=[DataRequired()])
+	enddate = DateField('End Date', validators=[DataRequired()])
+	#Need to add custom validators to check if files uploaded end in csv
+	sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
+	facilitatorlist = StringField('Facilitator IDs', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
+	studentfile = FileField('Student List CSV Upload:', validators=[DataRequired()])
+	consentcheck = BooleanField('Photo Consent Required?')
+	sessionoccurence = MultiCheckboxField(
+		'Session Occurence',
+		choices=[('Morning','Morning'), ('Afternoon', 'Afternoon')
+		],
+		validators=[validate_sessionoccurence])
+	assessmentcheck = BooleanField('Sessions Assessed?')
+	commentsenabled = BooleanField('Student Comments Enabled?')
+	commentsuggestions = StringField('Comment Suggestions:', render_kw={"placeholder":"Optional; separate with |"})
+	submit = SubmitField('Add Unit')
     
 class StudentSignInForm(FlaskForm):
     student_sign_in = StringField('Sign in Student', validators=[DataRequired()])
