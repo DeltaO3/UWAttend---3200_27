@@ -111,23 +111,38 @@ def session():
     set_session_form_select_options(form)
     return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
 
-#ADMIM - /admin/
+#ADMIM - /unitconfig /
+@app.route('/unitconfig', methods=['GET', 'POST'])
+@login_required
+def unitconfig():
+    if current_user.userType == 3:
+        return flask.redirect('home')
+    
+    return flask.render_template('unit.html')
+
+# add users
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
 def admin():
     if current_user.userType != 1:
         return flask.redirect('home')
-    # I (James) do not know what to add here so for now it is blank
 
+    form = AddUserForm()
 
-    return flask.render_template('admin.html')
+    if form.validate_on_submit() and flask.request.method == 'POST':       
+        
+        AddUser(userType=form.UserType.data, uwaID=form.uwaId.data, firstName=form.firstName.data, lastName=form.lastName.data, passwordHash=form.passwordHash.data)
+        return flask.redirect(flask.url_for('admin'))
+    
+    return flask.render_template('admin.html', form=form)
 
-# ADDUNIT - /addunit/ /admin/
+# ADDUNIT - /addunit/ /unit/
 @app.route('/addunit', methods=['GET', 'POST'])
 @login_required
 def addunit():
-    if current_user.userType != 1:
+    if current_user.userType == 3:
         return flask.redirect('home')
+    
     form = AddUnitForm()
 
     if form.validate_on_submit() and flask.request.method == 'POST':
@@ -187,7 +202,7 @@ def addunit():
             AddUnitToFacilitator(facilitator, unitID)
         AddUnitToCoordinator(current_user.uwaID, unitID)
         
-        return flask.redirect(flask.url_for('admin'))
+        return flask.redirect(flask.url_for('unitconfig'))
 	    
     return flask.render_template('addunit.html', form=form)
 

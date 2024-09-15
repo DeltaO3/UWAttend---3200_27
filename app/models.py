@@ -22,7 +22,7 @@ Units_Facilitators_Table = db.Table(
 # Define models
 class User(UserMixin, db.Model):
     __tablename__ = 'user'
-    userID: Mapped[int] = mapped_column(primary_key=True)
+    userID: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     uwaID: Mapped[int] = mapped_column(unique=True, nullable=False)
     firstName: Mapped[Optional[str]] = mapped_column(String(50))
     lastName: Mapped[Optional[str]] = mapped_column(String(50))
@@ -91,4 +91,5 @@ class Attendance(db.Model) :
 @login.user_loader
 def load_user(id):
     return db.session.get(User, int(id))
+
 

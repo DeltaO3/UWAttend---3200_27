@@ -43,7 +43,27 @@ def validate_sessionoccurence(form, field):
     if not field.data:
         print("reached here")
         raise ValidationError("Select at least one occurence")
+
+
+def validate_UserType(form, field):
+    if not field.data:
+        print("reached here")
+        raise ValidationError("Select at least one occurence")
         
+class AddUserForm(FlaskForm):
+    
+    UserType = SelectField(
+    'User Type',
+    choices=[(1, 'Administrator'), (2, 'Coordinator'), (3, "Facilitator")],
+    coerce=int,  # Ensure the selected value is coerced to an integer
+    validators=[validate_UserType]
+    )
+    uwaId       = StringField('Uwa ID:', validators=[DataRequired()])
+    firstName   = StringField('First name:', validators=[DataRequired()])
+    lastName    = StringField('Last name:', validators=[DataRequired()])
+    passwordHash = StringField('Password:', validators=[DataRequired()])
+    submit      = SubmitField('Add User')
+
     
 class AddUnitForm(FlaskForm):
     unitcode = StringField('Unit Code:', validators=[DataRequired()])
