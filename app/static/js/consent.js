@@ -1,11 +1,8 @@
 //Runs when attendance form is submitted - put post request to flask in here
 $("#attendanceForm").submit(function (e) {
 	e.preventDefault();  // Prevent the default form submission
-	//TODO: add conditional to check - if consent already given, then run the function:
-	//addAttendance()
-	//TODO: else (no consent), open modal
-	//get value of id='hidden_consent_indicator'
 
+	// Only display the modal if consent has not been previously granted 
 	if ($("#hidden_consent_indicator").val() == "yes") {
 		$("#consentModal").modal('show');
 		document.getElementById('hidden_consent_indicator').value = "no";

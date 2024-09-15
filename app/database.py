@@ -199,7 +199,7 @@ def GetUniqueSession(unitID, sessionName, sessionTime, sessionDate):
                                              ).first()
     return session
 
-def GetSession(sessionID = None, unitID = None):
+def GetSession(sessionID = None, unitID = None, return_all=False):
 
     query = db.session.query(Session)
     
@@ -208,9 +208,10 @@ def GetSession(sessionID = None, unitID = None):
         query = query.filter(Session.sessionID == sessionID)
     elif unitID is not None:
         query = query.filter(Session.unitID == unitID)
-    else:
+    elif not return_all:
+        return
         # no parameters were supplied.
-        print("You did not submit a parameter to use so returning all session records")
+        # print("You did not submit a parameter to use so returning all session records")
 
     
     attendance_records = query.all()
