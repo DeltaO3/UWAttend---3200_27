@@ -14,9 +14,11 @@ with app.app_context():
 	AddUser(44446666, "Coordinator1", "Coordinate", "coordinate", 2)
 	#Add units to users
 	AddUnitToCoordinator(12345678, unit1)
+	AddUnitToFacilitator(12345678, unit1)
 	AddUnitToFacilitator(22224444, unit1)
 	AddUnitToFacilitator(33335555, unit1)
 	AddUnitToCoordinator(44446666, unit1)
+	AddUnitToFacilitator(44456666, unit1)
 	#Add sessions to unit
 	AddSession(unit1, "Lab", "Morning", datetime.now())
 	AddSession(unit1, "Workshop", "Morning", datetime.now())
