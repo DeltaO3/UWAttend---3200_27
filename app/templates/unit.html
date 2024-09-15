@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid ">
+    <div class="mt-2 mx-md-5 mx-2">
+        <h2>Unit configuration</h2>
+        <br>
+        <a href="{{ url_for('addunit') }}" class="btn btn-primary">Add Unit</a>
+
+        <a href="{{ url_for('export_data') }}" class="btn btn-primary">Export Database</a>
+    </div>
+</div>
+
+{% endblock %}
