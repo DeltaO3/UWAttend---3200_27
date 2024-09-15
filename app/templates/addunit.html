@@ -13,43 +13,32 @@
             {% endif %}
 
             {% for field in form %}
-            {% if field.type == "StringField" or field.type =="DateField" %}
+
+            {% if field.type != "SubmitField" and field.widget.input_type != "hidden" %}
             <div class="mb-3">
-                {{ field.label(class="form-label") }}
-                {{ field(class="form-control") }}
+                <div class="row">
+
+                    {{ field.label(class="form-label col-md-3 col-sm-3 text-sm-end") }}
+                    <div class="col">
+                        {% if field.type == "StringField" or field.type =="DateField" %}
+                        {{ field(class="form-control") }}
+                        {% elif field.type == "FileField" %}
+                        {{ field(class="form-control-file") }}
+                        {% elif field.type == "BooleanField" %}
+                        {{ field(class="form-check-input") }}
+                        {% elif field.type == "MultiCheckboxField" %}
+                        {{ field(style="list-style-type: none;") }}
+                        {% endif %}
+
+                    </div>
+                </div>
                 {% for error in field.errors %}
-                <span class="text-danger"> {{error}} </span>
+                <div class="row">
+                    <div class="col-md-3 col-sm-3 "></div>
+                    <span class="text-danger col"> {{error}} </span>
+                </div>
                 {% endfor %}
             </div>
-
-            {% elif field.type == "FileField" %}
-            <div class="mb-3">
-                {{ field.label(class="form-label") }}
-                {{ field(class="form-control-file") }}
-                {% for error in field.errors %}
-                <span class="text-danger"> {{error}} </span>
-                {% endfor %}
-            </div>
-
-            {% elif field.type == "BooleanField" %}
-            <div class="mb-3">
-                {{ field.label(class="form-label") }}
-                {{ field(class="form-check-input") }}
-                {% for error in field.errors %}
-                <span class="text-danger"> {{error}} </span>
-                {% endfor %}
-            </div>
-
-            {% elif field.type == "MultiCheckboxField" %}
-            <div class="mb-3">
-                {{ field.label(class=" form-label") }}
-                {{ field(style="list-style-type: none;") }}
-                {% for error in field.errors %}
-                <span class="text-danger"> {{error}} </span>
-                {% endfor %}
-            </div>
-
-
             {% endif %}
             {% endfor %}
 

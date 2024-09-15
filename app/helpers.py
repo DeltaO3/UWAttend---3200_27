@@ -1,6 +1,5 @@
 from datetime import datetime
 import pytz
-from app.forms import SessionForm
 from flask_login import current_user
 
 # Return the current Perth time

@@ -111,23 +111,38 @@ def session():
     set_session_form_select_options(form)
     return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
 
-#ADMIM - /admin/
+#ADMIM - /unitconfig /
+@app.route('/unitconfig', methods=['GET', 'POST'])
+@login_required
+def unitconfig():
+    if current_user.userType == 3:
+        return flask.redirect('home')
+    
+    return flask.render_template('unit.html')
+
+# add users
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
 def admin():
     if current_user.userType != 1:
         return flask.redirect('home')
-    # I (James) do not know what to add here so for now it is blank
 
+    form = AddUserForm()
 
-    return flask.render_template('admin.html')
+    if form.validate_on_submit() and flask.request.method == 'POST':       
+        
+        AddUser(userType=form.UserType.data, uwaID=form.uwaId.data, firstName=form.firstName.data, lastName=form.lastName.data, passwordHash=form.passwordHash.data)
+        return flask.redirect(flask.url_for('admin'))
+    
+    return flask.render_template('admin.html', form=form)
 
-# ADDUNIT - /addunit/ /admin/
+# ADDUNIT - /addunit/ /unit/
 @app.route('/addunit', methods=['GET', 'POST'])
 @login_required
 def addunit():
-    if current_user.userType != 1:
+    if current_user.userType == 3:
         return flask.redirect('home')
+    
     form = AddUnitForm()
 
     if form.validate_on_submit() and flask.request.method == 'POST':
@@ -145,17 +160,8 @@ def addunit():
         commentsenabled = form.commentsenabled.data
         commentsuggestions = form.commentsuggestions.data
 
-        #Ensure is a new unit being added, QUESTION - is start date to be used?
-        if unit_exists(newunit_code, start_date):
-            error = "Unit and start date combo already exist in db"
-            return flask.render_template('addunit.html', form=form, error=error)
+        #Validation occurs in flask forms with custom validators
         
-        #Ensure end date is after start date
-        if start_date > end_date:
-            error = "Start date must be after end date"
-            return flask.render_template('addunit.html', form=form, error=error)
-        
-
         #convert session occurences to a | string
         occurences = ""
         for time in sessionoccurence:
@@ -174,6 +180,8 @@ def addunit():
             process_csv(filename, unitID)
         else:
             print("Submitted no file, probable error.")
+            error = "No file submitted"
+            return flask.render_template('addunit.html', form=form, error=error)
         
         #Handle facilitators
         #TODO: handle emailing facilitators, handle differentiating between facilitator and coordinator
@@ -183,11 +191,15 @@ def addunit():
                 print(f"Adding new user: {facilitator}")
                 AddUser(facilitator, "placeholder", "placeholder", facilitator, 3) #Do we assign coordinators?
             #add this unit to facilator
+            if(int(facilitator) == current_user.uwaID):
+                print(f"skipping user {facilitator} as it is the currently logged in user.")
+                continue
             print(f"Adding unit {unitID} to facilitator {facilitator}")
             AddUnitToFacilitator(facilitator, unitID)
+        AddUnitToFacilitator(current_user.uwaID, unitID)
         AddUnitToCoordinator(current_user.uwaID, unitID)
         
-        return flask.redirect(flask.url_for('admin'))
+        return flask.redirect(flask.url_for('unitconfig'))
 	    
     return flask.render_template('addunit.html', form=form)
 
