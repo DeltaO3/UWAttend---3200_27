@@ -154,7 +154,6 @@ def updatesession():
         print(f"Unit Id: {unit_id}")
 
         # TODO: implement update session logic
-        print('Updating session details...')
 
     # set updatesession form select fields to match current session's details
     current_session = existing_session[0]

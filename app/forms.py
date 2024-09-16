@@ -32,7 +32,7 @@ class SessionForm(FlaskForm):
         validate_choice=False
     )
 
-    submit = SubmitField('Update')
+    submit = SubmitField('')
 
 #straight up copied from https://wtforms.readthedocs.io/en/3.0.x/specific_problems/?highlight=listwidget#specialty-field-tricks
 

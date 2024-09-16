@@ -3,19 +3,20 @@
 
 {% block content %}
 <h2>Session Configuration</h2>
+<p>You have no active sessions. Configure a new session below to view your class list.</p>
 <form method="POST" action="{{ url_for('session') }}">
     {{ form.hidden_tag() }}
 
     <!-- Unit Code -->
     <div class="mb-3">
         {{ form.unit.label(class="form-label") }}
-        {{ form.unit(class="form-select", onchange="updateDatabaseName()") }}
+        {{ form.unit(class="form-select") }}
     </div>
 
     <!-- Session Name -->
     <div class="mb-3">
         {{ form.session_name.label(class="form-label") }}
-        {{ form.session_name(class="form-select", onchange="updateDatabaseName()") }}
+        {{ form.session_name(class="form-select") }}
     </div>
 
     <!-- Session Time (e.g. "Morning") -->
