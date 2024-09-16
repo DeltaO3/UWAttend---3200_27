@@ -78,7 +78,56 @@ def export_table_to_csv(fetch_function):
 
         return csvfile.getvalue()
     else:
-        print("No data found")
+        print(f"No data found for {fetch_function}")
+        return None
+
+def export_attendance_records_csv():
+    # Perform a query that joins the necessary tables
+    records = db.session.query(
+        Attendance,
+        Student,
+        Session,
+        Unit
+    ).join(
+        Student, Attendance.studentID == Student.studentID
+    ).join(
+        Session, Attendance.sessionID == Session.sessionID
+    ).join(
+        Unit, Student.unitID == Unit.unitID
+    ).all()
+
+    if records:
+        columns = [
+            'studentNumber', 'firstName', 'lastName', 'title', 'preferredName', 'unitCode',
+            'sessionDate', 'sessionName', 'sessionTime', 'signInTime', 'signOutTime',
+            'marks', 'comments', 'consent'
+        ]
+
+        csvfile = StringIO()
+        writer = csv.writer(csvfile)
+        writer.writerow(columns)  # Write the header
+
+        for attendance, student, session, unit in records:
+            row = [
+                student.studentNumber,
+                student.firstName,
+                student.lastName,
+                student.title,
+                student.preferredName,
+                unit.unitCode,
+                session.sessionDate.strftime('%Y-%m-%d') if session.sessionDate else '',
+                session.sessionName,
+                session.sessionTime,
+                attendance.signInTime.strftime('%H:%M:%S') if attendance.signInTime else '',
+                attendance.signOutTime.strftime('%H:%M:%S') if attendance.signOutTime else '',
+                attendance.marks if attendance.marks else '',
+                attendance.comments if attendance.comments else '',
+                'Yes' if attendance.consent_given else 'No'
+            ]
+            writer.writerow(row)
+        return csvfile.getvalue()
+    else:
+        print("No attendance records found")
         return None
 
 # Export all tables to a single ZIP file containing multiple CSV files
@@ -114,6 +163,12 @@ def export_all_to_zip(zip_filename):
         if unit_csv:
             zipf.writestr('units.csv', unit_csv)
             print("Exported units.csv")
+
+        # Export the Attendance Records CSV
+        attendance_records_csv = export_attendance_records_csv()
+        if attendance_records_csv:
+            zipf.writestr('attendancerecord.csv', attendance_records_csv)
+            print("Exported attendancerecord.csv")
 
     print(f"All tables have been exported to {zip_filename}")
 
