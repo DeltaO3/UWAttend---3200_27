@@ -29,6 +29,9 @@
     <div>
         <label for="current_time_display" class="form-label">Current Time:</label>
         <div id="current_time_display" data-perth-time="{{ perth_time }}">Loading...</div>
+
+        <!-- Hidden input to store current time for backend -->
+        <input type="hidden" id="current_time" name="current_time">
     </div>
 
     <!-- Buttons -->
