@@ -143,10 +143,20 @@ def updatesession():
     formatted_perth_time = perth_time.isoformat()
 
     if form.validate_on_submit():
-        # TODO: implement update session logic
-        print('Updating session details')
+        # Handle form submission
+        unit_id = form.unit.data
+        session_name = form.session_name.data
+        session_time = form.session_time.data
 
-    # set updatesession form select fields to match current
+        # Printing for debugging
+        print(f"Session Name: {session_name}")
+        print(f"Session Time: {session_time}")
+        print(f"Unit Id: {unit_id}")
+
+        # TODO: implement update session logic
+        print('Updating session details...')
+
+    # set updatesession form select fields to match current session's details
     current_session = existing_session[0]
     current_unit = GetUnit(unitID=current_session.unitID)[0]
     set_updatesession_form_select_options(current_session, current_unit, form)
