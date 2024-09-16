@@ -7,7 +7,7 @@ import zipfile
 from io import StringIO
 from app import app, db
 from app.models import Student, User, Attendance, Session, Unit
-from app.database import AddStudent, GetStudent, GetAttendance, GetSession, GetAllUsers, GetUnit, student_exists
+from app.database import AddStudent, GetStudent, GetAttendance, GetSessionForExport, GetAllUsers, GetUnit, student_exists
 
 # Set of functions used to read and populate students into the database from a csv file.
 # Checklist for future
@@ -153,7 +153,7 @@ def export_all_to_zip(zip_filename):
             print("Exported attendance.csv")
 
         # Export the Session table
-        session_csv = export_table_to_csv(GetSession)
+        session_csv = export_table_to_csv(GetSessionForExport)
         if session_csv:
             zipf.writestr('sessions.csv', session_csv)
             print("Exported sessions.csv")
