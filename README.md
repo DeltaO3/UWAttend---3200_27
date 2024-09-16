@@ -50,7 +50,6 @@ export SECRET_KEY='secret_string'
 
 Note: variable name must be SECRET_KEY, but the value can be any string (a random and long key is best for security).
 
-
 Create/update database :
 
 ```
@@ -86,6 +85,7 @@ If you have modified the database schema and want to update the database:
 ```
 flask db migrate -m "migration message"
 ```
+
 Note: The migration script needs to be reviewed and edited, as Alembic is not always able to detect every change you make to your models.
 
 - Apply the changes
@@ -95,10 +95,13 @@ flask db upgrade
 ```
 
 To sync the changes in another system, refresh migrations folder (so that the new migration is there), then apply changes:
+
 ```
 flask db upgrade
 ```
+
 To revert changes:
+
 ```
 flask db downgrade
 ```
@@ -116,10 +119,19 @@ python -m app.createadmin
 And the admin account should be added to the database.
 
 # Testing `utilities.py`
+
 Currently the only functionality of `utilities.py` is to read and print out a `csv` file. This will change once database has been configured and frontend is developed.
 
 To test functionality, be on the project root and run:
 
-``` shell
+```shell
 python -m app.utilities
+```
+
+# Initialising test data
+
+With an empty db file (delete app.db, create fresh file with `flask db upgrade`), run:
+
+```
+python -m app.testdb
 ```
