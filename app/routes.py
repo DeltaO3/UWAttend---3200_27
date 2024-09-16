@@ -71,6 +71,12 @@ def home():
 @login_required
 def session():
 
+    # if session already exists, redirect to /updatesession
+    session_id = flask.session.get('session_id')
+    existing_session = GetSession(session_id)
+    if existing_session:
+        return redirect(url_for('updatesession'))
+
     form = SessionForm()
 
     # Get perth time
@@ -117,22 +123,33 @@ def session():
 
     # set session form select field options
     set_session_form_select_options(form)
+
     return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
 
 @app.route('/updatesession', methods=['GET', 'POST'])
 def updatesession():
-    
+
+    # if session doesn't exist, redirect to /session
+    session_id = flask.session.get('session_id')
+    existing_session = GetSession(session_id)
+    if not existing_session:
+        return redirect(url_for('session'))
+
     form = SessionForm()
 
-    # Get perth time
     perth_time = get_perth_time()
-    humanreadable_perth_time = perth_time.strftime('%B %d, %Y, %H:%M:%S %Z')
 
     # For JS formatting
     formatted_perth_time = perth_time.isoformat()
 
     if form.validate_on_submit():
+        # TODO: implement update session logic
         print('Updating session details')
+
+    # set updatesession form select fields to match current
+    current_session = existing_session[0]
+    current_unit = GetUnit(unitID=current_session.unitID)[0]
+    set_updatesession_form_select_options(current_session, current_unit, form)
 
     return flask.render_template('updatesession.html', form=form, perth_time=formatted_perth_time)
 
