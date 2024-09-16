@@ -218,7 +218,7 @@ def GetSession(sessionID = None, unitID = None, return_all = False):
     
     return attendance_records
 
-# Specifically for exporting to csv ONLY. Above function was changed so reverting to old function for export so it doesn't break
+# Specifically for exporting to csv ONLY. GetSession() was changed so creating seperate function so sessions dont break
 def GetSessionForExport(sessionID = None, unitID = None):
 
     query = db.session.query(Session)
