@@ -18,10 +18,18 @@ import sqlalchemy as sa
 @app.route('/home', methods=['GET'])
 @login_required
 def home():
-    form = StudentSignInForm()
+    session_id = flask.session.get('session_id')
 
-    # TODO will need to be replaced with actual session logic later 
-    current_session = GetSession(sessionID=1)[0]
+    current_session = GetSession(session_id) 
+    
+    if current_session:
+        current_session = current_session[0]
+        # Use session_id for further processing
+
+    if not current_session:
+        return redirect(url_for('session')) 
+
+    form = StudentSignInForm()
 
     # get students who have signed in for this session
     attendance_records = GetAttendance(input_sessionID=current_session.sessionID)
@@ -100,8 +108,12 @@ def session():
         print(f"Session name: {current_session.sessionName}")
         print(f"Session time: {current_session.sessionTime}")
 
-        # Redirect back to home page when done
+        flask.session['session_id'] = current_session.sessionID
+        print(f"Saving session id: {current_session.sessionID} to global variable")
+
+        # Redirect back to home page with the session ID as a query parameter
         return flask.redirect(flask.url_for('home'))
+
     
     # print form errors
     else :
@@ -245,7 +257,15 @@ def student():
     student = GetStudent(studentID=student_id)[0]
 
     # TODO will need to be replaced with actual session logic later
-    current_session = GetSession(sessionID=1)[0]
+    session_id = flask.session.get('session_id')
+    print(f"Session ID as found in student : {session_id}")
+    current_session = GetSession(sessionID=session_id)
+
+    if not current_session:
+        flask.flash("Error loading session") 
+        return flask.redirect(flask.url_for('home'))
+    
+    current_session = current_session[0]
 
     attendance_record = GetAttendance(input_sessionID=current_session.sessionID, studentID=student_id)[0] 
 
@@ -271,7 +291,7 @@ def student():
 def login():
     
     if current_user.is_authenticated:
-        print("authenitcated")
+        print("authenticated")
         return flask.redirect('home')
     
     form = LoginForm()
@@ -306,16 +326,25 @@ def add_student():
         # Handle form submission
         studentID = form.studentID.data
         consent_status = form.consent_status.data
-        sessionID = form.sessionID.data
+        # sessionID = form.sessionID.data
 
-        session = GetSession(sessionID=sessionID)[0]
+        session_id = flask.session.get('session_id')
+        print("Session ID as found in add_student : ", session_id)
+
+        session = GetSession(sessionID=session_id)
+
+        if not session:
+            flask.flash("Error loading session") 
+            return flask.redirect(flask.url_for('home'))
+        
+        session = session[0]
         unitID = session.unitID
         
         student = GetStudent(studentID=studentID, unitID=unitID)
 
         if student:
             student=student[0]
-            existing_attendance = GetAttendance(input_sessionID=sessionID, studentID=studentID)
+            existing_attendance = GetAttendance(input_sessionID=session_id, studentID=studentID)
             
             if existing_attendance:
                 flask.flash("User already signed in", category='error')
@@ -327,7 +356,7 @@ def add_student():
             db.session.commit()
 
             # Add attendance for the current session
-            AddAttendance(sessionID=sessionID, studentID=studentID, consent_given=1, facilitatorID=1) # TODO need to be replaced with actual facilitator ID logic
+            AddAttendance(sessionID=session_id, studentID=studentID, consent_given=1, facilitatorID=1) # TODO need to be replaced with actual facilitator ID logic
             print(f"Logged {student.firstName} {student.lastName} in")
 
             return flask.redirect(flask.url_for('home'))
@@ -369,7 +398,8 @@ def student_suggestions():
     query = flask.request.args.get('q', '').strip().lower()
 
     # TODO will need to be replaced with actual session logic later 
-    current_session = GetSession(sessionID=1)[0] 
+    session_id = flask.session.get('session_id')
+    current_session = GetSession(sessionID=session_id)[0] 
 
     # get students in the unit associated with the session
     students = GetStudent(unitID=current_session.unitID)
@@ -409,8 +439,7 @@ def logout():
 
 @app.route('/sign_all_out', methods=['POST'])
 def sign_all_out():
-    session_id = flask.request.form.get('sessionID')
-    print(session_id)
+    session_id = flask.session.get('session_id')
 
     session = GetSession(sessionID=session_id)
     if not session:
