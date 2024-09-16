@@ -64,12 +64,13 @@ def home():
 
     student_list.sort(key=lambda x: x['time'], reverse=True)
 
-    return flask.render_template('home.html', form=form, students=student_list, session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=current_session.sessionID) 
+    return flask.render_template('home.html', form=form, students=student_list, current_session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=current_session.sessionID) 
 	
 # CONFIGURATION - /session/ /admin/
 @app.route('/session', methods=['GET', 'POST'])
 @login_required
-def session():    
+def session():
+
     form = SessionForm()
 
     # Get perth time
@@ -114,16 +115,28 @@ def session():
         # Redirect back to home page with the session ID as a query parameter
         return flask.redirect(flask.url_for('home'))
 
-    
-    # print form errors
-    else :
-        print(form.errors)
-
     # set session form select field options
     set_session_form_select_options(form)
     return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
 
-#ADMIM - /unitconfig /
+@app.route('/updatesession', methods=['GET', 'POST'])
+def updatesession():
+    
+    form = SessionForm()
+
+    # Get perth time
+    perth_time = get_perth_time()
+    humanreadable_perth_time = perth_time.strftime('%B %d, %Y, %H:%M:%S %Z')
+
+    # For JS formatting
+    formatted_perth_time = perth_time.isoformat()
+
+    if form.validate_on_submit():
+        print('Updating session details')
+
+    return flask.render_template('updatesession.html', form=form, perth_time=formatted_perth_time)
+
+#ADMIN - /unitconfig /
 @app.route('/unitconfig', methods=['GET', 'POST'])
 @login_required
 def unitconfig():
