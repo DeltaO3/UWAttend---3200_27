@@ -12,10 +12,9 @@ from app.database import AddStudent, GetStudent, GetAttendance, GetSessionForExp
 # Set of functions used to read and populate students into the database from a csv file.
 # Checklist for future
 # 1. DONE Connect to actual database for population
-# 2. TODO Create upload button for frontend that uses these functions
-# 3. TODO Remove "if __name__ == "__main__:" and instead incorporate code into Flask
+# 2. DONE Create upload button for frontend that uses these functions
+# 3. DONE Remove "if __name__ == "__main__:" and instead incorporate code into Flask
 
-# PLACEHOLDER FUNCTION: This will be replaced with import button on frontend
 # Reads a CSV file and returns a list of dictionaries where each dictionary represents a row.
 def read_csv_file(file_path):
     data = []
@@ -81,6 +80,7 @@ def export_table_to_csv(fetch_function):
         print(f"No data found for {fetch_function}")
         return None
 
+# Creates attendancerecord.csv for exporting
 def export_attendance_records_csv():
     # Perform a query that joins the necessary tables
     records = db.session.query(
@@ -97,6 +97,7 @@ def export_attendance_records_csv():
     ).all()
 
     if records:
+        # Define the headers
         columns = [
             'studentNumber', 'firstName', 'lastName', 'title', 'preferredName', 'unitCode',
             'sessionDate', 'sessionName', 'sessionTime', 'signInTime', 'signOutTime',
@@ -107,6 +108,7 @@ def export_attendance_records_csv():
         writer = csv.writer(csvfile)
         writer.writerow(columns)  # Write the header
 
+        # Iterate over each record and write to csvfile
         for attendance, student, session, unit in records:
             row = [
                 student.studentNumber,
@@ -120,9 +122,9 @@ def export_attendance_records_csv():
                 session.sessionTime,
                 attendance.signInTime.strftime('%H:%M:%S') if attendance.signInTime else '',
                 attendance.signOutTime.strftime('%H:%M:%S') if attendance.signOutTime else '',
-                attendance.marks if attendance.marks else '',
-                attendance.comments if attendance.comments else '',
-                'Yes' if attendance.consent_given else 'No'
+                attendance.marks if attendance.marks else '', # Marks, blank if none
+                attendance.comments if attendance.comments else '', # Comments, blank if none
+                'Yes' if attendance.consent_given else 'No' # Consent status ('Yes' or 'No')
             ]
             writer.writerow(row)
         return csvfile.getvalue()
@@ -171,14 +173,3 @@ def export_all_to_zip(zip_filename):
             print("Exported attendancerecord.csv")
 
     print(f"All tables have been exported to {zip_filename}")
-
-# For testing purposes. Remove when integrating into main application
-if __name__ == "__main__":
-    csv_file_path = 'test.csv'
-
-    # Process the CSV file
-    process_csv(csv_file_path)
-
-    with app.app_context():
-        # Export CSV File
-        export_all_to_zip("database.zip")
