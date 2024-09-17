@@ -1,6 +1,6 @@
 # Utilities file for storing miscellaneous functions that dont neatly fit into other categories
 # (i.e. not models, databases, etc)
-
+import hashlib
 import csv
 import os
 import zipfile
@@ -14,6 +14,11 @@ from app.database import AddStudent, GetStudent, GetAttendance, GetSession, GetA
 # 1. DONE Connect to actual database for population
 # 2. TODO Create upload button for frontend that uses these functions
 # 3. TODO Remove "if __name__ == "__main__:" and instead incorporate code into Flask
+
+
+# password hashing
+def md5_hash(string):
+    return hashlib.md5(string.encode()).hexdigest()
 
 # PLACEHOLDER FUNCTION: This will be replaced with import button on frontend
 # Reads a CSV file and returns a list of dictionaries where each dictionary represents a row.
@@ -127,3 +132,4 @@ if __name__ == "__main__":
     with app.app_context():
         # Export CSV File
         export_all_to_zip("database.zip")
+
