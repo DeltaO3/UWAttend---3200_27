@@ -110,9 +110,11 @@ def AddUser(uwaID, firstName, lastName, passwordHash, userType):
             uwaID       = uwaID,
             firstName   = firstName,
             lastName    = lastName,
-            passwordHash = passwordHash,
+            passwordHash = "",
             userType    = userType)
 
+        UserEntry.set_password(passwordHash)
+        
         db.session.add(UserEntry)    # add the changes 
         db.session.commit()             # save the changes
     
@@ -306,6 +308,7 @@ def CheckPassword(uwaID, password):
     else:
         return False
 
+#Is this function needed? dont see it used anywhere
 def SetPassword(uwaID, newPassword):
     
     user = db.session.query(User).filter(User.uwaID == uwaID).first()

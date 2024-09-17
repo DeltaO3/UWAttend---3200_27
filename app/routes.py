@@ -298,7 +298,7 @@ def login():
     if form.validate_on_submit():
         user = database.GetUser(uwaID = form.username.data)                
 
-        if user is None or not database.CheckPassword(form.username.data, form.password.data):
+        if user is None or not user.is_password_correct(form.password.data):
             flask.flash('Invalid username or password')
             return flask.redirect('login')
         
