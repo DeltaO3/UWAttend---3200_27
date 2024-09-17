@@ -142,11 +142,8 @@ def admin():
     form = AddUserForm()
 
     if form.validate_on_submit() and flask.request.method == 'POST':       
-        passwordHash = md5_hash(form.passwordHash.data)
-
-        # add to db
-        AddUser(userType=form.UserType.data, uwaID=form.uwaId.data, firstName=form.firstName.data, lastName=form.lastName.data, passwordHash=passwordHash)
         
+        AddUser(userType=form.UserType.data, uwaID=form.uwaId.data, firstName=form.firstName.data, lastName=form.lastName.data, passwordHash=form.passwordHash.data)
         return flask.redirect(flask.url_for('admin'))
     
     return flask.render_template('admin.html', form=form)
@@ -299,11 +296,9 @@ def login():
     
     form = LoginForm()
     if form.validate_on_submit():
-        
         user = database.GetUser(uwaID = form.username.data)                
-        hashedPassword = md5_hash(form.password.data)
-        
-        if user is None or not database.CheckPassword(form.username.data, hashedPassword):
+
+        if user is None or not database.CheckPassword(form.username.data, form.password.data):
             flask.flash('Invalid username or password')
             return flask.redirect('login')
         
@@ -465,4 +460,3 @@ def sign_all_out():
 
     print("Successfully signed out all users")
     return flask.redirect(flask.url_for('home'))
-
