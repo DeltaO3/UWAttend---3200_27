@@ -201,7 +201,7 @@ def GetUniqueSession(unitID, sessionName, sessionTime, sessionDate):
                                              ).first()
     return session
 
-def GetSession(sessionID = None, unitID = None, return_all=False):
+def GetSession(sessionID = None, unitID = None, return_all = False):
 
     query = db.session.query(Session)
     
@@ -220,6 +220,24 @@ def GetSession(sessionID = None, unitID = None, return_all=False):
     
     return attendance_records
 
+# Specifically for exporting to csv ONLY. GetSession() was changed so creating seperate function so sessions dont break
+def GetSessionForExport(sessionID = None, unitID = None):
+
+    query = db.session.query(Session)
+
+    # handle the optional arguements, only one can be used
+    if sessionID is not None:
+        query = query.filter(Session.sessionID == sessionID)
+    elif unitID is not None:
+        query = query.filter(Session.unitID == unitID)
+    else:
+        # no parameters were supplied.
+        print("You did not submit a parameter to use so returning all session records")
+
+
+    attendance_records = query.all()
+
+    return attendance_records
 def GetStudent(unitID = None, studentID = None, studentNumber = None):
 
     query = db.session.query(Student)
