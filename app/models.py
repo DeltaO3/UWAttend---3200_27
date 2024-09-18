@@ -5,6 +5,7 @@ from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app import db
 from flask_login import UserMixin
 from app import login
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # Define association tables
 Units_Coordinators_Table = db.Table(
@@ -34,6 +35,12 @@ class User(UserMixin, db.Model):
 
     def get_id(self):
         return str(self.userID)
+    
+    def is_password_correct(self, password_plaintext: str):
+        return check_password_hash(self.passwordHash, password_plaintext)
+
+    def set_password(self, password_plaintext: str):
+        self.passwordHash = generate_password_hash(password_plaintext)
     
 class Unit(db.Model) :
     __tablename__ = 'unit'
