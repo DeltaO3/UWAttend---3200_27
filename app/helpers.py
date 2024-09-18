@@ -42,3 +42,34 @@ def set_session_form_select_options(form):
     form.unit.choices = unit_choices
     form.session_name.choices = session_name_choices
     form.session_time.choices = session_time_choices
+
+    form.submit.label.text = "Create"
+
+def set_updatesession_form_select_options(current_session, current_unit, form):
+
+    unit_choices = [(current_unit.unitID, current_unit.unitCode)]
+
+    session_name_choices = []
+    session_time_choices = []
+
+    # get session names for unit
+    session_names = current_unit.sessionNames.split('|')
+    for name in session_names :
+        session_name_choices.append(name)
+
+    # get session times for unit
+    session_times = current_unit.sessionTimes.split('|')
+    for time in session_times :
+        session_time_choices.append(time)
+    
+    # set form options
+    form.unit.choices = unit_choices
+    form.session_name.choices = session_name_choices
+    form.session_time.choices = session_time_choices
+
+    # set form defaults to current session
+    form.unit.default = current_unit.unitID
+    form.session_name.default = current_session.sessionName
+    form.session_time.default = current_session.sessionTime
+
+    form.submit.label.text = "Update"

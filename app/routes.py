@@ -64,12 +64,19 @@ def home():
 
     student_list.sort(key=lambda x: x['time'], reverse=True)
 
-    return flask.render_template('home.html', form=form, students=student_list, session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=current_session.sessionID) 
+    return flask.render_template('home.html', form=form, students=student_list, current_session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=current_session.sessionID) 
 	
 # CONFIGURATION - /session/ /admin/
 @app.route('/session', methods=['GET', 'POST'])
 @login_required
-def session():    
+def session():
+
+    # if session already exists, redirect to /updatesession
+    session_id = flask.session.get('session_id')
+    existing_session = GetSession(session_id)
+    if existing_session:
+        return redirect(url_for('updatesession'))
+
     form = SessionForm()
 
     # Get perth time
@@ -114,16 +121,48 @@ def session():
         # Redirect back to home page with the session ID as a query parameter
         return flask.redirect(flask.url_for('home'))
 
-    
-    # print form errors
-    else :
-        print(form.errors)
-
     # set session form select field options
     set_session_form_select_options(form)
+
     return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
 
-#ADMIM - /unitconfig /
+@app.route('/updatesession', methods=['GET', 'POST'])
+def updatesession():
+
+    # if session doesn't exist, redirect to /session
+    session_id = flask.session.get('session_id')
+    existing_session = GetSession(session_id)
+    if not existing_session:
+        return redirect(url_for('session'))
+
+    form = SessionForm()
+
+    perth_time = get_perth_time()
+
+    # For JS formatting
+    formatted_perth_time = perth_time.isoformat()
+
+    if form.validate_on_submit():
+        # Handle form submission
+        unit_id = form.unit.data
+        session_name = form.session_name.data
+        session_time = form.session_time.data
+
+        # Printing for debugging
+        print(f"Session Name: {session_name}")
+        print(f"Session Time: {session_time}")
+        print(f"Unit Id: {unit_id}")
+
+        # TODO: implement update session logic
+
+    # set updatesession form select fields to match current session's details
+    current_session = existing_session[0]
+    current_unit = GetUnit(unitID=current_session.unitID)[0]
+    set_updatesession_form_select_options(current_session, current_unit, form)
+
+    return flask.render_template('updatesession.html', form=form, perth_time=formatted_perth_time)
+
+#ADMIN - /unitconfig /
 @app.route('/unitconfig', methods=['GET', 'POST'])
 @login_required
 def unitconfig():
