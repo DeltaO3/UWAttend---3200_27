@@ -3,6 +3,9 @@ from datetime import date, time
 from sqlalchemy import ForeignKey, Column, Table, Integer, String
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app import db
+from flask_login import UserMixin
+from app import login
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # Define association tables
 Units_Coordinators_Table = db.Table(
@@ -18,9 +21,9 @@ Units_Facilitators_Table = db.Table(
 )
 
 # Define models
-class User(db.Model) :
+class User(UserMixin, db.Model):
     __tablename__ = 'user'
-    userID: Mapped[int] = mapped_column(primary_key=True)
+    userID: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     uwaID: Mapped[int] = mapped_column(unique=True, nullable=False)
     firstName: Mapped[Optional[str]] = mapped_column(String(50))
     lastName: Mapped[Optional[str]] = mapped_column(String(50))
@@ -30,6 +33,15 @@ class User(db.Model) :
     unitsCoordinate: Mapped[List['Unit']] = relationship(secondary='Units_Coordinators_Table', back_populates='coordinators')
     unitsFacilitate: Mapped[List['Unit']] = relationship(secondary='Units_Facilitators_Table', back_populates='facilitators')
 
+    def get_id(self):
+        return str(self.userID)
+    
+    def is_password_correct(self, password_plaintext: str):
+        return check_password_hash(self.passwordHash, password_plaintext)
+
+    def set_password(self, password_plaintext: str):
+        self.passwordHash = generate_password_hash(password_plaintext)
+    
 class Unit(db.Model) :
     __tablename__ = 'unit'
     unitID: Mapped[int] = mapped_column(primary_key=True)
@@ -81,5 +93,10 @@ class Attendance(db.Model) :
     marks: Mapped[Optional[str]] = mapped_column(String(100))         # | separated string
     comments: Mapped[Optional[str]] = mapped_column(String(1000))     # | separated string
     consent_given: Mapped[int] = mapped_column(nullable=False)
+
+
+@login.user_loader
+def load_user(id):
+    return db.session.get(User, int(id))
 
 

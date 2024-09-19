@@ -1,9 +1,42 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container-fluid mt-2 mx-md-5 mx-2">
-    <h2>Admin Page</h2>
-    <br>
-    <a href="{{ url_for('addunit') }}" class="btn btn-primary">Add Unit</a>
-</div>
+<div class="container-fluid">
+    <div class="mt-2 mx-md-5 mx-2">
+        <h2>Add a Coordinator</h2>
+        <form method="POST" enctype="multipart/form-data" novalidate>
+            {{ form.hidden_tag() }}
 
+            {% if error %}
+            <div class="alert alert-danger">
+                {{error}}
+            </div>
+            {% endif %}
+
+            {% for field in form %}
+            {% if field.type == "StringField" or field.type =="DateField" %}
+            <div class="mb-3">
+                {{ field.label(class="form-label") }}
+                {{ field(class="form-control") }}
+                {% for error in field.errors %}
+                <span class="text-danger"> {{error}} </span>
+                {% endfor %}
+            </div>
+
+            {% elif field.type == "SelectField" %}
+            <div class="mb-3">
+                {{ field.label(class=" form-label") }}
+                {{ field(style="list-style-type: none;") }}
+                {% for error in field.errors %}
+                <span class="text-danger"> {{error}} </span>
+                {% endfor %}
+            </div>
+
+            {% endif %}
+            {% endfor %}
+
+            <br />
+            {{ form.submit(class="btn btn-primary") }}
+        </form>
+    </div>
+</div>
 {% endblock %}

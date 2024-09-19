@@ -7,15 +7,14 @@ import zipfile
 from io import StringIO
 from app import app, db
 from app.models import Student, User, Attendance, Session, Unit
-from app.database import AddStudent, GetStudent, GetAttendance, GetSession, GetUser, GetUnit, student_exists
+from app.database import AddStudent, GetStudent, GetAttendance, GetSessionForExport, GetAllUsers, GetUnit, student_exists
 
 # Set of functions used to read and populate students into the database from a csv file.
 # Checklist for future
 # 1. DONE Connect to actual database for population
-# 2. TODO Create upload button for frontend that uses these functions
-# 3. TODO Remove "if __name__ == "__main__:" and instead incorporate code into Flask
+# 2. DONE Create upload button for frontend that uses these functions
+# 3. DONE Remove "if __name__ == "__main__:" and instead incorporate code into Flask
 
-# PLACEHOLDER FUNCTION: This will be replaced with import button on frontend
 # Reads a CSV file and returns a list of dictionaries where each dictionary represents a row.
 def read_csv_file(file_path):
     data = []
@@ -29,13 +28,11 @@ def read_csv_file(file_path):
     return data
 
 # Imports students into the database given a .csv file
-def import_student_in_db(data):
+def import_student_in_db(data, unit_id):
     for record in data:
-        # PLACEHOLDER: Do we need unitID for students???
-        unit = 'CITS3000'
 
         student_number = record['Person ID']
-        if student_exists(student_number):
+        if student_exists(student_number, unit_id):
             print(f"Duplicate found: {record['Given Names']} {record['Surname']} (ID: {student_number}) - Skipping import.")
             continue
 
@@ -46,19 +43,19 @@ def import_student_in_db(data):
             lastName=record['Surname'],
             title=record['Title'],
             preferredName=record['Preferred Given Name'],
-            unitID=unit,  # Assuming a default unit ID, replace as needed
+            unitID=unit_id,  # Assuming a default unit ID, replace as needed
             consent=0  # Setting consent to 0 as per your requirements
         )
         print(f"Added student: {record['Given Names']} {record['Surname']} (ID: {student_number})")
 
 # Process a .csv file by reading and then importing into "student" table.
-def process_csv(file_path):
+def process_csv(file_path, unit_id):
     with app.app_context():
         # Read the data from the CSV file
         data = read_csv_file(file_path)
         if data:
             # Import the data to the database
-            import_student_in_db(data)
+            import_student_in_db(data, unit_id)
 
 # Export a single table's data to a CSV format and return it as a string
 def export_table_to_csv(fetch_function):
@@ -80,7 +77,59 @@ def export_table_to_csv(fetch_function):
 
         return csvfile.getvalue()
     else:
-        print("No data found")
+        print(f"No data found for {fetch_function}")
+        return None
+
+# Creates attendancerecord.csv for exporting
+def export_attendance_records_csv():
+    # Perform a query that joins the necessary tables
+    records = db.session.query(
+        Attendance,
+        Student,
+        Session,
+        Unit
+    ).join(
+        Student, Attendance.studentID == Student.studentID
+    ).join(
+        Session, Attendance.sessionID == Session.sessionID
+    ).join(
+        Unit, Student.unitID == Unit.unitID
+    ).all()
+
+    if records:
+        # Define the headers
+        columns = [
+            'studentNumber', 'firstName', 'lastName', 'title', 'preferredName', 'unitCode',
+            'sessionDate', 'sessionName', 'sessionTime', 'signInTime', 'signOutTime',
+            'marks', 'comments', 'consent'
+        ]
+
+        csvfile = StringIO()
+        writer = csv.writer(csvfile)
+        writer.writerow(columns)  # Write the header
+
+        # Iterate over each record and write to csvfile
+        for attendance, student, session, unit in records:
+            row = [
+                student.studentNumber,
+                student.firstName,
+                student.lastName,
+                student.title,
+                student.preferredName,
+                unit.unitCode,
+                session.sessionDate.strftime('%Y-%m-%d') if session.sessionDate else '',
+                session.sessionName,
+                session.sessionTime,
+                attendance.signInTime.strftime('%H:%M:%S') if attendance.signInTime else '',
+                attendance.signOutTime.strftime('%H:%M:%S') if attendance.signOutTime else '',
+                attendance.marks if attendance.marks else '', # Marks, blank if none
+                attendance.comments if attendance.comments else '', # Comments, blank if none
+                'Yes' if attendance.consent_given else 'No' # Consent status ('Yes' or 'No')
+            ]
+            writer.writerow(row)
+        return csvfile.getvalue()
+    else:
+        print("No attendance records found")
         return None
 
 # Export all tables to a single ZIP file containing multiple CSV files
@@ -94,7 +143,7 @@ def export_all_to_zip(zip_filename):
             print("Exported students.csv")
 
         # Export the User table
-        user_csv = export_table_to_csv(GetUser)
+        user_csv = export_table_to_csv(GetAllUsers)
         if user_csv:
             zipf.writestr('users.csv', user_csv)
             print("Exported users.csv")
@@ -106,7 +155,7 @@ def export_all_to_zip(zip_filename):
             print("Exported attendance.csv")
 
         # Export the Session table
-        session_csv = export_table_to_csv(GetSession)
+        session_csv = export_table_to_csv(GetSessionForExport)
         if session_csv:
             zipf.writestr('sessions.csv', session_csv)
             print("Exported sessions.csv")
@@ -117,15 +166,10 @@ def export_all_to_zip(zip_filename):
             zipf.writestr('units.csv', unit_csv)
             print("Exported units.csv")
 
+        # Export the Attendance Records CSV
+        attendance_records_csv = export_attendance_records_csv()
+        if attendance_records_csv:
+            zipf.writestr('attendancerecord.csv', attendance_records_csv)
+            print("Exported attendancerecord.csv")
+
     print(f"All tables have been exported to {zip_filename}")
-
-# For testing purposes. Remove when integrating into main application
-if __name__ == "__main__":
-    csv_file_path = 'test.csv'
-
-    # Process the CSV file
-    process_csv(csv_file_path)
-
-    with app.app_context():
-        # Export CSV File
-        export_all_to_zip("database.zip")

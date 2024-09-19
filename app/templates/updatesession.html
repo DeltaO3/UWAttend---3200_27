@@ -1,10 +1,10 @@
-<!-- File: templates/session.html -->
+<!-- File: templates/updatesession.html -->
 {% extends "base.html" %}
 
 {% block content %}
 <h2>Session Configuration</h2>
-<p>You have no active sessions. Configure a new session below to view your class list.</p>
-<form method="POST" action="{{ url_for('session') }}">
+<p>You are already in an active session. Update the session configuration below.</p>
+<form method="POST" action="{{ url_for('updatesession') }}">
     {{ form.hidden_tag() }}
 
     <!-- Unit Code -->
@@ -40,5 +40,4 @@
         <button type="button" class="btn btn-secondary" onclick="window.history.back()">Back</button>
     </div>
 </form>
-<script src="{{url_for('static', filename='js/session_config.js')}}"></script>
 {% endblock %}

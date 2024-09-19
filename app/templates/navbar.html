@@ -1,6 +1,6 @@
 <nav class="navbar sticky-top navbar-expand-md bg-dark-subtle">
 	<div class="container-fluid">
-		<a class="navbar-brand">UWAttend</a> <!--Can likely be an image/gif later on-->
+		<a class="navbar-brand">UWAttend</a> <!-- Can likely be an image/gif later on -->
 		<span class="navbar-text fw-bold ms-auto me-2 d-md-none text-truncate w-25">
 			Username
 		</span>
@@ -12,22 +12,36 @@
 		<div class="collapse navbar-collapse row ms-1 ms-md-0" id="navbarNav">
 			<!-- Left side -->
 			<div class="navbar-nav nav-underline col-md-6">
-				<!-- question: url_for doesnt detect the empty / as a route for home. is there a better way?-->
+				<!-- Home link (everyone can see this) -->
 				<a class="nav-link {% if request.path == url_for('home') or request.path == '/' %}active"
-					aria-current="page {% endif %}" href="{{ url_for('home')}}">
-					Home</a>
+					aria-current="page {% endif %}" href="{{ url_for('home') }}">
+					Home
+				</a>
+
+				<!-- Session Config: Visible to admins (1), coordinators (2), and facilitators (3) -->
+				
 				<a class="nav-link {% if request.path == url_for('session') %}active" aria-current="page{% endif %}"
-					href="{{ url_for('session')}}">Config</a>
-				<!-- TODO: add jinja login conditional-->
-				<a class="nav-link {% if request.path == url_for('admin') %}active" aria-current="page{% endif %}"
-					href="{{ url_for('admin')}}">Admin</a>
+					href="{% if session['session_id']%}{{ url_for('updatesession')}}{% else %}{{ url_for('session') }}{% endif %}">Session Config</a>
+				
+				<!-- Unit Config: Only visible to admins (1) and coordinators (2) -->
+				{% if current_user.userType == 1 or current_user.userType == 2 %}
+					<a class="nav-link {% if request.path == url_for('unitconfig') %}active" aria-current="page{% endif %}"
+						href="{{ url_for('unitconfig') }}">Unit Config</a>
+				{% endif %}
+
+				<!-- Administration: Only visible to admins (1) -->
+				{% if current_user.userType == 1 %}
+					<a class="nav-link {% if request.path == url_for('admin') %}active" aria-current="page{% endif %}"
+						href="{{ url_for('admin') }}">Administration</a>
+				{% endif %}
 			</div>
+
 			<!-- Right side -->
 			<div class="navbar-nav d-flex justify-content-end col-md-6">
-				<span class="navbar-text fw-bold text-truncate me-3 d-none d-md-block ">
-					Username
+				<span class="navbar-text fw-bold text-truncate me-3 d-none d-md-block">
+					{{ current_user.uwaID }}
 				</span>
-				<button class="btn btn-danger">Logout</button>
+				<a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
 			</div>
 		</div>
 	</div>

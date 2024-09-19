@@ -30,11 +30,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 suggestionItem.classList.add('list-group-item', 'list-group-item-action', 'suggestion-item');
                 suggestionItem.textContent = `${suggestion.name} (${suggestion.number})`;
                 suggestionItem.setAttribute('data-student-id', suggestion.number);  // Store student ID
+
+                document.getElementById('hidden_consent_indicator').value = "no";
+                document.getElementById('studentID').value = false;
         
                 suggestionItem.addEventListener('click', function () {
                     // Set the student ID and name when a suggestion is clicked
                     document.getElementById('studentID').value = suggestion.id;
-                    document.getElementById('session_id').value = 1; // TODO Add proper session id logic here 
+
+                    if (suggestion.consentNeeded == 1) {
+                        document.getElementById('hidden_consent_indicator').value = "no";
+                    } else {
+                        document.getElementById('hidden_consent_indicator').value = "yes";}
                     
                     studentInput.value = suggestion.name;
 
