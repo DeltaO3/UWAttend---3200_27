@@ -220,33 +220,39 @@ def addunit():
         occurences = occurences[:-1]
         print(f"session occurence string: {occurences}")
 
-        #add to database
-        unitID = AddUnit(newunit_code, "placeholdername", semester, 1, start_date, end_date, 
-                sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
-        
          #read CSV file
         if student_file.filename != '':
             student_file.save(student_file.filename)
-            filename = student_file.filename
-            process_csv(filename, unitID)
+            student_filename = student_file.filename
         else:
             print("Submitted no file, probable error.")
             error = "No file submitted"
             return flask.render_template('addunit.html', form=form, error=error)
         
-        #Handle facilitators
-        #TODO: handle emailing facilitators - should go in the correct process csv function
         if facilitator_file.filename != '':
             facilitator_file.save(facilitator_file.filename)
-            filename = facilitator_file.filename
-            process_csv(filename, unitID, current_user.uwaID)
+            facilitator_filename = facilitator_file.filename
         else:
             print("Submitted no file, probable error.")
             error = "No file submitted"
             return flask.render_template('addunit.html', form=form, error=error)
+     
+        #Process csvs
+        s_data, f_data, error = process_csvs(student_filename, facilitator_filename)
+        if error:
+            return flask.render_template('addunit.html', form=form, error=error)
         
-        AddUnitToFacilitator(current_user.uwaID, unitID)
-        AddUnitToCoordinator(current_user.uwaID, unitID)
+        #add to database
+        unit_id = AddUnit(newunit_code, "placeholdername", semester, 1, start_date, end_date, 
+                sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
+        
+        #Add from csv
+        #TODO: handle emailing facilitators - should go in the correct process csv function
+        import_student_in_db(s_data, unit_id)
+        import_facilitator_in_db(f_data, unit_id, current_user)
+        
+        AddUnitToFacilitator(current_user.uwaID, unit_id)
+        AddUnitToCoordinator(current_user.uwaID, unit_id)
         
         return flask.redirect(flask.url_for('unitconfig'))
 	    

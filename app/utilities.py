@@ -65,16 +65,25 @@ def import_facilitator_in_db(data, unit_id, current_user):
 
 # Process a .csv file by reading and then importing into "student" table. 
 # If current user is passsed, processes file as a facilitator file
-def process_csv(file_path, unit_id, current_user=None):
+def process_csvs(student_file_path, facilitator_file_path):
     with app.app_context():
         # Read the data from the CSV file
-        data = read_csv_file(file_path)
-        if data:
+        s_data = read_csv_file(student_file_path)
+        f_data = read_csv_file(facilitator_file_path)
+        if s_data and f_data:
             # Import the data to the database
-            if current_user is None:
-                import_student_in_db(data, unit_id)
-            else:
-                import_facilitator_in_db(data, unit_id, current_user)
+            #Ensure passed csv file is correct type 
+            errors = []
+            if len(s_data[0]) != 6:
+                print("Not a student csv!")
+                errors.append("Student csv format is incorrect")
+            if len(f_data[0]) != 1:
+                print("Not a facilitator csv!")
+                errors.append("Facilitator csv format is incorrect")
+            if errors:
+                msg = errors[0] if len(errors) == 1 else errors[0] + ", " + errors[1]
+                return 0, 0, msg
+            return s_data, f_data, 0 #return value for routes validation
 
 # Export a single table's data to a CSV format and return it as a string
 def export_table_to_csv(fetch_function):
