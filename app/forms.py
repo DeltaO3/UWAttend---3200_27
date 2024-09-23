@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileAllowed, FileRequired
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, SelectMultipleField, HiddenField, FileField, DateField, widgets
 from wtforms.validators import DataRequired, ValidationError
 from app.database import unit_exists
@@ -83,7 +84,7 @@ class AddUnitForm(FlaskForm):
 	#Need to add custom validators to check if files uploaded end in csv
 	sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
 	facilitatorlist = StringField('Facilitator IDs', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
-	studentfile = FileField('Student List CSV Upload:', validators=[DataRequired()])
+	studentfile = FileField('Student List CSV Upload:', validators=[FileRequired(), FileAllowed(['csv'], "Only accepts .csv files")])
 	consentcheck = BooleanField('Photo Consent Required?')
 	sessionoccurence = MultiCheckboxField(
 		'Session Occurence',
