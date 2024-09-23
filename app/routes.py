@@ -204,7 +204,7 @@ def addunit():
         start_date = form.startdate.data
         end_date = form.enddate.data
         student_file = form.studentfile.data
-        facilitator_list = form.facilitatorlist.data
+        facilitator_file = form.facilitatorlist.data
         sessionnames = form.sessionnames.data
         sessionoccurence = form.sessionoccurence.data
         assessmentcheck = form.assessmentcheck.data
@@ -236,9 +236,9 @@ def addunit():
         
         #Handle facilitators
         #TODO: handle emailing facilitators, handle differentiating between facilitator and coordinator
-        if student_file.filename != '':
-            student_file.save(student_file.filename)
-            filename = student_file.filename
+        if facilitator_file.filename != '':
+            facilitator_file.save(facilitator_file.filename)
+            filename = facilitator_file.filename
             process_csv(filename, unitID, current_user.uwaID)
         else:
             print("Submitted no file, probable error.")
