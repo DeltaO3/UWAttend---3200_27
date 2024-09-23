@@ -340,3 +340,15 @@ def SetPassword(uwaID, newPassword):
     # Commit the changes to the database
     db.session.commit()
 
+def RemoveStudentFromSession(studentID, sessionID):
+    attendance_record = db.session.query(Attendance).filter_by(studentID=studentID, sessionID=sessionID).first()
+
+    if attendance_record:
+        db.session.delete(attendance_record)
+        db.session.commit()
+        return True
+
+    else:
+        return False
+
+

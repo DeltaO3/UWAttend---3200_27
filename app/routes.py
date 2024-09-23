@@ -297,7 +297,6 @@ def student():
 
     student = GetStudent(studentID=student_id)[0]
 
-    # TODO will need to be replaced with actual session logic later
     session_id = flask.session.get('session_id')
     print(f"Session ID as found in student : {session_id}")
     current_session = GetSession(sessionID=session_id)
@@ -316,24 +315,41 @@ def student():
         flask.flash("Error - Student not found")
         return flask.redirect(flask.url_for('home'))
     
+    print("consent", student.consent)
+    
     student_info = {
         "name": f"{student.preferredName} {student.lastName}",
         "number": student.studentNumber,
         "id": student.studentID,
         "login": login_status,  
-        "photo": "yes" if student.consent == 1 else "no",
+        "consent": "yes" if student.consent == 1 else "no",
         "signInTime": str(attendance_record.signInTime).split('.')[0], # this is because when I included the microseconds html's input type="time" wasn't formatting properly
         "signOutTime": str(attendance_record.signOutTime).split('.')[0],
     }
 
     return flask.render_template('student.html', form=form, student=student_info, attendance=attendance_record)
 
-@app.route('/remove_from_session', methods=['POST'])
+@app.route('/remove_from_session', methods=['GET'])
 def remove_from_session():
     # Access form data
-    student_id = flask.request.form.get('student_id')
-    print("Student ID: " + student_id)
-    return flask.redirect('home')
+    student_id = flask.request.args.get('student_id')
+
+    session = flask.session.get('session_id')
+
+    current_session = GetSession(session)
+
+    if not current_session:
+        flask.flash("Error loading session") 
+        return flask.redirect(flask.url_for('home'))
+    
+    current_session = current_session[0]
+
+    status = RemoveStudentFromSession(student_id, current_session.sessionID)
+
+    if not status:
+        flask.flash("Error removing student from session")
+        
+    return flask.redirect(flask.url_for('home'))
 	
 # LOGIN - /login/ 
 @app.route('/login', methods=['GET', 'POST'])
@@ -345,7 +361,7 @@ def login():
     
     form = LoginForm()
     if form.validate_on_submit():
-        user = database.GetUser(uwaID = form.username.data)                
+        user = database.GetUser(uwaID = form.username.data)          
 
         if user is None or not user.is_password_correct(form.password.data):
             flask.flash('Invalid username or password')
