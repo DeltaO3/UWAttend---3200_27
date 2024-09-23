@@ -236,17 +236,26 @@ def addunit():
         
         #Handle facilitators
         #TODO: handle emailing facilitators, handle differentiating between facilitator and coordinator
-        facilitators = facilitator_list.split('|')
-        for facilitator in facilitators:
-            if(not GetUser(uwaID=facilitator)):
-                print(f"Adding new user: {facilitator}")
-                AddUser(facilitator, "placeholder", "placeholder", facilitator, 3) #Do we assign coordinators?
-            #add this unit to facilator
-            if(int(facilitator) == current_user.uwaID):
-                print(f"skipping user {facilitator} as it is the currently logged in user.")
-                continue
-            print(f"Adding unit {unitID} to facilitator {facilitator}")
-            AddUnitToFacilitator(facilitator, unitID)
+        if student_file.filename != '':
+            student_file.save(student_file.filename)
+            filename = student_file.filename
+            process_csv(filename, unitID, current_user.uwaID)
+        else:
+            print("Submitted no file, probable error.")
+            error = "No file submitted"
+            return flask.render_template('addunit.html', form=form, error=error)
+        
+        # facilitators = facilitator_list.split('|')
+        # for facilitator in facilitators:
+        #     if(not GetUser(uwaID=facilitator)):
+        #         print(f"Adding new user: {facilitator}")
+        #         AddUser(facilitator, "placeholder", "placeholder", facilitator, 3) #Do we assign coordinators?
+        #     #add this unit to facilator
+        #     if(int(facilitator) == current_user.uwaID):
+        #         print(f"skipping user {facilitator} as it is the currently logged in user.")
+        #         continue
+        #     print(f"Adding unit {unitID} to facilitator {facilitator}")
+        #     AddUnitToFacilitator(facilitator, unitID)
         AddUnitToFacilitator(current_user.uwaID, unitID)
         AddUnitToCoordinator(current_user.uwaID, unitID)
         

@@ -7,7 +7,7 @@ import zipfile
 from io import StringIO
 from app import app, db
 from app.models import Student, User, Attendance, Session, Unit
-from app.database import AddStudent, GetStudent, GetAttendance, GetSessionForExport, GetAllUsers, GetUnit, student_exists
+from app.database import AddStudent, GetStudent, GetAttendance, GetSessionForExport, GetAllUsers, GetUnit, student_exists, GetUser, AddUser, AddUnitToFacilitator
 
 # Set of functions used to read and populate students into the database from a csv file.
 # Checklist for future
@@ -48,14 +48,33 @@ def import_student_in_db(data, unit_id):
         )
         print(f"Added student: {record['Given Names']} {record['Surname']} (ID: {student_number})")
 
-# Process a .csv file by reading and then importing into "student" table.
-def process_csv(file_path, unit_id):
+def import_facilitator_in_db(data, unitID, current_user):
+
+    for record in data:
+        facilitator = record['Facilitator ID']
+        #Add facilitator as user if not in DB
+        if(not GetUser(uwaID=facilitator)):
+            print(f"Adding new user: {facilitator}")
+            AddUser(facilitator, "placeholder", "placeholder", facilitator, 3)
+        #add this unit to facilator
+        if(int(facilitator) == current_user):
+            print(f"skipping user {facilitator} as it is the currently logged in user.")
+            continue
+        print(f"Adding unit {unitID} to facilitator {facilitator}")
+        AddUnitToFacilitator(facilitator, unitID)
+
+# Process a .csv file by reading and then importing into "student" table. 
+# If current user is passsed, processes file as a facilitator file
+def process_csv(file_path, unit_id, current_user=None):
     with app.app_context():
         # Read the data from the CSV file
         data = read_csv_file(file_path)
         if data:
             # Import the data to the database
-            import_student_in_db(data, unit_id)
+            if current_user is None:
+                import_student_in_db(data, unit_id)
+            else:
+                import_facilitator_in_db(data, current_user)
 
 # Export a single table's data to a CSV format and return it as a string
 def export_table_to_csv(fetch_function):
