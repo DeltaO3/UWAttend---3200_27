@@ -102,9 +102,10 @@ class StudentSignInForm(FlaskForm):
     session_id = HiddenField('Session ID')  
 
 class AttendanceChangesForm(FlaskForm):
+    student_id = HiddenField('Student ID')
     signInTime = StringField('Sign in time')
     signOutTime = StringField('Sign out time')
     login = BooleanField('Login')
     consent = BooleanField('Photo Consent')
     grade = StringField('Grade')
-    comment = TextAreaField('Comment')
+    comments = TextAreaField('Comment')

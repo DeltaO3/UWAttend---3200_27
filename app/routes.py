@@ -325,6 +325,8 @@ def student():
         "consent": "yes" if student.consent == 1 else "no",
         "signInTime": str(attendance_record.signInTime).split('.')[0], # this is because when I included the microseconds html's input type="time" wasn't formatting properly
         "signOutTime": str(attendance_record.signOutTime).split('.')[0],
+        "grade": attendance_record.marks,
+        "comments": attendance_record.comments
     }
 
     return flask.render_template('student.html', form=form, student=student_info, attendance=attendance_record)
@@ -346,7 +348,9 @@ def remove_from_session():
 
     status = RemoveStudentFromSession(student_id, current_session.sessionID)
 
-    if not status:
+    if status:
+        flask.flash("Student removed from session")
+    else:
         flask.flash("Error removing student from session")
         
     return flask.redirect(flask.url_for('home'))
@@ -372,34 +376,47 @@ def login():
 
     return flask.render_template('login.html', form=form)
 
-@app.route('/save_changes', methods=['POST'])
-def save_changes():
+@app.route('/edit_student_details', methods=['POST'])
+def edit_student_details():
 
     form = AttendanceChangesForm()
 
+    session = flask.session.get('session_id')
+
+    current_session = GetSession(session)
+
+    if not current_session:
+        flask.flash("Error loading session") 
+        return flask.redirect(flask.url_for('home'))
+    
+    current_session = current_session[0]
+
     if form.validate_on_submit():
 
-        # Handle form submission
-        signInTime = form.signInTime.data
-        signOutTime = form.signOutTime.data
-        login = form.login.data
-        consent = form.consent.data
-        grade = form.grade.data
-        comment = form.comment.data
+        # Build the dictionary with only non-empty/None values
+        update_data = { 
+            'sessionID': current_session.sessionID,
+            'studentID': form.student_id.data,
+            'signInTime': form.signInTime.data or None,
+            'signOutTime': form.signOutTime.data or None,
+            'login': form.login.data if form.login.data is not None else None,
+            'consent': form.consent.data if form.consent.data is not None else None,
+            'grade': form.grade.data or None,
+            'comments': form.comments.data or None
+        }
 
-        # print all info
-        print(signInTime)
-        print(signOutTime)
-        print(login)
-        print(consent)
-        print(grade)
-        print(comment)
+        # Remove keys with None values to pass only filled data
+        update_data = {k: v for k, v in update_data.items() if v is not None}
 
-        
+        if update_data:
+            status =EditAttendance(**update_data)   
 
-    # Process form data here (save changes to db)
+            if status:
+                flask.flash("Student details updated", category='success')
+            else:
+                flask.flash("Error updating student details", category='error')
 
-    return flask.redirect('home') 
+    return flask.redirect(flask.url_for('home'))
 
 @app.route('/add_student', methods=['POST'])
 def add_student():

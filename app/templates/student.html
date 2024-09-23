@@ -3,7 +3,7 @@
 
 <div class="container-fluid">
     <!-- Form element -->
-    <form method="POST" action="{{ url_for('save_changes') }}">
+    <form method="POST" action="{{ url_for('edit_student_details') }}">
         {{ form.hidden_tag() }}
         <div class="mx-4 mt-3 mx-md-5">
             <div class="mb-3">
@@ -11,6 +11,7 @@
             </div>
             <div class="mb-3">
                 <strong>Student ID:</strong> {{ student.number }}
+                {{ form.student_id(value=student.number) }}
             </div>
             <div class="mb-3">
                 <label for="sign_in_time" class="form-check-label">Sign in time:</label> 
@@ -41,14 +42,18 @@
             <!-- Grade Input -->
             <div class="mb-3">
                 <label for="grade" class="form-label">Grade:</label>
+                {% if student.grade %}
+                {{ form.grade(class="form-control", value=student.grade) }}
+                {% else %}
                 {{ form.grade(class="form-control") }}
+                {% endif %}
             </div>
         </div>
 
         <!-- Comment Section -->
         <div class="mx-4 mt-3 mx-md-5">
-            <label for="comment" class="form-label">Leave a Comment:</label>
-            {{ form.comment(class="form-control", rows="3") }}
+            <label for="comments" class="form-label">Leave a Comment:</label>
+            {{ form.comments(class="form-control", rows="3", value=student.comments) }}
         </div>
 
         <!-- <form id="remove_from_session_form" method="POST" action="{{ url_for('remove_from_session') }}" class="col">

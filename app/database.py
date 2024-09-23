@@ -350,5 +350,60 @@ def RemoveStudentFromSession(studentID, sessionID):
 
     else:
         return False
+    
+def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, login=None, consent=None, grade=None, comments=None):
+    # Fetch the attendance record based on studentID
+    attendance_record = db.session.query(Attendance).filter_by(studentID=studentID, sessionID=sessionID).first()
+    unitID = GetSession(sessionID=sessionID)[0].unitID
+    student_record = db.session.query(Student).filter_by(studentID=studentID, unitID=unitID).first()
+
+    if not attendance_record:
+        print(f"Attendance record for student ID {studentID} not found.")
+        return False
+    
+    if signOutTime < signInTime:
+        print("Sign out time cannot be before sign in time.")
+        return False
+
+    # Update only the fields that are passed
+    if signInTime:
+        try:
+            # Convert signInTime string to a Python time object
+            attendance_record.signInTime = datetime.strptime(signInTime, '%H:%M:%S').time()
+        except ValueError:
+            print(f"Invalid time format for signInTime: {signInTime}")
+            return False
+
+    if signOutTime:
+        try:
+            # Convert signOutTime string to a Python time object
+            attendance_record.signOutTime = datetime.strptime(signOutTime, '%H:%M:%S').time()
+        except ValueError:
+            print(f"Invalid time format for signOutTime: {signOutTime}")
+            return False
+
+    if login is not None:  # Boolean field
+        if not login and not attendance_record.signOutTime:
+            attendance_record.signOutTime = get_perth_time().time()
+
+    if consent is not None:  # Boolean field
+        student_record.consent = 1 if consent else 0
+
+    if grade:
+        attendance_record.marks = grade
+
+    if comments:
+        attendance_record.comments = comments
+
+    # Commit the changes to the database
+    try:
+        db.session.commit()
+        print(f"Attendance record for student ID {studentID} updated successfully.")
+        return True
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error updating attendance record for student ID {studentID}: {e}")
+        return False
+
 
 
