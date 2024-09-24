@@ -65,7 +65,7 @@ class Unit(db.Model) :
 class Student(db.Model) :
     __tablename__ = 'student'
     studentID: Mapped[int] = mapped_column(primary_key=True)
-    studentNumber: Mapped[int] = mapped_column(nullable=False)
+    studentNumber: Mapped[str] = mapped_column(String(15), nullable=False)
     firstName: Mapped[str] = mapped_column(String(50), nullable=False)
     lastName: Mapped[str] = mapped_column(String(50), nullable=False)
     title: Mapped[str] = mapped_column(String(50), nullable=False)
