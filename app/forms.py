@@ -65,35 +65,35 @@ class AddUserForm(FlaskForm):
     
     UserType = SelectField(
     'User Type',
-    choices=[(1, 'Administrator'), (2, 'Coordinator'), (3, "Facilitator")],
-    coerce=int,  # Ensure the selected value is coerced to an integer
+    choices=[('admin', 'Administrator'), ('coordinator', 'Coordinator'), ('facilitator', 'Facilitator')],
     validators=[validate_UserType]
     )
-    uwaId       = StringField('Uwa ID:', validators=[DataRequired()])
+    email       = StringField('Email:', validators=[DataRequired()])
     firstName   = StringField('First name:', validators=[DataRequired()])
     lastName    = StringField('Last name:', validators=[DataRequired()])
     passwordHash = StringField('Password:', validators=[DataRequired()])
     submit      = SubmitField('Add User')
     
 class AddUnitForm(FlaskForm):
-	unitcode = StringField('Unit Code:', validators=[DataRequired(), unit_check])
-	semester = StringField('Semester:', validators=[DataRequired()])
-	startdate = DateField('Start Date', validators=[DataRequired(), date_check])
-	enddate = DateField('End Date', validators=[DataRequired()])
+    unitcode = StringField('Unit Code:', validators=[DataRequired(), unit_check])
+    unitname = StringField('Unit Name:', validators=[DataRequired()])
+    semester = StringField('Semester:', validators=[DataRequired()])
+    startdate = DateField('Start Date', validators=[DataRequired(), date_check])
+    enddate = DateField('End Date', validators=[DataRequired()])
 	#Need to add custom validators to check if files uploaded end in csv
-	sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
-	facilitatorlist = StringField('Facilitator IDs', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
-	studentfile = FileField('Student List CSV Upload:', validators=[DataRequired()])
-	consentcheck = BooleanField('Photo Consent Required?')
-	sessionoccurence = MultiCheckboxField(
+    sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
+    facilitatorlist = StringField('Facilitator IDs', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
+    studentfile = FileField('Student List CSV Upload:', validators=[DataRequired()])
+    consentcheck = BooleanField('Photo Consent Required?')
+    sessionoccurence = MultiCheckboxField(
 		'Session Occurence',
 		choices=[('Morning','Morning'), ('Afternoon', 'Afternoon')
 		],
 		validators=[validate_sessionoccurence])
-	assessmentcheck = BooleanField('Sessions Assessed?')
-	commentsenabled = BooleanField('Student Comments Enabled?')
-	commentsuggestions = StringField('Comment Suggestions:', render_kw={"placeholder":"Optional; separate with |"})
-	submit = SubmitField('Add Unit')
+    assessmentcheck = BooleanField('Sessions Assessed?')
+    commentsenabled = BooleanField('Student Comments Enabled?')
+    commentsuggestions = StringField('Comment Suggestions:', render_kw={"placeholder":"Optional; separate with |"})
+    submit = SubmitField('Add Unit')
     
 class StudentSignInForm(FlaskForm):
     student_sign_in = StringField('Sign in Student', validators=[DataRequired()])

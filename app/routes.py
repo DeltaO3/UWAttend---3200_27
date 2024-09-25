@@ -57,7 +57,7 @@ def home():
             "number": student.studentNumber,
             "id": student.studentID,
             "login": login_status,  
-            "photo": "yes" if student.consent == 1 else "no",
+            "photo": "yes" if student.consent == "yes" else "no",
             "time": attendance_record.signInTime
         }
         student_list.append(student_info)
@@ -166,7 +166,7 @@ def updatesession():
 @app.route('/unitconfig', methods=['GET', 'POST'])
 @login_required
 def unitconfig():
-    if current_user.userType == 3:
+    if current_user.userType == 'facilitator':
         return flask.redirect('home')
     
     return flask.render_template('unit.html')
@@ -175,7 +175,7 @@ def unitconfig():
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
 def admin():
-    if current_user.userType != 1:
+    if current_user.userType != 'administrator':
         return flask.redirect('home')
 
     form = AddUserForm()
@@ -191,7 +191,7 @@ def admin():
 @app.route('/addunit', methods=['GET', 'POST'])
 @login_required
 def addunit():
-    if current_user.userType == 3:
+    if current_user.userType == 'facilitator':
         return flask.redirect('home')
     
     form = AddUnitForm()
@@ -199,6 +199,7 @@ def addunit():
     if form.validate_on_submit() and flask.request.method == 'POST':
         #Form data held here
         newunit_code = form.unitcode.data
+        unit_name = form.unitname.data
         semester = form.semester.data
         consent_required = form.consentcheck.data
         start_date = form.startdate.data
@@ -221,7 +222,7 @@ def addunit():
         print(f"session occurence string: {occurences}")
 
         #add to database
-        unitID = AddUnit(newunit_code, "placeholdername", semester, 1, start_date, end_date, 
+        unitID = AddUnit(newunit_code, unit_name, semester, start_date, end_date, 
                 sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
         
          #read CSV file
@@ -238,17 +239,17 @@ def addunit():
         #TODO: handle emailing facilitators, handle differentiating between facilitator and coordinator
         facilitators = facilitator_list.split('|')
         for facilitator in facilitators:
-            if(not GetUser(uwaID=facilitator)):
+            if(not GetUser(email=facilitator)):
                 print(f"Adding new user: {facilitator}")
                 AddUser(facilitator, "placeholder", "placeholder", facilitator, 3) #Do we assign coordinators?
             #add this unit to facilator
-            if(int(facilitator) == current_user.uwaID):
+            if(int(facilitator) == current_user.email):
                 print(f"skipping user {facilitator} as it is the currently logged in user.")
                 continue
             print(f"Adding unit {unitID} to facilitator {facilitator}")
             AddUnitToFacilitator(facilitator, unitID)
-        AddUnitToFacilitator(current_user.uwaID, unitID)
-        AddUnitToCoordinator(current_user.uwaID, unitID)
+        AddUnitToFacilitator(current_user.email, unitID)
+        AddUnitToCoordinator(current_user.email, unitID)
         
         return flask.redirect(flask.url_for('unitconfig'))
 	    
@@ -319,7 +320,7 @@ def student():
         "number": student.studentNumber,
         "id": student.studentID,
         "login": login_status,  
-        "photo": "yes" if student.consent == 1 else "no",
+        "photo": "yes" if student.consent == "yes" else "no",
         "time": attendance_record.signInTime
     }
 
@@ -335,7 +336,7 @@ def login():
     
     form = LoginForm()
     if form.validate_on_submit():
-        user = database.GetUser(uwaID = form.username.data)                
+        user = database.GetUser(email = form.username.data)                
 
         if user is None or not user.is_password_correct(form.password.data):
             flask.flash('Invalid username or password')
@@ -389,9 +390,9 @@ def add_student():
                 flask.flash("User already signed in", category='error')
                 return flask.redirect(flask.url_for('home'))
             
-            consent_int = 1 if consent_status == "yes" else 0
+            consent = "yes" if consent_status == "yes" else "no"
 
-            student.consent = consent_int
+            student.consent = consent
             db.session.commit()
 
             # Add attendance for the current session
