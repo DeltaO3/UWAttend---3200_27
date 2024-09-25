@@ -175,7 +175,7 @@ def unitconfig():
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
 def admin():
-    if current_user.userType != 'administrator':
+    if current_user.userType != 'admin':
         return flask.redirect('home')
 
     form = AddUserForm()
@@ -237,13 +237,13 @@ def addunit():
         
         #Handle facilitators
         #TODO: handle emailing facilitators, handle differentiating between facilitator and coordinator
-        facilitators = facilitator_list.split('|')
-        for facilitator in facilitators:
+        facilitator_emails = facilitator_list.split('|')
+        for facilitator in facilitator_emails:
             if(not GetUser(email=facilitator)):
                 print(f"Adding new user: {facilitator}")
-                AddUser(facilitator, "placeholder", "placeholder", facilitator, 3) #Do we assign coordinators?
-            #add this unit to facilator
-            if(int(facilitator) == current_user.email):
+                AddUser(facilitator, "placeholder", "placeholder", facilitator, 'facilitator') #Do we assign coordinators?
+            #add this unit to facilitator
+            if(facilitator == current_user.email):
                 print(f"skipping user {facilitator} as it is the currently logged in user.")
                 continue
             print(f"Adding unit {unitID} to facilitator {facilitator}")
@@ -396,7 +396,7 @@ def add_student():
             db.session.commit()
 
             # Add attendance for the current session
-            AddAttendance(sessionID=session_id, studentID=studentID, consent_given=1, facilitatorID=1) # TODO need to be replaced with actual facilitator ID logic
+            AddAttendance(sessionID=session_id, studentID=studentID, consent_given="yes", facilitatorID=1) # TODO need to be replaced with actual facilitator ID logic
             print(f"Logged {student.firstName} {student.lastName} in")
 
             return flask.redirect(flask.url_for('home'))

@@ -24,13 +24,13 @@
 					href="{% if session['session_id']%}{{ url_for('updatesession')}}{% else %}{{ url_for('session') }}{% endif %}">Session Config</a>
 				
 				<!-- Unit Config: Only visible to admins (1) and coordinators (2) -->
-				{% if current_user.userType == 1 or current_user.userType == 2 %}
+				{% if current_user.userType == 'admin' or current_user.userType == 'coordinator' %}
 					<a class="nav-link {% if request.path == url_for('unitconfig') %}active" aria-current="page{% endif %}"
 						href="{{ url_for('unitconfig') }}">Unit Config</a>
 				{% endif %}
 
 				<!-- Administration: Only visible to admins (1) -->
-				{% if current_user.userType == 1 %}
+				{% if current_user.userType == 'admin' %}
 					<a class="nav-link {% if request.path == url_for('admin') %}active" aria-current="page{% endif %}"
 						href="{{ url_for('admin') }}">Administration</a>
 				{% endif %}

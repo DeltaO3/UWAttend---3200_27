@@ -11,7 +11,7 @@ with app.app_context():
 	#Assign facilitators to unit
 	AddUser("22224444@uwa.edu.au", "Facilitator1", "Lastname", "facilitator1", "facilitator")
 	AddUser("33335555@uwa.edu.au", "Facilitator2", "Lastname", "facilitator2", "facilitator")
-	AddUser("44446666@uwa.edu.au", "Coordinator1", "Coordinate", "coordinate", "facilitator")
+	AddUser("44446666@uwa.edu.au", "Coordinator1", "Coordinate", "coordinate", "coordinator")
 	#Add units to users
 	AddUnitToCoordinator("admin@admin.com", unit1)
 	AddUnitToFacilitator("admin@admin.com", unit1)
