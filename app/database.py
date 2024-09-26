@@ -361,9 +361,10 @@ def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, logi
         print(f"Attendance record for student ID {studentID} not found.")
         return False
     
-    if signOutTime < signInTime:
-        print("Sign out time cannot be before sign in time.")
-        return False
+    if signOutTime and signInTime:
+        if signOutTime < signInTime:
+            print("Sign out time cannot be before sign in time.")
+            return False
 
     # Update only the fields that are passed
     if signInTime:
