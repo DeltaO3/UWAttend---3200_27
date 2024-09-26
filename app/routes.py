@@ -169,7 +169,37 @@ def unitconfig():
     if current_user.userType == 3:
         return flask.redirect('home')
     
-    return flask.render_template('unit.html')
+    # Query all units with their coordinators
+    if current_user.userType == 2:
+        units_list = (
+            db.session.query(Unit)
+            .join(Unit.coordinators)
+            .filter(User.userID == current_user.userID)
+            .all()
+        )
+    # Query all units for admins
+    if current_user.userType == 1:
+        units_list = (
+            db.session.query(Unit)
+            .join(Unit.coordinators)
+            .all()
+        )
+
+    # Create a list to hold unit information
+    units_data = []
+
+    for unit in units_list:
+        # Extract relevant data for each unit
+        unit_info = {
+            "code": unit.unitCode,
+            "name": unit.unitName or "N/A",
+            "study_period": unit.studyPeriod,
+            "start_date": unit.startDate.strftime('%Y-%m-%d'),
+            "end_date": unit.endDate.strftime('%Y-%m-%d'),
+        }
+        units_data.append(unit_info)
+    
+    return flask.render_template('unit.html', units=units_data)
 
 # add users
 @app.route('/admin', methods=['GET', 'POST'])
