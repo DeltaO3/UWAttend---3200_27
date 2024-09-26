@@ -8,3 +8,5 @@ migrations/versions/__pycache__
 .env
 database.zip
 .env
+/app/static/.webassets-cache
+app/static/dist/styles.css
