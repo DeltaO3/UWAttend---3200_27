@@ -295,7 +295,13 @@ def student():
 
     student_id = flask.request.form['student_id']
 
-    student = GetStudent(studentID=student_id)[0]
+    student = GetStudent(studentID=student_id)
+
+    if not student:
+        flask.flash("Error - Student not found")
+        return flask.redirect(flask.url_for('home'))
+    
+    student = student[0]
 
     session_id = flask.session.get('session_id')
     print(f"Session ID as found in student : {session_id}")
@@ -309,26 +315,10 @@ def student():
 
     attendance_record = GetAttendance(input_sessionID=current_session.sessionID, studentID=student_id)[0] 
 
-    login_status = "no" if attendance_record.signOutTime else "yes"
+    student_info = generate_student_info(student, attendance_record)
 
-    if not student:
-        flask.flash("Error - Student not found")
-        return flask.redirect(flask.url_for('home'))
-    
     print("consent", student.consent)
     
-    student_info = {
-        "name": f"{student.preferredName} {student.lastName}",
-        "number": student.studentNumber,
-        "id": student.studentID,
-        "login": login_status,  
-        "consent": "yes" if student.consent == 1 else "no",
-        "signInTime": str(attendance_record.signInTime).split('.')[0], # this is because when I included the microseconds html's input type="time" wasn't formatting properly
-        "signOutTime": str(attendance_record.signOutTime).split('.')[0],
-        "grade": attendance_record.marks,
-        "comments": attendance_record.comments
-    }
-
     return flask.render_template('student.html', form=form, student=student_info, attendance=attendance_record)
 
 @app.route('/remove_from_session', methods=['GET'])
@@ -409,12 +399,17 @@ def edit_student_details():
         update_data = {k: v for k, v in update_data.items() if v is not None}
 
         if update_data:
-            status =EditAttendance(**update_data)   
+            message = EditAttendance(**update_data)   
 
-            if status:
+            if message == "True":
                 flask.flash("Student details updated", category='success')
             else:
-                flask.flash("Error updating student details", category='error')
+                flask.flash(message, category='error')
+                student = GetStudent(studentID=form.student_id.data)
+                attendance_record = GetAttendance(input_sessionID=current_session.sessionID, studentID=form.student_id.data)
+                if not student or not attendance_record:
+                    return flask.redirect(flask.url_for('home'))
+                return flask.render_template('student.html', form=form, student=generate_student_info(student[0], attendance_record[0]), attendance=attendance_record[0])
 
     return flask.redirect(flask.url_for('home'))
 
@@ -450,10 +445,12 @@ def add_student():
                 flask.flash("User already signed in", category='error')
                 return flask.redirect(flask.url_for('home'))
             
+            if student.consent == 1:
+                consent_status = "yes"
+            
             consent_int = 1 if consent_status == "yes" else 0
 
             student.consent = consent_int
-            db.session.commit()
 
             # Add attendance for the current session
             AddAttendance(sessionID=session_id, studentID=studentID, consent_given=1, facilitatorID=1) # TODO need to be replaced with actual facilitator ID logic
