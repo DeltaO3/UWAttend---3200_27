@@ -231,8 +231,8 @@ def addunit():
             process_csv(filename, unitID)
         else:
             print("Submitted no file, probable error.")
-            error = "No file submitted"
-            return flask.render_template('addunit.html', form=form, error=error)
+            flask.flash("No file submitted", 'error`')
+            return flask.render_template('addunit.html', form=form)
         
         #Handle facilitators
         #TODO: handle emailing facilitators, handle differentiating between facilitator and coordinator
