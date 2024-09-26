@@ -386,7 +386,11 @@ def add_student():
             existing_attendance = GetAttendance(input_sessionID=session_id, studentID=studentID)
             
             if existing_attendance:
-                flask.flash("User already signed in", category='error')
+                status = SignStudentOut(attendanceID=existing_attendance[0].attendanceID)
+                if status:
+                    flask.flash(f"Signed out {student.firstName} {student.lastName}", 'success')
+                else:
+                    flask.flash(f"Error signing out {student.firstName} {student.lastName}", 'error')
                 return flask.redirect(flask.url_for('home'))
             
             consent_int = 1 if consent_status == "yes" else 0
@@ -448,7 +452,7 @@ def student_suggestions():
     for student in students:
         existing_attendance = GetAttendance(input_sessionID=current_session.sessionID, studentID=student.studentID)
 
-        if existing_attendance:
+        if existing_attendance and existing_attendance[0].signOutTime:
             continue
 
         first_last_name = f"{student.firstName} {student.lastName}"
@@ -458,14 +462,16 @@ def student_suggestions():
                 'name': f"{student.preferredName} {student.lastName}",
                 'id': student.studentID,
                 'number': student.studentNumber,
-                'consentNeeded': student.consent
+                'consentNeeded': student.consent,
+                'signedIn': True if existing_attendance else False,
             })
         elif query in student.firstName.lower() or query in first_last_name.lower():
             suggestions.append({
                 'name': f"{student.firstName} {student.lastName}",
                 'id': student.studentID,
                 'number': student.studentNumber,
-                'consentNeeded': student.consent
+                'consentNeeded': student.consent,
+                'signedIn': 1 if existing_attendance else 0,
             })
 
     return flask.jsonify(suggestions)
