@@ -39,7 +39,7 @@
 			<!-- Right side -->
 			<div class="navbar-nav d-flex justify-content-end col-md-6">
 				<span class="navbar-text fw-bold text-truncate me-3 d-none d-md-block">
-					{{ current_user.uwaID }}
+					{{ current_user.firstName }} {{ current_user.lastName}}
 				</span>
 				<a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
 			</div>

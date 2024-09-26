@@ -38,10 +38,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Set the student ID and name when a suggestion is clicked
                     document.getElementById('studentID').value = suggestion.id;
 
-                    if (suggestion.consentNeeded == 1) {
+                    // Do not ask for consent if student's consent is already yes or not required
+                    if (suggestion.consentNeeded == "yes" || suggestion.consentNeeded == "not required") {
                         document.getElementById('hidden_consent_indicator').value = "no";
                     } else {
-                        document.getElementById('hidden_consent_indicator').value = "yes";}
+                        document.getElementById('hidden_consent_indicator').value = "yes";
+                    }
                     
                     studentInput.value = suggestion.name;
 

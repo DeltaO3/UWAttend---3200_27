@@ -57,7 +57,7 @@ def home():
             "number": student.studentNumber,
             "id": student.studentID,
             "login": login_status,  
-            "photo": "yes" if student.consent == "yes" else "no",
+            "photo": student.consent,
             "time": attendance_record.signInTime
         }
         student_list.append(student_info)
@@ -368,6 +368,8 @@ def add_student():
         consent_status = form.consent_status.data
         # sessionID = form.sessionID.data
 
+        print(f'{studentID} consent as given in form: {consent_status}')
+
         session_id = flask.session.get('session_id')
         print("Session ID as found in add_student : ", session_id)
 
@@ -390,9 +392,12 @@ def add_student():
                 flask.flash("User already signed in", category='error')
                 return flask.redirect(flask.url_for('home'))
             
-            consent = "yes" if consent_status == "yes" else "no"
+            # consent will be none if it is already yes or not required i.e. no changes required
+            if consent_status != "none" :
+                student.consent = "yes" if consent_status == "yes" else "no"
 
-            student.consent = consent
+            print(f'{student.studentID} consent as added to db: {student.consent}')
+
             db.session.commit()
 
             # Add attendance for the current session

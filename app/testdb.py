@@ -23,7 +23,7 @@ with app.app_context():
 	AddSession(unit1, "Lab", "Morning", datetime.now())
 	AddSession(unit1, "Workshop", "Morning", datetime.now())
 	#Add students to unit/sessions
-	AddStudent("55557777", "Alice", "Alicelast", "Ms", "Alice", unit1, 0)
-	AddStudent("66668888", "Robert", "Boblast", "Mr", "Bob", unit1, 0)
-	AddStudent("77777777", "Cathy", "Cathylast", "Ms", "Cathy", unit1, 1)
+	AddStudent("55557777", "Alice", "Alicelast", "Ms", "Alice", unit1, "no")
+	AddStudent("66668888", "Robert", "Boblast", "Mr", "Bob", unit1, "no")
+	AddStudent("77777777", "Cathy", "Cathylast", "Ms", "Cathy", unit1, "yes")
 	print("successful!")
