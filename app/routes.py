@@ -401,7 +401,7 @@ def add_student():
             db.session.commit()
 
             # Add attendance for the current session
-            AddAttendance(sessionID=session_id, studentID=studentID, consent_given="yes", facilitatorID=1) # TODO need to be replaced with actual facilitator ID logic
+            AddAttendance(sessionID=session_id, studentID=studentID, consent_given=student.consent, facilitatorID=1) # TODO need to be replaced with actual facilitator ID logic
             print(f"Logged {student.firstName} {student.lastName} in")
 
             return flask.redirect(flask.url_for('home'))
