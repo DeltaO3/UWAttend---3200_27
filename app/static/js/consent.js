@@ -3,7 +3,7 @@ $("#attendanceForm").submit(function (e) {
 	e.preventDefault();  // Prevent the default form submission
 
 	// Only display the modal if consent has not been previously granted 
-	if ($("#hidden_consent_indicator").val() == "yes" && $('#signed').val() == 0) {
+	if ($("#hidden_consent_indicator").val() == "yes") {
 		$("#consentModal").modal('show');
 		document.getElementById('hidden_consent_indicator').value = "no";
 	} else {
