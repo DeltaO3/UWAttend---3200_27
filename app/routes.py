@@ -81,7 +81,7 @@ def session():
 
     # Get perth time
     perth_time = get_perth_time()
-    humanreadable_perth_time = perth_time.strftime('%B %d, %Y, %H:%M:%S %Z')
+    # humanreadable_perth_time = perth_time.strftime('%B %d, %Y, %H:%M:%S %Z')
 
     # For JS formatting
     formatted_perth_time = perth_time.isoformat()
@@ -92,21 +92,22 @@ def session():
         unit_id = form.unit.data
         session_name = form.session_name.data
         session_time = form.session_time.data
+        session_date = form.session_date.data
 
         # Printing for debugging
         print(f"Session Name: {session_name}")
         print(f"Session Time: {session_time}")
         print(f"Unit Id: {unit_id}")
-        print(f"Current Date/Time: {humanreadable_perth_time}")
+        print(f"Session Date: {session_date}")
 
         # Check if the session already exists
-        current_session = GetUniqueSession(unit_id, session_name, session_time, perth_time.date())
+        current_session = GetUniqueSession(unit_id, session_name, session_time, session_date)
 
         if current_session is not None :
             print("Session already exists.")
         else :
             print("Session doesn't exist... creating new session.")
-            current_session = AddSession(unit_id, session_name, session_time, perth_time)
+            current_session = AddSession(unit_id, session_name, session_time, session_date)
             if current_session is None :
                 print("An error has occurred. The session was not created. Please try again.")
                 return flask.redirect(flask.url_for('home'))
@@ -114,6 +115,7 @@ def session():
         print("Current session details:")
         print(f"Session name: {current_session.sessionName}")
         print(f"Session time: {current_session.sessionTime}")
+        print(f"Session date: {current_session.sessionDate}")
 
         flask.session['session_id'] = current_session.sessionID
         print(f"Saving session id: {current_session.sessionID} to global variable")
@@ -147,10 +149,12 @@ def updatesession():
         unit_id = form.unit.data
         session_name = form.session_name.data
         session_time = form.session_time.data
+        session_date = form.session_date.data
 
         # Printing for debugging
         print(f"Session Name: {session_name}")
         print(f"Session Time: {session_time}")
+        print(f"Session Date: {session_date}")
         print(f"Unit Id: {unit_id}")
 
         # TODO: implement update session logic

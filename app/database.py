@@ -74,7 +74,7 @@ def AddSession(unitID, sessionName, sessionTime, sessionDate):
         db.session.rollback()
         print(f'An error occurred: {e}')
 
-    return GetUniqueSession(unitID, sessionName, sessionTime, sessionDate.date())
+    return GetUniqueSession(unitID, sessionName, sessionTime, sessionDate)
 
    
 
@@ -197,7 +197,7 @@ def GetUniqueSession(unitID, sessionName, sessionTime, sessionDate):
     session = db.session.query(Session).filter(Session.unitID == unitID,
                                              Session.sessionName == sessionName,
                                              Session.sessionTime == sessionTime,
-                                             func.DATE(Session.sessionDate) == sessionDate
+                                             Session.sessionDate == sessionDate
                                              ).first()
     return session
 

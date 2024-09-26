@@ -31,6 +31,7 @@ class SessionForm(FlaskForm):
         validators=[DataRequired()],
         validate_choice=False
     )
+    session_date = DateField('Session Date', validators=[DataRequired()])    
 
     submit = SubmitField('')
 
