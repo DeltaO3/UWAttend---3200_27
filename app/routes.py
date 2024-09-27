@@ -224,23 +224,26 @@ def addunit():
         if student_file.filename != '':
             student_file.save(student_file.filename)
             student_filename = student_file.filename
+            print(f"Student filename: {student_filename}")
         else:
             print("Submitted no file, probable error.")
-            flask.flash("No file submitted", 'error`')
+            flask.flash("Error, no student file submitted", 'error')
             return flask.render_template('addunit.html', form=form)
         
         if facilitator_file.filename != '':
             facilitator_file.save(facilitator_file.filename)
             facilitator_filename = facilitator_file.filename
+            print(f"Facilitator filename: {facilitator_filename}")
         else:
             print("Submitted no file, probable error.")
-            error = "No file submitted"
+            flask.flash("Error, no facilitator file submitted", 'error')
             return flask.render_template('addunit.html', form=form, error=error)
      
         #Process csvs
         s_data, f_data, error = process_csvs(student_filename, facilitator_filename)
         if error:
-            return flask.render_template('addunit.html', form=form, error=error)
+            flask.flash(error, 'error`')
+            return flask.render_template('addunit.html', form=form)
         
         #add to database
         unit_id = AddUnit(newunit_code, "placeholdername", semester, 1, start_date, end_date, 
@@ -255,6 +258,8 @@ def addunit():
         AddUnitToCoordinator(current_user.uwaID, unit_id)
         
         return flask.redirect(flask.url_for('unitconfig'))
+    else:
+        flask.flash("Please fill in all required fields", 'error') # this message could definitely change though
 	    
     return flask.render_template('addunit.html', form=form)
 
@@ -405,7 +410,7 @@ def add_student():
             return flask.redirect(flask.url_for('home'))
 
         else:
-            flask.flash(f"Invalid student information", 'error')
+            flask.flash("Invalid student information", 'error')
 
     # Redirect back to home page when done
     return flask.redirect(flask.url_for('home'))
