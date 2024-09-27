@@ -108,4 +108,4 @@ class AttendanceChangesForm(FlaskForm):
     login = BooleanField('Login')
     consent = BooleanField('Photo Consent')
     grade = StringField('Grade')
-    comments = TextAreaField('Comment')
+    comments = StringField('Comment')

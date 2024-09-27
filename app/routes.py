@@ -316,6 +316,7 @@ def student():
     attendance_record = GetAttendance(input_sessionID=current_session.sessionID, studentID=student_id)[0] 
 
     student_info = generate_student_info(student, attendance_record)
+    print("comments", student_info["comments"])
 
     print("consent", student.consent)
     
