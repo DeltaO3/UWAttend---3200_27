@@ -340,3 +340,15 @@ def SetPassword(uwaID, newPassword):
     # Commit the changes to the database
     db.session.commit()
 
+def SignStudentOut(attendanceID):
+
+    attendance = db.session.query(Attendance).filter(Attendance.attendanceID == attendanceID).first()
+
+    if attendance is None:
+        return False
+
+    attendance.signOutTime = get_perth_time().time()
+
+    db.session.commit()
+
+    return True

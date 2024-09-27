@@ -390,7 +390,11 @@ def add_student():
             existing_attendance = GetAttendance(input_sessionID=session_id, studentID=studentID)
             
             if existing_attendance:
-                flask.flash("User already signed in", category='error')
+                status = SignStudentOut(attendanceID=existing_attendance[0].attendanceID)
+                if status:
+                    flask.flash(f"Signed out {student.preferredName} {student.lastName}", 'success')
+                else:
+                    flask.flash(f"Error signing out {student.preferredName} {student.lastName}", 'error')
                 return flask.redirect(flask.url_for('home'))
             
             consent_int = 1 if consent_status == "yes" else 0
@@ -400,7 +404,7 @@ def add_student():
 
             # Add attendance for the current session
             AddAttendance(sessionID=session_id, studentID=studentID, consent_given=1, facilitatorID=1) # TODO need to be replaced with actual facilitator ID logic
-            print(f"Logged {student.firstName} {student.lastName} in")
+            print(f"Logged {student.preferredName} {student.lastName} in")
 
             return flask.redirect(flask.url_for('home'))
 
@@ -452,7 +456,7 @@ def student_suggestions():
     for student in students:
         existing_attendance = GetAttendance(input_sessionID=current_session.sessionID, studentID=student.studentID)
 
-        if existing_attendance:
+        if existing_attendance and existing_attendance[0].signOutTime:
             continue
 
         first_last_name = f"{student.firstName} {student.lastName}"
@@ -462,14 +466,16 @@ def student_suggestions():
                 'name': f"{student.preferredName} {student.lastName}",
                 'id': student.studentID,
                 'number': student.studentNumber,
-                'consentNeeded': student.consent
+                'consentNeeded': 1 if existing_attendance else student.consent,
+                'signedIn': 1 if existing_attendance else 0,
             })
         elif query in student.firstName.lower() or query in first_last_name.lower():
             suggestions.append({
                 'name': f"{student.firstName} {student.lastName}",
                 'id': student.studentID,
                 'number': student.studentNumber,
-                'consentNeeded': student.consent
+                'consentNeeded': 1 if existing_attendance else student.consent,
+                'signedIn': 1 if existing_attendance else 0,
             })
 
     return flask.jsonify(suggestions)
