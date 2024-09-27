@@ -1,6 +1,7 @@
 import flask
 
 from app import app
+from app import mail
 from .forms import *
 from .helpers import *
 from .models import *
@@ -509,3 +510,15 @@ def sign_all_out():
 
     print("Successfully signed out all users")
     return flask.redirect(flask.url_for('home'))
+
+# message object mapped to a particular URL ‘/’ 
+@app.route("/send_email") 
+def send_email(): 
+   msg = Message( 
+                'Hello', 
+                sender ='cits3200team27testing@gmail.com', 
+                recipients = ['roweisabella702@gmail.com'] 
+               ) 
+   msg.body = 'Hello Flask message sent from Flask-Mail'
+   mail.send(msg) 
+   return 'Sent'

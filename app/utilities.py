@@ -8,6 +8,7 @@ from io import StringIO
 from app import app, db
 from app.models import Student, User, Attendance, Session, Unit
 from app.database import AddStudent, GetStudent, GetAttendance, GetSessionForExport, GetAllUsers, GetUnit, student_exists, GetUser, AddUser, AddUnitToFacilitator
+from flask_mail import Mail, Message
 
 # Set of functions used to read and populate students into the database from a csv file.
 # Checklist for future
@@ -76,7 +77,7 @@ def process_csvs(student_file_path, facilitator_file_path):
             errors = []
             if len(s_data[0]) != 6:
                 print("Not a student csv!")
-                errors.append("Student csv format is incorrect")
+                errors.append("Student csv format is incorrect") # TODO : we should be checking for the column headings here as well, no? make sure they are in the correct order
             if len(f_data[0]) != 1:
                 print("Not a facilitator csv!")
                 errors.append("Facilitator csv format is incorrect")
@@ -201,3 +202,6 @@ def export_all_to_zip(zip_filename):
             print("Exported attendancerecord.csv")
 
     print(f"All tables have been exported to {zip_filename}")
+
+def email_new_user(user):
+    pass
