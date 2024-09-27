@@ -46,6 +46,14 @@ endwith %}
                     </div>
                 </div>
             </div>
+            <div>
+                {% for error in field.errors %}
+                <div class="row">
+                    <div class="col-md-3 col-sm-3 "></div>
+                    <span class="text-danger col"> {{error}} </span>
+                </div>
+                {% endfor %}
+            </div>
             {% endif %}
             {% endfor %}
 

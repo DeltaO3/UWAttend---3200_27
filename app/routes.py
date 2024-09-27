@@ -237,12 +237,12 @@ def addunit():
         else:
             print("Submitted no file, probable error.")
             flask.flash("Error, no facilitator file submitted", 'error')
-            return flask.render_template('addunit.html', form=form, error=error)
+            return flask.render_template('addunit.html', form=form)
      
         #Process csvs
         s_data, f_data, error = process_csvs(student_filename, facilitator_filename)
         if error:
-            flask.flash(error, 'error`')
+            flask.flash(error, 'error')
             return flask.render_template('addunit.html', form=form)
         
         #add to database
@@ -258,8 +258,6 @@ def addunit():
         AddUnitToCoordinator(current_user.uwaID, unit_id)
         
         return flask.redirect(flask.url_for('unitconfig'))
-    else:
-        flask.flash("Please fill in all required fields", 'error') # this message could definitely change though
 	    
     return flask.render_template('addunit.html', form=form)
 
