@@ -447,6 +447,8 @@ def student_suggestions():
     # TODO will need to be replaced with actual session logic later 
     session_id = flask.session.get('session_id')
     current_session = GetSession(sessionID=session_id)[0] 
+    unit = GetUnit(unitID=current_session.unitID)[0]
+    print(unit.consent)
 
     # get students in the unit associated with the session
     students = GetStudent(unitID=current_session.unitID)
@@ -462,19 +464,31 @@ def student_suggestions():
         first_last_name = f"{student.firstName} {student.lastName}"
         preferred_last_name = f"{student.preferredName} {student.lastName}"
         if query in student.lastName.lower() or query in student.preferredName.lower() or query in preferred_last_name.lower() or query in str(student.studentNumber):
+            consent_int = student.consent
+            if existing_attendance:
+                consent_int = 1
+            if not unit.consent:
+                consent_int = -1
+            print(consent_int)
             suggestions.append({
                 'name': f"{student.preferredName} {student.lastName}",
                 'id': student.studentID,
                 'number': student.studentNumber,
-                'consentNeeded': 1 if existing_attendance else student.consent,
+                'consentNeeded': consent_int,
                 'signedIn': 1 if existing_attendance else 0,
             })
         elif query in student.firstName.lower() or query in first_last_name.lower():
+            consent_int = student.consent
+            if existing_attendance:
+                consent_int = 1
+            if not unit.consent:
+                consent_int = -1
+            print(consent_int)
             suggestions.append({
                 'name': f"{student.firstName} {student.lastName}",
                 'id': student.studentID,
                 'number': student.studentNumber,
-                'consentNeeded': 1 if existing_attendance else student.consent,
+                'consentNeeded': consent_int,
                 'signedIn': 1 if existing_attendance else 0,
             })
 
