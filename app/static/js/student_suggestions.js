@@ -27,9 +27,15 @@ document.addEventListener('DOMContentLoaded', function () {
         
             suggestions.forEach(suggestion => {
                 const suggestionItem = document.createElement('a');
-                suggestionItem.classList.add('list-group-item', 'list-group-item-action', 'suggestion-item');
+                suggestionItem.classList.add('list-group-item');
                 suggestionItem.textContent = `${suggestion.name} (${suggestion.number})`;
                 suggestionItem.setAttribute('data-student-id', suggestion.number);  // Store student ID
+                suggestionItem.setAttribute('signed-in', suggestion.signedIn); // Store signed in status
+                if (suggestion.signedIn == 1) {
+                    suggestionItem.style.backgroundColor = 'lightcoral'; 
+                } else {
+                    suggestionItem.style.backgroundColor = 'lightgreen'; 
+                }
 
                 document.getElementById('hidden_consent_indicator').value = "no";
                 document.getElementById('studentID').value = false;

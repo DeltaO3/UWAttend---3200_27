@@ -340,6 +340,7 @@ def SetPassword(uwaID, newPassword):
     # Commit the changes to the database
     db.session.commit()
 
+
 def RemoveStudentFromSession(studentID, sessionID):
     attendance_record = db.session.query(Attendance).filter_by(studentID=studentID, sessionID=sessionID).first()
 
@@ -407,4 +408,18 @@ def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, logi
         return message
 
 
+
+
+def SignStudentOut(attendanceID):
+
+    attendance = db.session.query(Attendance).filter(Attendance.attendanceID == attendanceID).first()
+
+    if attendance is None:
+        return False
+
+    attendance.signOutTime = get_perth_time().time()
+
+    db.session.commit()
+
+    return True
 
