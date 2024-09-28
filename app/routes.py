@@ -247,7 +247,7 @@ def addunit():
             return flask.render_template('addunit.html', form=form)
         
         #add to database
-        unit_id = AddUnit(newunit_code, "placeholdername", semester, 1, start_date, end_date, 
+        unit_id = AddUnit(newunit_code, unit_name, semester, start_date, end_date, 
                 sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
         
         #Add from csv
@@ -255,8 +255,8 @@ def addunit():
         import_student_in_db(s_data, unit_id)
         import_facilitator_in_db(f_data, unit_id, current_user)
         
-        AddUnitToFacilitator(current_user.uwaID, unit_id)
-        AddUnitToCoordinator(current_user.uwaID, unit_id)
+        AddUnitToFacilitator(current_user.email, unit_id)
+        AddUnitToCoordinator(current_user.email, unit_id)
         
         return flask.redirect(flask.url_for('unitconfig'))
 	    
@@ -327,7 +327,7 @@ def student():
         "number": student.studentNumber,
         "id": student.studentID,
         "login": login_status,  
-        "photo": "yes" if student.consent == "yes" else "no",
+        "photo": student.consent,
         "time": attendance_record.signInTime
     }
 
@@ -406,6 +406,16 @@ def add_student():
             # consent will be none if it is already yes or not required i.e. no changes required
             if consent_status != "none" :
                 student.consent = "yes" if consent_status == "yes" else "no"
+
+            unit = GetUnit(unitID=unitID)
+
+            if not unit:
+                flask.flash("Error loading unit information") 
+                return flask.redirect(flask.url_for('home'))
+
+            # set consent to not required it unit is configured to not require consent
+            if not unit[0].consent :
+                student.consent = "not required"
 
             print(f'{student.studentID} consent as added to db: {student.consent}')
 
