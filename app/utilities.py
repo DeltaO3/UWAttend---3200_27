@@ -51,13 +51,13 @@ def import_student_in_db(data, unit_id):
 def import_facilitator_in_db(data, unit_id, current_user):
 
     for record in data:
-        facilitator = record['Facilitator ID']
+        facilitator = record['Facilitator Email']
         #Add facilitator as user if not in DB
-        if(not GetUser(uwaID=facilitator)):
+        if(not GetUser(email=facilitator)):
             print(f"Adding new user: {facilitator}")
-            AddUser(facilitator, "placeholder", "placeholder", facilitator, 3)
+            AddUser(facilitator, "placeholder", "placeholder", facilitator, "facilitator")
         #add this unit to facilator
-        if(int(facilitator) == current_user):
+        if(facilitator == current_user.email):
             print(f"skipping user {facilitator} as it is the currently logged in user.")
             continue
         print(f"Adding unit {unit_id} to facilitator {facilitator}")
