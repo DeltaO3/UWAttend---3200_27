@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileAllowed, FileRequired
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, SelectMultipleField, HiddenField, FileField, DateField, widgets
 from wtforms.validators import DataRequired, ValidationError
 from app.database import unit_exists
@@ -81,11 +82,19 @@ class AddUnitForm(FlaskForm):
     startdate = DateField('Start Date', validators=[DataRequired(), date_check])
     enddate = DateField('End Date', validators=[DataRequired()])
 	#Need to add custom validators to check if files uploaded end in csv
+<<<<<<< HEAD
     sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
     facilitatorlist = StringField('Facilitator IDs', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
     studentfile = FileField('Student List CSV Upload:', validators=[DataRequired()])
     consentcheck = BooleanField('Photo Consent Required?')
     sessionoccurence = MultiCheckboxField(
+=======
+	sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
+	facilitatorfile = FileField('Facilitator IDs', validators=[FileRequired(), FileAllowed(['csv'], "Only accepts .csv files")])
+	studentfile = FileField('Student List CSV Upload:', validators=[FileRequired(), FileAllowed(['csv'], "Only accepts .csv files")])
+	consentcheck = BooleanField('Photo Consent Required?')
+	sessionoccurence = MultiCheckboxField(
+>>>>>>> main
 		'Session Occurence',
 		choices=[('Morning','Morning'), ('Afternoon', 'Afternoon')
 		],

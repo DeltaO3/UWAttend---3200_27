@@ -7,7 +7,7 @@ import zipfile
 from io import StringIO
 from app import app, db
 from app.models import Student, User, Attendance, Session, Unit
-from app.database import AddStudent, GetStudent, GetAttendance, GetSessionForExport, GetAllUsers, GetUnit, student_exists
+from app.database import AddStudent, GetStudent, GetAttendance, GetSessionForExport, GetAllUsers, GetUnit, student_exists, GetUser, AddUser, AddUnitToFacilitator
 
 # Set of functions used to read and populate students into the database from a csv file.
 # Checklist for future
@@ -48,14 +48,42 @@ def import_student_in_db(data, unit_id):
         )
         print(f"Added student: {record['Given Names']} {record['Surname']} (ID: {student_number})")
 
-# Process a .csv file by reading and then importing into "student" table.
-def process_csv(file_path, unit_id):
+def import_facilitator_in_db(data, unit_id, current_user):
+
+    for record in data:
+        facilitator = record['Facilitator ID']
+        #Add facilitator as user if not in DB
+        if(not GetUser(uwaID=facilitator)):
+            print(f"Adding new user: {facilitator}")
+            AddUser(facilitator, "placeholder", "placeholder", facilitator, 3)
+        #add this unit to facilator
+        if(int(facilitator) == current_user):
+            print(f"skipping user {facilitator} as it is the currently logged in user.")
+            continue
+        print(f"Adding unit {unit_id} to facilitator {facilitator}")
+        AddUnitToFacilitator(facilitator, unit_id)
+
+# Process a .csv file by reading and then importing into "student" table. 
+# If current user is passsed, processes file as a facilitator file
+def process_csvs(student_file_path, facilitator_file_path):
     with app.app_context():
         # Read the data from the CSV file
-        data = read_csv_file(file_path)
-        if data:
+        s_data = read_csv_file(student_file_path)
+        f_data = read_csv_file(facilitator_file_path)
+        if s_data and f_data:
             # Import the data to the database
-            import_student_in_db(data, unit_id)
+            #Ensure passed csv file is correct type 
+            errors = []
+            if len(s_data[0]) != 6:
+                print("Not a student csv!")
+                errors.append("Student csv format is incorrect")
+            if len(f_data[0]) != 1:
+                print("Not a facilitator csv!")
+                errors.append("Facilitator csv format is incorrect")
+            if errors:
+                msg = errors[0] if len(errors) == 1 else errors[0] + ", " + errors[1]
+                return 0, 0, msg
+            return s_data, f_data, 0 #return value for routes validation
 
 # Export a single table's data to a CSV format and return it as a string
 def export_table_to_csv(fetch_function):

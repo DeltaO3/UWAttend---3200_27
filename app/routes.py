@@ -205,7 +205,7 @@ def addunit():
         start_date = form.startdate.data
         end_date = form.enddate.data
         student_file = form.studentfile.data
-        facilitator_list = form.facilitatorlist.data
+        facilitator_file = form.facilitatorfile.data
         sessionnames = form.sessionnames.data
         sessionoccurence = form.sessionoccurence.data
         assessmentcheck = form.assessmentcheck.data
@@ -221,35 +221,42 @@ def addunit():
         occurences = occurences[:-1]
         print(f"session occurence string: {occurences}")
 
-        #add to database
-        unitID = AddUnit(newunit_code, unit_name, semester, start_date, end_date, 
-                sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
-        
          #read CSV file
         if student_file.filename != '':
             student_file.save(student_file.filename)
-            filename = student_file.filename
-            process_csv(filename, unitID)
+            student_filename = student_file.filename
+            print(f"Student filename: {student_filename}")
         else:
             print("Submitted no file, probable error.")
-            error = "No file submitted"
-            return flask.render_template('addunit.html', form=form, error=error)
+            flask.flash("Error, no student file submitted", 'error')
+            return flask.render_template('addunit.html', form=form)
         
-        #Handle facilitators
-        #TODO: handle emailing facilitators, handle differentiating between facilitator and coordinator
-        facilitator_emails = facilitator_list.split('|')
-        for facilitator in facilitator_emails:
-            if(not GetUser(email=facilitator)):
-                print(f"Adding new user: {facilitator}")
-                AddUser(facilitator, "placeholder", "placeholder", facilitator, 'facilitator') #Do we assign coordinators?
-            #add this unit to facilitator
-            if(facilitator == current_user.email):
-                print(f"skipping user {facilitator} as it is the currently logged in user.")
-                continue
-            print(f"Adding unit {unitID} to facilitator {facilitator}")
-            AddUnitToFacilitator(facilitator, unitID)
-        AddUnitToFacilitator(current_user.email, unitID)
-        AddUnitToCoordinator(current_user.email, unitID)
+        if facilitator_file.filename != '':
+            facilitator_file.save(facilitator_file.filename)
+            facilitator_filename = facilitator_file.filename
+            print(f"Facilitator filename: {facilitator_filename}")
+        else:
+            print("Submitted no file, probable error.")
+            flask.flash("Error, no facilitator file submitted", 'error')
+            return flask.render_template('addunit.html', form=form)
+     
+        #Process csvs
+        s_data, f_data, error = process_csvs(student_filename, facilitator_filename)
+        if error:
+            flask.flash(error, 'error')
+            return flask.render_template('addunit.html', form=form)
+        
+        #add to database
+        unit_id = AddUnit(newunit_code, "placeholdername", semester, 1, start_date, end_date, 
+                sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
+        
+        #Add from csv
+        #TODO: handle emailing facilitators - should go in the correct process csv function
+        import_student_in_db(s_data, unit_id)
+        import_facilitator_in_db(f_data, unit_id, current_user)
+        
+        AddUnitToFacilitator(current_user.uwaID, unit_id)
+        AddUnitToCoordinator(current_user.uwaID, unit_id)
         
         return flask.redirect(flask.url_for('unitconfig'))
 	    
@@ -389,7 +396,11 @@ def add_student():
             existing_attendance = GetAttendance(input_sessionID=session_id, studentID=studentID)
             
             if existing_attendance:
-                flask.flash("User already signed in", category='error')
+                status = SignStudentOut(attendanceID=existing_attendance[0].attendanceID)
+                if status:
+                    flask.flash(f"Signed out {student.preferredName} {student.lastName}", 'success')
+                else:
+                    flask.flash(f"Error signing out {student.preferredName} {student.lastName}", 'error')
                 return flask.redirect(flask.url_for('home'))
             
             # consent will be none if it is already yes or not required i.e. no changes required
@@ -402,12 +413,12 @@ def add_student():
 
             # Add attendance for the current session
             AddAttendance(sessionID=session_id, studentID=studentID, consent_given=student.consent, facilitatorID=1) # TODO need to be replaced with actual facilitator ID logic
-            print(f"Logged {student.firstName} {student.lastName} in")
+            print(f"Logged {student.preferredName} {student.lastName} in")
 
             return flask.redirect(flask.url_for('home'))
 
         else:
-            flask.flash(f"Invalid student information", 'error')
+            flask.flash("Invalid student information", 'error')
 
     # Redirect back to home page when done
     return flask.redirect(flask.url_for('home'))
@@ -445,6 +456,8 @@ def student_suggestions():
     # TODO will need to be replaced with actual session logic later 
     session_id = flask.session.get('session_id')
     current_session = GetSession(sessionID=session_id)[0] 
+    unit = GetUnit(unitID=current_session.unitID)[0]
+    print(unit.consent)
 
     # get students in the unit associated with the session
     students = GetStudent(unitID=current_session.unitID)
@@ -454,24 +467,38 @@ def student_suggestions():
     for student in students:
         existing_attendance = GetAttendance(input_sessionID=current_session.sessionID, studentID=student.studentID)
 
-        if existing_attendance:
+        if existing_attendance and existing_attendance[0].signOutTime:
             continue
 
         first_last_name = f"{student.firstName} {student.lastName}"
         preferred_last_name = f"{student.preferredName} {student.lastName}"
         if query in student.lastName.lower() or query in student.preferredName.lower() or query in preferred_last_name.lower() or query in str(student.studentNumber):
+            consent = student.consent
+            if existing_attendance:
+                consent = "yes"
+            if not unit.consent:
+                consent = "not required"
+            print(consent)
             suggestions.append({
                 'name': f"{student.preferredName} {student.lastName}",
                 'id': student.studentID,
                 'number': student.studentNumber,
-                'consentNeeded': student.consent
+                'consentNeeded': consent,
+                'signedIn': 1 if existing_attendance else 0,
             })
         elif query in student.firstName.lower() or query in first_last_name.lower():
+            consent = student.consent
+            if existing_attendance:
+                consent = "yes"
+            if not unit.consent:
+                consent = "not required"
+            print(consent)
             suggestions.append({
                 'name': f"{student.firstName} {student.lastName}",
                 'id': student.studentID,
                 'number': student.studentNumber,
-                'consentNeeded': student.consent
+                'consentNeeded': consent,
+                'signedIn': 1 if existing_attendance else 0,
             })
 
     return flask.jsonify(suggestions)
