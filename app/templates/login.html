@@ -40,11 +40,11 @@
                 <span class="form-text invisible">No error</span>
                 {% endfor %}
             </div>
-            <div class="d-flex flex-column">
-                {{ form.submit(class="btn btn-success mb-3") }}
+            <div class="d-flex flex-column align-items-center">
+                {{ form.submit(class="btn btn-success mb-3 rounded-5 w-100") }}
 
                 <!-- Replace href with forgot password logic -->
-                <a class="text-center mt" href="{{ url_for('login') }}">Forgot password?</a>
+                <a class="" href="{{ url_for('login') }}">Forgot password?</a>
             </div>
 
         </form>
