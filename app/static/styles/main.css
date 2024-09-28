@@ -15,7 +15,7 @@
     --secondary: var(--bs-secondary);
     --danger: var(--bs-danger);
     --success: var(--bs-teal);
-    --bg: var(--bs-body-color);
+    --bg: var(--bs-gray-900);
     --text: var(--bs-gray-300);
   }
 }
