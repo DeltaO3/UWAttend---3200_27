@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="vh-100 d-flex justify-content-center align-items-center">
-    <div class="border d-flex flex-column justify-content-center align-items-center py-5 px-2">
+<div class="vh-100 d-flex justify-content-center align-items-center bg-dark-subtle ">
+    <!-- !!!Change colours to custom css!!! -->
+    <div class="border rounded-4 bg-body shadow-lg d-flex flex-column 
+         justify-content-center align-items-center mb-3 py-5 px-5">
+
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         <div class="alert alert-danger">
@@ -12,31 +15,35 @@
         {% endif %}
         {% endwith %}
 
-        <p>Welcome to UWAttend. Please log in to access the app.</p>
+        <h3>Welcome to UWAttend!</h3>
+        <p>Please log in to access the app.</p>
 
-        <form method="POST" novalidate>
+        <form method="POST" novalidate class="w-100">
             {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {{ form.username.label(class="form-label")}}
+                {{ form.username(class="form-control") }}
 
-            {{ form.username.label}}
-            {{ form.username }}
-            <br>
+                {% for error in form.username.errors %}
+                <span class="form-text text-danger">{{ error }}</span><br>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control") }}
 
-            {% for error in form.username.errors %}
-            <span>{{ error }}</span><br>
-            {% endfor %}
+                {% for error in form.password.errors %}
+                <span class="form-text text-danger">{{ error }}</span><br>
+                {% endfor %}
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    {{ form.remember_me(class="form-check-input") }}
+                    {{ form.remember_me.label(class="form-check-label")}}
+                </div>
 
-            {{ form.password.label }}
-            {{ form.password }}
-            <br>
-
-            {% for error in form.password.errors %}
-            <span>{{ error }}</span><br>
-            {% endfor %}
-
-            {{ form.remember_me() }} {{ form.remember_me.label}}
-            <br>
-
-            {{ form.submit() }}
+                {{ form.submit(class="btn btn-success") }}
+            </div>
 
         </form>
     </div>
