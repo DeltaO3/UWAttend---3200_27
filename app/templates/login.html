@@ -3,16 +3,16 @@
 <div class="vh-100 d-flex justify-content-center align-items-center bg-dark-subtle ">
     <!-- !!!Change colours to custom css!!! -->
     <div class="border rounded-4 bg-body shadow-lg d-flex flex-column 
-         justify-content-center align-items-center mb-3 py-3 px-4">
+         justify-content-center align-items-center py-3 px-4">
 
         <h3>Welcome to UWAttend!</h3>
-        <p>Please log in to access the app.</p>
+        <p class="mb-2">Please log in to access the app.</p>
 
         {% with messages = get_flashed_messages() %}
         {% if messages %}
-        <div class="alert alert-danger">
+        <div class="alert alert-danger py-1 mb-3 text-center w-100">
             {% for message in messages %}
-            <p>{{ message }}</p>
+            {{ message }}
             {% endfor %}
         </div>
         {% endif %}
@@ -41,10 +41,10 @@
                 {% endfor %}
             </div>
             <div class="d-flex flex-column">
-                {{ form.submit(class="btn btn-success mb-2") }}
+                {{ form.submit(class="btn btn-success mb-3") }}
 
                 <!-- Replace href with forgot password logic -->
-                <a href="{{ url_for('login') }}">Forgot password?</a>
+                <a class="text-center mt" href="{{ url_for('login') }}">Forgot password?</a>
             </div>
 
         </form>
