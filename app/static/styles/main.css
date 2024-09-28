@@ -1,3 +1,39 @@
+/* Variables */
+:root {
+  --primary: var(--bs-primary);
+  --secondary: var(--bs-secondary);
+  --danger: var(--bs-danger);
+  --success: var(--bs-success);
+  --bg: var(--bs-body-bg);
+  --text: var(--bs-body-color);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: var(--bs-primary);
+    --secondary: var(--bs-secondary);
+    --danger: var(--bs-danger);
+    --success: var(--bs-success);
+    --bg: var(--bs-body-color);
+    --text: var(--bs-gray-300);
+  }
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+/* Login page elements */
+.login-bg {
+  background-color: color-mix(in srgb, var(--bg) 90%, var(--text) 10%);
+}
+
+.login-box {
+  background-color: var(--bg);
+}
+
 /* Invalid input for configuration fields */
 .input-error {
   border: 2px solid red;
@@ -14,22 +50,20 @@
   }
 }
 
-
 .table-element {
   cursor: pointer;
   transition: background-color 0.3s ease-in-out;
 }
 
-
 .table-element:hover {
-  background-color: var(--bs-primary);
+  background-color: var(--primary);
 }
 
 /* Darker grey for odd and even items for the student-suggestions on homepage */
 .list-group-item:nth-child(odd) {
-    background-color: #f8f9fa; /* Light grey for odd items */
+  background-color: #f8f9fa; /* Light grey for odd items */
 }
 
 .list-group-item:nth-child(even) {
-    background-color: #e9ecef; /* Slightly darker grey for even items */
+  background-color: #e9ecef; /* Slightly darker grey for even items */
 }
