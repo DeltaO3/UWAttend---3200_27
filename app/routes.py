@@ -570,6 +570,7 @@ def logout():
     return flask.redirect(flask.url_for('login'))
 
 @app.route('/sign_all_out', methods=['POST'])
+@login_required
 def sign_all_out():
     session_id = flask.session.get('session_id')
 
