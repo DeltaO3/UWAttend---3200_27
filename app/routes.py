@@ -127,6 +127,7 @@ def session():
     return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
 
 @app.route('/updatesession', methods=['GET', 'POST'])
+@login_required
 def updatesession():
 
     # if session doesn't exist, redirect to /session
@@ -297,6 +298,7 @@ def export_data():
 
 # STUDENT - /student/
 @app.route('/student', methods=['POST'])
+@login_required
 def student():
     form = AttendanceChangesForm()
 
@@ -330,6 +332,7 @@ def student():
     return flask.render_template('student.html', form=form, student=student_info, attendance=attendance_record)
 
 @app.route('/remove_from_session', methods=['GET'])
+@login_required
 def remove_from_session():
     # Access form data
     student_id = flask.request.args.get('student_id')
@@ -375,6 +378,7 @@ def login():
     return flask.render_template('login.html', form=form)
 
 @app.route('/edit_student_details', methods=['POST'])
+@login_required
 def edit_student_details():
 
     form = AttendanceChangesForm()
@@ -422,6 +426,7 @@ def edit_student_details():
     return flask.redirect(flask.url_for('home'))
 
 @app.route('/add_student', methods=['POST'])
+@login_required
 def add_student():
     form = StudentSignInForm() # TODO still need a front-end prevention method for false sign ins 
 
@@ -477,6 +482,7 @@ def add_student():
     return flask.redirect(flask.url_for('home'))
 
 @app.route('/get_session_details/<unitID>')
+@login_required
 def get_session_details(unitID) :
 
     # get unit by unitID
@@ -502,6 +508,7 @@ def get_session_details(unitID) :
     return flask.jsonify({'session_name_choices': session_name_choices, 'session_time_choices': session_time_choices})
 
 @app.route('/student_suggestions', methods=['GET'])
+@login_required
 def student_suggestions(): 
     # get the search query from the request
     query = flask.request.args.get('q', '').strip().lower()
