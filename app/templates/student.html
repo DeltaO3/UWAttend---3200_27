@@ -69,7 +69,7 @@ endwith %}
         <!-- Comment Section -->
         <div class="mx-4 mt-3 mx-md-5">
             <label for="comments" class="form-label">Leave a Comment:</label>
-            {{ form.comments(class="form-control", rows="3", value=student.comments) }}
+            {{ form.comments(class="form-control", rows="3", **{"data-comment": student.comments}) }}
         </div>
 
         <!-- <form id="remove_from_session_form" method="POST" action="{{ url_for('remove_from_session') }}" class="col">
@@ -87,5 +87,5 @@ endwith %}
     {% include 'removeStudent.html'%}
 </div>
 
-<script src="{{url_for('static', filename='js/removeStudent.js')}}"></script>
+<script src="{{url_for('static', filename='js/student.js')}}"></script>
 {% endblock %}

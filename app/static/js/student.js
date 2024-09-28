@@ -1,3 +1,9 @@
+window.onload = function() {
+    const comment_node = document.getElementById("comments")
+    comment_node.textContent = comment_node.getAttribute("data-comment")
+
+}
+
 function removeStudent(id) {
 	// Submit the form
     console.log("Student ID: " + id);
