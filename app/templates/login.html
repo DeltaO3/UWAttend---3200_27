@@ -3,7 +3,10 @@
 <div class="vh-100 d-flex justify-content-center align-items-center bg-dark-subtle ">
     <!-- !!!Change colours to custom css!!! -->
     <div class="border rounded-4 bg-body shadow-lg d-flex flex-column 
-         justify-content-center align-items-center mb-3 py-5 px-5">
+         justify-content-center align-items-center mb-3 py-3 px-4">
+
+        <h3>Welcome to UWAttend!</h3>
+        <p>Please log in to access the app.</p>
 
         {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -15,34 +18,33 @@
         {% endif %}
         {% endwith %}
 
-        <h3>Welcome to UWAttend!</h3>
-        <p>Please log in to access the app.</p>
-
         <form method="POST" novalidate class="w-100">
             {{ form.hidden_tag() }}
-            <div class="mb-3">
+            <div class="mb-1">
                 {{ form.username.label(class="form-label")}}
                 {{ form.username(class="form-control") }}
 
-                {% for error in form.username.errors %}
-                <span class="form-text text-danger">{{ error }}</span><br>
+                {% for error in form.username.errors if form.username.errors %}
+                <span class="form-text text-danger">{{ error }}</span>
+                {% else %}
+                <span class="form-text invisible">No error</span>
                 {% endfor %}
             </div>
-            <div class="mb-3">
+            <div class="mb-1">
                 {{ form.password.label(class="form-label") }}
                 {{ form.password(class="form-control") }}
 
-                {% for error in form.password.errors %}
-                <span class="form-text text-danger">{{ error }}</span><br>
+                {% for error in form.password.errors if form.password.errors %}
+                <span class="form-text text-danger">{{ error }}</span>
+                {% else %}
+                <span class="form-text invisible">No error</span>
                 {% endfor %}
             </div>
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    {{ form.remember_me(class="form-check-input") }}
-                    {{ form.remember_me.label(class="form-check-label")}}
-                </div>
+            <div class="d-flex flex-column">
+                {{ form.submit(class="btn btn-success mb-2") }}
 
-                {{ form.submit(class="btn btn-success") }}
+                <!-- Replace href with forgot password logic -->
+                <a href="{{ url_for('login') }}">Forgot password?</a>
             </div>
 
         </form>
