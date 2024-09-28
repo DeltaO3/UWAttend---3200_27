@@ -1,42 +1,44 @@
 {% extends "base.html" %}
 {% block content %}
-
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
+<div class="vh-100 d-flex justify-content-center align-items-center">
+    <div class="border d-flex flex-column justify-content-center align-items-center py-5 px-2">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
         <div class="alert alert-danger">
             {% for message in messages %}
-                <p>{{ message }}</p>
+            <p>{{ message }}</p>
             {% endfor %}
         </div>
-    {% endif %}
-{% endwith %}
+        {% endif %}
+        {% endwith %}
 
-<p>Welcome to UWAttend. Please log in to access the app.</p>
+        <p>Welcome to UWAttend. Please log in to access the app.</p>
 
-<form method="POST" novalidate>
-    {{ form.hidden_tag() }}
+        <form method="POST" novalidate>
+            {{ form.hidden_tag() }}
 
-    {{ form.username.label}}
-    {{ form.username }}
-    <br>
+            {{ form.username.label}}
+            {{ form.username }}
+            <br>
 
-    {% for error in form.username.errors %}
-    <span>{{ error }}</span><br>
-    {% endfor %}
+            {% for error in form.username.errors %}
+            <span>{{ error }}</span><br>
+            {% endfor %}
 
-    {{ form.password.label }}
-    {{ form.password }}
-    <br>
+            {{ form.password.label }}
+            {{ form.password }}
+            <br>
 
-    {% for error in form.password.errors %}
-    <span>{{ error }}</span><br>
-    {% endfor %}
+            {% for error in form.password.errors %}
+            <span>{{ error }}</span><br>
+            {% endfor %}
 
-    {{ form.remember_me() }} {{ form.remember_me.label}}
-    <br>
-    
-    {{ form.submit() }}
+            {{ form.remember_me() }} {{ form.remember_me.label}}
+            <br>
 
-</form>
+            {{ form.submit() }}
 
+        </form>
+    </div>
+</div>
 {% endblock %}
