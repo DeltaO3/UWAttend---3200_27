@@ -31,14 +31,27 @@ function checkServerStatus() {
                 // If server is running, do nothing
             } else {
                 // If server is down, show an alert
-                alert("Warning: The server has disconnected!");
+                ShowAlert("Warning: The server has disconnected!", "danger");
             }
         })
         .catch(error => {
             // If fetch fails (server down or disconnected), show an alert
-            alert("Warning: The server has disconnected!");
+            ShowAlert("Warning: The server has disconnected!", "danger");
         });
 }
+
+function ShowAlert(message, type) {
+    const alertDiv = document.getElementById('serverAlert');
+    alertDiv.textContent = message;
+    alertDiv.className = `alert alert-${type}`; // Sets the type (success, danger, etc.)
+    alertDiv.style.display = 'block'; // Show the alert
+
+    // Automatically hide the alert after a few seconds
+    setTimeout(() => {
+        alertDiv.style.display = 'none';
+    }, 7000);
+}
+
 
 // Run code only on /session
 if (window.location.href.indexOf("session") != -1) {
@@ -52,4 +65,5 @@ if (window.location.href.indexOf("session") != -1) {
 setInterval(checkServerStatus, 2000);
 // Initial check when the page loads
 checkServerStatus();
+
 
