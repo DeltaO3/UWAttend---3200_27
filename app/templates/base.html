@@ -11,6 +11,10 @@
 </head>
 
 <body>
+	<div class="alert alert-warning" id="serverAlert" style="display:none;">
+		Warning: The server has disconnected!
+	</div>
+	
 	{% include 'navbar.html' %}
 	{% block content %} {% endblock %}
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
