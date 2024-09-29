@@ -353,6 +353,28 @@ def SignStudentOut(attendanceID):
 
     return True
 
+def delete_expired_units():
+    # Wrap the function in the app context
+    with app.app_context():
+        try:
+            # The query will work now as it has a proper Flask context
+            today = date.today()
+            year_ago = today - timedelta(days=365)
+            expired_units = Unit.query.filter(Unit.endDate < year_ago).all()
+            
+            # Perform your deletion logic
+            for unit in expired_units:
+                # Delete the unit and associated records
+                perform_delete_unit(unit.unitID)
+                print(f"Deleted Unit ID: {unit.unitID}")
+            
+            db.session.commit()
+            print("Successfully deleted expired units")
+        except Exception as e:
+            print(f"Error deleting units: {e}")
+            db.session.rollback()
+
+      
 def perform_delete_unit(unit_id):
     try:
         # Step 1: Delete associated records from the Attendance table based on SessionID
