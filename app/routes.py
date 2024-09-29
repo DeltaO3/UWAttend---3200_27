@@ -527,51 +527,22 @@ def sign_all_out():
     print("Successfully signed out all users")
     return flask.redirect(flask.url_for('home'))
 
-@app.route('/deletion')
-def deletion():
-    # Get units older than a year to display for deletion
+@app.route('/delete_expired_units', methods=['GET'])
+def delete_expired_units():
     today = date.today()
     year_ago = today - timedelta(days=365)
+    
+    # Get all units that are older than a year
     expired_units = Unit.query.filter(Unit.endDate < year_ago).all()
-    return flask.render_template('manage.html', expired_units=expired_units)
-
-@app.route('/delete_unit/<int:unit_id>', methods=['POST'])
-def delete_unit(unit_id):
+    print(expired_units)
     try:
         
-        # Step 1: Delete associated records from the Attendance table based on SessionID
-        session_records = Session.query.filter_by(unitID=unit_id).all()
-        for session in session_records:
-            attendance_records = Attendance.query.filter_by(sessionID=session.sessionID).all()
-            for attendance in attendance_records:
-                db.session.delete(attendance)
-                print(f"Deleting Attendance record for SessionID {session.sessionID}")
+        # Loop through each expired unit and delete it using the helper function
+        for unit in expired_units:
+            perform_delete_unit(unit.unitID)
+    except BaseException as e:
+    # Catch any exception, regardless of type
+        print(f"An error occurred: {e}") 
 
-        # Step 2: Delete associated students from the Student table
-        students = Student.query.filter_by(unitID=unit_id).all()
-        for student in students:
-            db.session.delete(student)  # Delete each student associated with the unit
-            print(f"Deleting Student {student.studentID}")
-
-        # Step 3: Delete associated records from the Sessions table (if applicable)
-        session_records = Session.query.filter_by(unitID=unit_id).all()
-        for session in session_records:
-            db.session.delete(session)
-            print("Deleting Session record")
-
-        # Step 4: Finally, delete the unit record from the Units table
-        unit_record = Unit.query.filter_by(unitID=unit_id).first()
-        if unit_record:
-            db.session.delete(unit_record)
-            print("Deleting Unit record")
-
-        # Step 5: Commit all changes to the database
-        db.session.commit()
-        print("Committed changes")
-    except Exception as e:
-        # Rollback changes in case of an error
-        print(e)
-        db.session.rollback()
-        
-
-    return redirect(url_for('deletion'))
+    # Redirect back to the manage records page after deletion
+    return flask.redirect(flask.url_for('home'))
