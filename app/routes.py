@@ -349,7 +349,7 @@ def login():
             return flask.redirect('login')
         
         login_user(user, remember=form.remember_me.data)
-        return flask.redirect('home')
+        return flask.redirect('delete_expired_units')
 
     return flask.render_template('login.html', form=form)
 
