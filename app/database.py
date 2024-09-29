@@ -2,7 +2,7 @@ import flask
 from app import app
 from app import db
 from .models import db, Student, User, Attendance, Session, Unit
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from app.helpers import get_perth_time
 
 # sql
