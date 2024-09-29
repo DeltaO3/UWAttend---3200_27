@@ -10,7 +10,7 @@ from app import database
 from flask import send_file, redirect, url_for, after_this_request
 from flask_login import current_user, login_user, logout_user, login_required
 import os
-from datetime import datetime, date, timedelta
+from datetime import datetime, date
 import sqlalchemy as sa
 
 # HOME -   /home/
