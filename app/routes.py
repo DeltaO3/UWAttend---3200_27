@@ -349,7 +349,7 @@ def login():
             return flask.redirect('login')
         
         login_user(user, remember=form.remember_me.data)
-        return flask.redirect('delete_expired_units')
+        return flask.redirect('home')
 
     return flask.render_template('login.html', form=form)
 
@@ -525,24 +525,4 @@ def sign_all_out():
         
 
     print("Successfully signed out all users")
-    return flask.redirect(flask.url_for('home'))
-
-@app.route('/delete_expired_units', methods=['GET'])
-def delete_expired_units():
-    today = date.today()
-    year_ago = today - timedelta(days=365)
-    
-    # Get all units that are older than a year
-    expired_units = Unit.query.filter(Unit.endDate < year_ago).all()
-    print(expired_units)
-    try:
-        
-        # Loop through each expired unit and delete it using the helper function
-        for unit in expired_units:
-            perform_delete_unit(unit.unitID)
-    except BaseException as e:
-    # Catch any exception, regardless of type
-        print(f"An error occurred: {e}") 
-
-    # Redirect back to the manage records page after deletion
     return flask.redirect(flask.url_for('home'))
