@@ -526,3 +526,7 @@ def sign_all_out():
 
     print("Successfully signed out all users")
     return flask.redirect(flask.url_for('home'))
+
+@app.route('/ping')
+def check_status():
+    return "OK"
