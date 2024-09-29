@@ -352,3 +352,40 @@ def SignStudentOut(attendanceID):
     db.session.commit()
 
     return True
+
+def perform_delete_unit(unit_id):
+    try:
+        # Step 1: Delete associated records from the Attendance table based on SessionID
+        session_records = Session.query.filter_by(unitID=unit_id).all()
+        for session in session_records:
+            attendance_records = Attendance.query.filter_by(sessionID=session.sessionID).all()
+            for attendance in attendance_records:
+                db.session.delete(attendance)
+                print(f"Deleting Attendance record for SessionID {session.sessionID}")
+
+        # Step 2: Delete associated students from the Student table
+        students = Student.query.filter_by(unitID=unit_id).all()
+        for student in students:
+            db.session.delete(student)  # Delete each student associated with the unit
+            print(f"Deleting Student {student.studentID}")
+
+        # Step 3: Delete associated records from the Sessions table
+        session_records = Session.query.filter_by(unitID=unit_id).all()
+        for session in session_records:
+            db.session.delete(session)
+            print(f"Deleting Session record for Unit {unit_id}")
+
+        # Step 4: Delete the unit record from the Units table
+        unit_record = Unit.query.filter_by(unitID=unit_id).first()
+        if unit_record:
+            db.session.delete(unit_record)
+            print(f"Deleting Unit record for Unit {unit_id}")
+
+        # Step 5: Commit all changes to the database
+        db.session.commit()
+        print(f"Successfully deleted Unit {unit_id} and all related records.")
+    except Exception as e:
+        # Rollback changes in case of an error
+        print(f"Error deleting unit {unit_id}: {e}")
+        db.session.rollback()
+
