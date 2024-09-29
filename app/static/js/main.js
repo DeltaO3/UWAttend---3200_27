@@ -23,12 +23,33 @@ function updateTime() {
     timeElementDisplay.setAttribute('data-perth-time', newPerthTimeStr);
 }
 
+// Function to check the server status
+function checkServerStatus() {
+    fetch('/ping')
+        .then(response => {
+            if (response.ok) {
+                // If server is running, do nothing
+            } else {
+                // If server is down, show an alert
+                alert("Warning: The server has disconnected!");
+            }
+        })
+        .catch(error => {
+            // If fetch fails (server down or disconnected), show an alert
+            alert("Warning: The server has disconnected!");
+        });
+}
+
 // Run code only on /session
 if (window.location.href.indexOf("session") != -1) {
     // Update the time every second
     setInterval(updateTime, 1000);
-
     // Initial call to display the time immediately when the page loads
     updateTime();
-
 }
+
+// Check server status every 5 seconds
+setInterval(checkServerStatus, 2000);
+// Initial check when the page loads
+checkServerStatus();
+
