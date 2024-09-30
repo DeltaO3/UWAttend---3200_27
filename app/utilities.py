@@ -191,16 +191,22 @@ def export_attendance_records_columns():
                     'title': student.title,
                     'preferredName': student.preferredName,
                     'unitCode': unit.unitCode,
-                    'consent': 'Yes' if attendance.consent_given else 'No'
+                    'consent': 'Yes' if attendance.consent_given else 'No',
                 }
-                print(f"Created new entry for {unique_key}")
 
             # Format session data for attendance: [sessionName]signInTime;signOutTime
             session_key = f"{session.sessionDate.strftime('%Y_%B_%d')}_{session.sessionTime}"
-            sign_in_time = attendance.signInTime.strftime('%H:%M:%S') if attendance.signInTime else ''
-            sign_out_time = attendance.signOutTime.strftime('%H:%M:%S') if attendance.signOutTime else ''
+            sign_in_time = (
+                attendance.signInTime.strftime('%H:%M:%S')
+                if attendance.signInTime
+                else ''
+            )
+            sign_out_time = (
+                attendance.signOutTime.strftime('%H:%M:%S')
+                if attendance.signOutTime
+                else ''
+            )
             attendance_info = f"[{session.sessionName}]{sign_in_time};{sign_out_time}"
-            print(f"Attendance Info for {unique_key} - Session {session_key}: {attendance_info}")
 
             # Store attendance_info under session_key
             attendance_data[unique_key][session_key] = attendance_info
