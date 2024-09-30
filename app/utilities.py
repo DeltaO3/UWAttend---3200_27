@@ -205,8 +205,18 @@ def export_attendance_records_columns():
             # Store attendance_info under session_key
             attendance_data[unique_key][session_key] = attendance_info
 
-            # Format grade data: marks;comments (no times)
-            grade_info = f"{attendance.marks if attendance.marks else ''};{attendance.comments if attendance.comments else ''}"
+            # Format grade data according to your specified rules
+            marks = attendance.marks if attendance.marks else ''
+            comments = attendance.comments if attendance.comments else ''
+
+            if marks and comments:
+                grade_info = f"{marks};comment={comments}"
+            elif marks:
+                grade_info = f"{marks};"
+            elif comments:
+                grade_info = f";comment={comments}"
+            else:
+                grade_info = ''
             print(f"Grade Info for {unique_key} - Session {session_key}_Grade: {grade_info}")
 
             # Store grade_info under session_key + '_Grade'
