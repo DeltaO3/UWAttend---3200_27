@@ -25,5 +25,8 @@ with app.app_context():
 	#Add students to unit/sessions
 	AddStudent(55557777, "Alice", "Alicelast", "Ms", "Alice", unit1, 0)
 	AddStudent(66668888, "Robert", "Boblast", "Mr", "Bob", unit1, 0)
-	AddStudent(77777777, "Cathy", "Cathylast", "Ms", "Cathy", unit1, 1)
+	AddStudent(77777777, "Cathy", "Cathylast(con)", "Ms", "Cathy", unit1, 1)
+	AddStudent(88888888, "David", "Davidlast", "Mr", "David", unit1, 0)
+	AddStudent(99999999, "Eve", "Evelast(con)", "Ms", "Eve", unit1, 1)
+	AddStudent(11111111, "Frank", "Franklast", "Mr", "Frank", unit1, 0)
 	print("successful!")
