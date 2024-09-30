@@ -356,6 +356,7 @@ def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, logi
     # Fetch the attendance record based on studentID
     attendance_record = db.session.query(Attendance).filter_by(studentID=studentID, sessionID=sessionID).first()
     unitID = GetSession(sessionID=sessionID)[0].unitID
+    consent_required_for_unit = GetUnit(unitID=unitID)[0].consent
     student_record = db.session.query(Student).filter_by(studentID=studentID, unitID=unitID).first()
 
     if not attendance_record:
@@ -390,6 +391,11 @@ def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, logi
 
     if consent is not None:  # Boolean field
         student_record.consent = "yes" if consent else "no"
+        attendance_record.consent_given = "yes" if consent else "no"
+
+    if not consent_required_for_unit :
+        student_record.consent = "not required"
+        attendance_record.consent_given = "not required"
 
     if grade:
         attendance_record.marks = grade
