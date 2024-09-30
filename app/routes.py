@@ -469,6 +469,16 @@ def add_student():
             if consent_status != "none" :
                 student.consent = "yes" if consent_status == "yes" else "no"
 
+            unit = GetUnit(unitID=unitID)
+
+            if not unit :
+                flask.flash("Error loading unit details")
+                return flask.redirect(flask.url_for('home'))
+            
+            unit = unit[0]
+
+            if not unit.consent :
+                student.consent = "not required"
 
             # Add attendance for the current session
             AddAttendance(sessionID=session_id, studentID=studentID, consent_given=student.consent, facilitatorID=current_user.userID)
