@@ -389,7 +389,7 @@ def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, logi
             attendance_record.signOutTime = get_perth_time().time()
 
     if consent is not None:  # Boolean field
-        student_record.consent = 1 if consent else 0
+        student_record.consent = "yes" if consent else "no"
 
     if grade:
         attendance_record.marks = grade
