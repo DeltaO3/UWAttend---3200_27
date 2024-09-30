@@ -193,52 +193,64 @@ def export_attendance_records_columns():
                     'unitCode': unit.unitCode,
                     'consent': 'Yes' if attendance.consent_given else 'No'
                 }
+                print(f"Created new entry for {unique_key}")
 
             # Format session data for attendance: [sessionName]signInTime;signOutTime
             session_key = f"{session.sessionDate.strftime('%Y_%B_%d')}_{session.sessionTime}"
             sign_in_time = attendance.signInTime.strftime('%H:%M:%S') if attendance.signInTime else ''
             sign_out_time = attendance.signOutTime.strftime('%H:%M:%S') if attendance.signOutTime else ''
             attendance_info = f"[{session.sessionName}]{sign_in_time};{sign_out_time}"
+            print(f"Attendance Info for {unique_key} - Session {session_key}: {attendance_info}")
 
-            # Check if there's already data for this session_key, concatenate if necessary
-            if session_key in attendance_data[unique_key]:
-                attendance_data[unique_key][session_key] += attendance_info
-            else:
-                attendance_data[unique_key][session_key] = attendance_info
+            # Store attendance_info under session_key
+            attendance_data[unique_key][session_key] = attendance_info
 
             # Format grade data: marks;comments (no times)
             grade_info = f"{attendance.marks if attendance.marks else ''};{attendance.comments if attendance.comments else ''}"
+            print(f"Grade Info for {unique_key} - Session {session_key}_Grade: {grade_info}")
 
-            # Add grade info to the student's record
-            if f"{session_key}_Grade" in attendance_data[unique_key]:
-                # If grade info exists, concatenate it
-                attendance_data[unique_key][f"{session_key}_Grade"] += f" {grade_info}"
-            else:
-                attendance_data[unique_key][f"{session_key}_Grade"] = grade_info
+            # Store grade_info under session_key + '_Grade'
+            attendance_data[unique_key][f"{session_key}_Grade"] = grade_info
 
         # Prepare the headers
         headers = [
             'studentNumber', 'firstName', 'lastName', 'title', 'preferredName', 'unitCode', 'consent'
         ]
 
-        # Add dynamic session-based columns
-        session_columns = set()
+        # Collect all session_keys
+        session_keys = set()
         for student_record in attendance_data.values():
-            session_columns.update([key for key in student_record if '_Grade' in key])
+            for key in student_record:
+                if key not in headers:
+                    if key.endswith('_Grade'):
+                        session_keys.add(key[:-6])  # Remove '_Grade' from key
+                    else:
+                        session_keys.add(key)
 
-        for session_date_time in sorted(set(key.split('_Grade')[0] for key in session_columns)):
-            headers.append(session_date_time)
-            headers.append(f"{session_date_time}_Grade")
+        print(f"Session keys collected: {session_keys}")
+
+        # Sort the session_keys and build headers
+        sorted_session_keys = sorted(session_keys)
+        print(f"Sorted session keys: {sorted_session_keys}")
+
+        for session_key in sorted_session_keys:
+            headers.append(session_key)
+            headers.append(f"{session_key}_Grade")
+
+        print(f"Final Headers: {headers}")
 
         # Create a list of rows (each row represents a unique student-unit combination)
         rows = []
         for student_unit_key, student_record in attendance_data.items():
+            # Print the student record before creating the row
+            print(f"Student Record for {student_unit_key}: {student_record}")
             row = [student_record.get(header, '') for header in headers]
+            print(f"Row for {student_unit_key}: {row}")
             rows.append(row)
 
-        # Convert to CSV
+        # Convert to CSV with proper quoting
         csvfile = StringIO()
-        writer = csv.writer(csvfile)
+        writer = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
         writer.writerow(headers)  # Write the header
         writer.writerows(rows)    # Write all student rows
 
