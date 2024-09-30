@@ -22,7 +22,7 @@
 {% endfor %} {% endif %} {% endwith %}
 
 <div class="container-fluid">
-	<div class="row mt-2 mx-md-5 mx-2 input-holder">
+	<div class="row mt-2 mx-md-5 mx-2">
 		<div class="d-flex justify-content-center align-items-center col-md-4 order-md-2">
 			<h4>{{ current_session.unitID }}-{{ current_session.sessionName }}-{{ current_session.sessionDate }}/{{
 				current_session.sessionTime }}</h4>
@@ -77,14 +77,13 @@
 		</div>
 	</div>
 	{% include 'signOut.html'%}
-	<div class="fixed-bottom row bg-body home-footer">
-		<button class="btn col-md-3 col">Sync</button>
-		<button id="signOutButton" class="btn btn-danger col">Sign All Out</button>
-		<button class="btn col-md-3 col">Download</button>
+	<div class="fixed-bottom d-flex justify-content-center home-footer mb-1">
+		<button id="signOutButton" class="btn btn-danger w-50">Sign All Out</button>
 	</div>
 </div>
 
-<script src="{{url_for('static', filename='js/consent.js')}}"></script>
+<script src="{{ url_for('static', filename='js/home.js') }}"></script>
+<script src="{{ url_for('static', filename='js/consent.js') }}"></script>
 <script src="{{ url_for('static', filename='js/student_suggestions.js') }}"></script>
 <script src="{{ url_for('static', filename='js/sign_out.js') }}"></script>
 {% endblock %}

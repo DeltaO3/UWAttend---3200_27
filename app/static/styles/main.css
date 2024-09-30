@@ -72,6 +72,8 @@ body {
   background-color: var(--bg);
 }
 
+/* Bootstrap class css changes (all elements have this from version 5.2) */
+
 /* Form control changes */
 .form-control:focus {
   /* https://stackoverflow.com/a/76910228 */
@@ -79,7 +81,21 @@ body {
   border-color: var(--primary);
 }
 
-/* Bootstrap class css changes (all elements have this from version 5.2) */
+.navbar {
+  background-color: color-mix(in srgb, var(--bg) 75%, var(--text) 25%);
+  --bs-navbar-toggler-border-color: none;
+  --bs-navbar-toggler-focus-width: 1px;
+  --bs-navbar-hover-color: color-mix(in srgb, var(--text) 75%, transparent);
+  --bs-navbar-color: var(--text);
+  --bs-navbar-brand-color: var(--text);
+}
+
+.modal {
+  --bs-modal-color: var(--text);
+  --bs-modal-bg: var(--bg);
+  --bs-modal-border-color: var(--text);
+}
+
 .btn-primary {
   --bs-btn-color: var(--bs-white);
   --bs-btn-bg: var(--primary);

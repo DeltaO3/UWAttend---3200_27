@@ -33,20 +33,8 @@ if (window.location.href.indexOf("session") != -1) {
 
 }
 
-
-$(window).on("load resize", function () {
-    //!HARD CODED URL
-    if (top.location.pathname === '/home') {
-        usedHeight = 0;
-        rect = $("#classTable")[0].getBoundingClientRect();
-        console.log(rect.top)
-        usedHeight += rect.top;
-        usedHeight += $(".home-footer").height();
-
-        remainingHeight = window.innerHeight - usedHeight
-        console.log("total" + window.innerHeight + "used" + usedHeight + "remaining" + remainingHeight)
-        $("#classTable").height(remainingHeight + "px")
-
-    }
-
-})
+//Works only on reload, but I doubt a user will be changing colour schemes and not expecting to have to reload
+if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    $(".modal").attr("data-bs-theme", "dark")
+    $(".navbar").attr("data-bs-theme", "dark")
+}

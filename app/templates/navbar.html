@@ -1,8 +1,8 @@
-<nav class="navbar sticky-top navbar-expand-md bg-dark-subtle">
+<nav class="navbar sticky-top navbar-expand-md">
 	<div class="container-fluid">
-		<a class="navbar-brand">UWAttend</a> <!-- Can likely be an image/gif later on -->
-		<span class="navbar-text fw-bold ms-auto me-2 d-md-none text-truncate w-25">
-			Username
+		<a class="navbar-brand">UWAttend</a>
+		<span class="navbar-text fw-bold ms-auto me-2 text-end d-md-none text-truncate w-25">
+			{{ current_user.uwaID }}
 		</span>
 		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
 			aria-controls="navbarNav" aria-expanded="false" aria-label="navbar-toggler-icon">
@@ -19,20 +19,21 @@
 				</a>
 
 				<!-- Session Config: Visible to admins (1), coordinators (2), and facilitators (3) -->
-				
+
 				<a class="nav-link {% if request.path == url_for('session') %}active" aria-current="page{% endif %}"
-					href="{% if session['session_id']%}{{ url_for('updatesession')}}{% else %}{{ url_for('session') }}{% endif %}">Session Config</a>
-				
+					href="{% if session['session_id']%}{{ url_for('updatesession')}}{% else %}{{ url_for('session') }}{% endif %}">Session
+					Config</a>
+
 				<!-- Unit Config: Only visible to admins (1) and coordinators (2) -->
 				{% if current_user.userType == 1 or current_user.userType == 2 %}
-					<a class="nav-link {% if request.path == url_for('unitconfig') %}active" aria-current="page{% endif %}"
-						href="{{ url_for('unitconfig') }}">Unit Config</a>
+				<a class="nav-link {% if request.path == url_for('unitconfig') %}active" aria-current="page{% endif %}"
+					href="{{ url_for('unitconfig') }}">Unit Config</a>
 				{% endif %}
 
 				<!-- Administration: Only visible to admins (1) -->
 				{% if current_user.userType == 1 %}
-					<a class="nav-link {% if request.path == url_for('admin') %}active" aria-current="page{% endif %}"
-						href="{{ url_for('admin') }}">Administration</a>
+				<a class="nav-link {% if request.path == url_for('admin') %}active" aria-current="page{% endif %}"
+					href="{{ url_for('admin') }}">Administration</a>
 				{% endif %}
 			</div>
 
