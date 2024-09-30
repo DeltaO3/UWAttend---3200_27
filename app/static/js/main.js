@@ -42,4 +42,4 @@ if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').match
 //Closes an alert 3 seconds after it pops up
 setTimeout(function () {
     $('.alert').alert('close');
-}, 4000); 
+}, 3000); 
