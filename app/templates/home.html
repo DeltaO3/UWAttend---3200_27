@@ -3,7 +3,7 @@
 
 <!-- Flash Messages -->
 {% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %} 
+{% if messages %}
 {% for category, message in messages %} {%if category == 'error'%}
 <div class="alert alert-danger alert-dismissable fade show d-flex justify-content-between" role="alert">
 	{{ message }}
@@ -20,20 +20,21 @@ endwith %}
 <div class="container-fluid">
 	<div class="row mt-2 mx-md-5 mx-2">
 		<div class="d-flex justify-content-center align-items-center col-md-4 order-md-2">
-			<h4>{{ current_session.unitID }}-{{ current_session.sessionName }}-{{ current_session.sessionDate }}/{{ current_session.sessionTime }}</h4>
+			<h4>{{ current_session.unitID }}-{{ current_session.sessionName }}-{{ current_session.sessionDate }}/{{
+				current_session.sessionTime }}</h4>
 		</div>
-		
+
+		<!-- Input element -->
 		<div class="col-md-8 order-md-1">
 			<h2>
 				{{ signed_in }} signed in of {{ total_students }}
 			</h2>
-			<!-- Use Flask forms?-->
 			<form id="attendanceForm" method="POST" action="{{ url_for('add_student') }}">
 				{{ form.hidden_tag() }}
 				<div class="input-group">
-					<label for="studentSignIn" class="form-label visually-hidden">{{ form.student_sign_in.label }}</label>
+					{{ form.student_sign_in(id='student_search', placeholder="Enter name or ID...",
+					class="form-control") }}
 					{{ form.studentID(id='studentID') }}
-					{{ form.student_sign_in(id='student_search', class="form-control", placeholder="Enter name or ID...") }}
 					{{ form.consent_status(id="consentStatus", type="hidden") }}
 					<input type="hidden" id="hidden_consent_indicator" value="no">
 					<button id="student_sign_in_button" type="submit" class="btn btn-primary">Submit</button>
@@ -55,7 +56,8 @@ endwith %}
 			<span class="col">Photo</span>
 		</div>
 		{% for student in students%} <!-- onlick re-route to student page for this specific student -->
-		<div class="row table-element text-center my-2 py-2 rounded border border-primary" onclick="redirectToStudent('{{ student.id }}')">
+		<div class="row table-element text-center my-2 py-2 rounded border border-primary"
+			onclick="redirectToStudent('{{ student.id }}')">
 			<form id="studentForm_{{ student.id }}" action="/student" method="POST" style="display:none;">
 				<input type="hidden" name="student_id" value="{{ student.id }}">
 			</form>
