@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileRequired
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, SelectMultipleField, HiddenField, FileField, DateField, widgets
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, SelectMultipleField, HiddenField, FileField, DateField, widgets, TextAreaField
 from wtforms.validators import DataRequired, ValidationError
 from app.database import unit_exists
 
@@ -83,8 +83,8 @@ class AddUnitForm(FlaskForm):
 	enddate = DateField('End Date', validators=[DataRequired()])
 	#Need to add custom validators to check if files uploaded end in csv
 	sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
-	facilitatorfile = FileField('Facilitator IDs', validators=[FileRequired(), FileAllowed(['csv'], "Only accepts .csv files")])
-	studentfile = FileField('Student List CSV Upload:', validators=[FileRequired(), FileAllowed(['csv'], "Only accepts .csv files")])
+	facilitatorfile = FileField('Facilitator IDs', validators=[FileRequired(), FileAllowed(['csv'], "Only accepts .csv files")],render_kw={"accept": ".csv"})
+	studentfile = FileField('Student List CSV Upload:', validators=[FileRequired(), FileAllowed(['csv'], "Only accepts .csv files")],render_kw={"accept": ".csv"})
 	consentcheck = BooleanField('Photo Consent Required?')
 	sessionoccurence = MultiCheckboxField(
 		'Session Occurence',
@@ -100,4 +100,13 @@ class StudentSignInForm(FlaskForm):
     student_sign_in = StringField('Sign in Student', validators=[DataRequired()])
     consent_status = HiddenField('Consent Status', default="none")
     studentID = HiddenField('Student ID')  
-    sessionID = StringField('Session ID')  
+    session_id = HiddenField('Session ID')  
+
+class AttendanceChangesForm(FlaskForm):
+    student_id = HiddenField('Student ID')
+    signInTime = StringField('Sign in time')
+    signOutTime = StringField('Sign out time')
+    login = BooleanField('Login')
+    consent = BooleanField('Photo Consent')
+    grade = StringField('Grade')
+    comments = TextAreaField('Comment')
