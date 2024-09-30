@@ -21,18 +21,18 @@ endwith %}
     <!-- Form element -->
     <form method="POST" action="{{ url_for('edit_student_details') }}">
         {{ form.hidden_tag() }}
-        <div class="mx-4 mt-3 mx-md-5">
-            <div class="mb-3 ">
-                <p>
-                    <strong>Student name:</strong> {{ student.name }}
-                </p>
-                <p>
-                    <strong>Student ID:</strong> {{ student.number }}
-                    {{ form.student_id(value=student.number) }}
-                </p>
-            </div>
+        <div class="mx-4 mt-3 mx-md-5 mb-5">
             <div class="row">
                 <div class="col-md-6">
+                    <div class="mb-3 ">
+                        <p>
+                            <strong>Student name:</strong> {{ student.name }}
+                        </p>
+                        <p>
+                            <strong>Student ID:</strong> {{ student.number }}
+                            {{ form.student_id(value=student.number) }}
+                        </p>
+                    </div>
                     <div class="d-flex flex-md-column flex-row justify-content-between">
                         <div class="mb-3 col-md-8 col-5">
                             {{ form.signInTime.label(class="form-label")}}
@@ -60,7 +60,7 @@ endwith %}
                     </div>
                 </div>
 
-                <div class="col-md-6 mb-5">
+                <div class="col-md-6 mb-4">
                     <!-- Grade Input -->
                     <div class="mb-3">
                         {{ form.grade.label(class="form-label")}}:
@@ -75,6 +75,11 @@ endwith %}
 
                     {{ form.comments.label(class="form-label")}}:
                     {{ form.comments(class="form-control", rows="5", **{"data-comment": student.comments}) }}
+                    <div class="d-flex justify-content-md-end justify-content-center">
+                        <button type="button" class="btn btn-danger w-50 mt-4" data-bs-toggle="modal"
+                            data-bs-target="#removeStudentModal">Remove
+                            Student</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -84,12 +89,10 @@ endwith %}
         </form> -->
 
         <!-- Action Buttons -->
-        <div class="fixed-bottom row mt-5">
-            <a href="{{ url_for('home') }}" class="btn btn-secondary col">Cancel</a>
-            <button type="submit" class="btn btn-success col">Save Changes</button>
-            <button type="button" class="btn btn-danger col" data-bs-toggle="modal"
-                data-bs-target="#removeStudentModal">Remove
-                Student</button>
+        <div class="fixed-bottom row d-flex justify-content-around mt-5 mb-3">
+            <a href="{{ url_for('home') }}" class="btn btn-secondary col-4">Cancel</a>
+            <button type="submit" class="btn btn-success col-4">Save Changes</button>
+
         </div>
     </form>
     {% include 'removeStudent.html'%}
