@@ -25,15 +25,6 @@ body {
   color: var(--text);
 }
 
-/* Login page elements */
-.login-bg {
-  background-color: color-mix(in srgb, var(--bg) 90%, var(--text) 10%);
-}
-
-.login-box {
-  background-color: var(--bg);
-}
-
 /* Invalid input for configuration fields */
 .input-error {
   border: 2px solid red;
@@ -50,13 +41,30 @@ body {
   }
 }
 
+/* Table elements */
+.table-heading {
+  background-color: color-mix(in srgb, var(--bg) 75%, var(--text) 25%);
+  border-radius: 0.5rem;
+}
+
 .table-element {
+  background-color: color-mix(in srgb, var(--bg) 90%, var(--text) 10%);
+  border-radius: 0.5rem;
   cursor: pointer;
   transition: background-color 0.3s ease-in-out;
 }
 
 .table-element:hover {
-  background-color: var(--primary);
+  background-color: color-mix(in srgb, var(--primary) 60%, transparent);
+}
+
+/* Login page elements */
+.login-bg {
+  background-color: color-mix(in srgb, var(--bg) 90%, var(--text) 10%);
+}
+
+.login-box {
+  background-color: var(--bg);
 }
 
 /* Form control changes */
@@ -67,6 +75,15 @@ body {
 }
 
 /* Bootstrap class css changes (all elements have this from version 5.2) */
+.btn-primary {
+  --bs-btn-color: var(--bs-white);
+  --bs-btn-bg: var(--primary);
+  --bs-btn-border-color: var(--primary);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--primary), black 20%);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--primary), black 20%);
+  --bs-btn-active-bg: color-mix(in srgb, var(--primary), black 25%);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--primary), black 25%);
+}
 
 .btn-success {
   --bs-btn-color: var(--bs-white);

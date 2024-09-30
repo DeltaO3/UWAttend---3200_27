@@ -33,7 +33,7 @@ endwith %}
 				{{ form.hidden_tag() }}
 				<div class="input-group">
 					{{ form.student_sign_in(id='student_search', placeholder="Enter name or ID...",
-					class="form-control") }}
+					class="form-control", autocomplete="off") }}
 					{{ form.studentID(id='studentID') }}
 					{{ form.consent_status(id="consentStatus", type="hidden") }}
 					<input type="hidden" id="hidden_consent_indicator" value="no">
@@ -41,23 +41,24 @@ endwith %}
 				</div>
 				<div id="suggestions_container" class="list-group mt-2"></div>
 			</form>
-			{% include 'photoConsent.html'%}
 		</div>
-
 	</div>
 
+	{% include 'photoConsent.html'%}
 	<!-- Table element -->
 	<div class="mx-4 mt-3 mx-md-5" id="classTable">
 		{% if total_students > 0 %}
-		<div class="row d-none d-md-flex text-center lead bg-dark-subtle rounded">
+		<div class="row d-none d-md-flex text-center lead table-heading">
 			<span class="col">Name</span>
 			<span class="col">ID</span>
 			<span class="col">Login</span>
 			<span class="col">Photo</span>
 		</div>
-		{% for student in students%} <!-- onlick re-route to student page for this specific student -->
-		<div class="row table-element text-center my-2 py-2 rounded border border-primary"
-			onclick="redirectToStudent('{{ student.id }}')">
+		<!-- https://getbootstrap.com/docs/5.3/components/scrollspy/ probably what we want -->
+
+		{% for student in students%} <!-- onlick re-route to student page for this specific
+			student -->
+		<div class="row table-element text-center my-2 py-2" onclick="redirectToStudent('{{ student.id }}')">
 			<form id="studentForm_{{ student.id }}" action="/student" method="POST" style="display:none;">
 				<input type="hidden" name="student_id" value="{{ student.id }}">
 			</form>
@@ -69,13 +70,12 @@ endwith %}
 		{% endfor %}
 		{% endif %}
 	</div>
-
-	<div class="fixed-bottom row pb-2 bg-body">
+	{% include 'signOut.html'%}
+	<div class="fixed-bottom row bg-body">
 		<button class="btn col-md-3 col">Sync</button>
 		<button id="signOutButton" class="btn btn-danger col">Sign All Out</button>
 		<button class="btn col-md-3 col">Download</button>
 	</div>
-	{% include 'signOut.html'%}
 </div>
 
 <script src="{{url_for('static', filename='js/consent.js')}}"></script>
