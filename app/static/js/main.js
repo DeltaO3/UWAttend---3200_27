@@ -38,16 +38,12 @@ $(window).on("load resize", function () {
     //!HARD CODED URL
     if (top.location.pathname === '/home') {
         usedHeight = 0;
-        if ($('#flashMessages').length > 0) {
-            usedHeight += $("flashMessages").height();
-        }
-        usedHeight += $("nav").height();
-        console.log($("nav").height());
-        usedHeight += $(".input-holder").height();
-        console.log($(".input-holder").height());
+        rect = $("#classTable")[0].getBoundingClientRect();
+        console.log(rect.top)
+        usedHeight += rect.top;
         usedHeight += $(".home-footer").height();
-        console.log($(".home-footer").height())
-        remainingHeight = window.innerHeight - usedHeight - 40
+
+        remainingHeight = window.innerHeight - usedHeight
         console.log("total" + window.innerHeight + "used" + usedHeight + "remaining" + remainingHeight)
         $("#classTable").height(remainingHeight + "px")
 
