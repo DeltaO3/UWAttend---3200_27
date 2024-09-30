@@ -1,22 +1,48 @@
 {% extends "base.html" %}
 {% block content %}
 
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %} 
+{% for category, message in messages %} {%if category == 'error'%}
+<div class="alert alert-danger alert-dismissable fade show d-flex justify-content-between" role="alert">
+	{{ message }}
+	<button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% else %}
+<div class="alert alert-success alert-dismissable fade show d-flex justify-content-between" role="alert">
+	{{ message }}
+	<button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %} {% endfor %} {% endif %} {%
+endwith %}
+
 <div class="container-fluid">
     <!-- Form element -->
-    <form method="POST" action="{{ url_for('save_changes') }}">
+    <form method="POST" action="{{ url_for('edit_student_details') }}">
+        {{ form.hidden_tag() }}
         <div class="mx-4 mt-3 mx-md-5">
             <div class="mb-3">
                 <strong>Student name:</strong> {{ student.name }}
             </div>
             <div class="mb-3">
-                <strong>Student ID:</strong> {{ student.id }}
+                <strong>Student ID:</strong> {{ student.number }}
+                {{ form.student_id(value=student.number) }}
+            </div>
+            <div class="mb-3">
+                <label for="sign_in_time" class="form-check-label">Sign in time:</label> 
+                {{ form.signInTime(class="form-control", type="time", step="1", value=student.signInTime) }}
+            </div>
+            <div class="mb-3">
+                <label for="sign_out_time" class="form-check-label">Sign out time:</label>
+                {{ form.signOutTime(class="form-control", type="time", step="1", value=student.signOutTime) }}
             </div>
         </div>
         <div class="mx-4 mt-3 mx-md-5">
             <!-- Login Switch -->
             <div style="display:flex; gap: 1em;">
                 <label for="login" class="form-check-label">Login:</label>
-                <div class="mb-3 form-check form-switch">
+                <div class="mb-3 form-check">
                     <input class="form-check-input" type="checkbox" name="login" id="login" {% if student.login == 'yes' %} checked {% endif %}>
                 </div>
             </div>
@@ -24,30 +50,42 @@
             <!-- Photo Switch -->
             <div style="display:flex; gap: 1em;">
                 <label for="photo" class="form-check-label">Photo:</label>
-                <div class="mb-3 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="photo" id="photo" {% if student.photo == 'yes' %} checked {% endif %}>
+                <div class="mb-3 form-check">
+                    <input class="form-check-input" type="checkbox" name="consent" id="consent" {% if student.consent == "yes" %} checked {% endif %}>
                 </div>
             </div>
 
             <!-- Grade Input -->
             <div class="mb-3">
                 <label for="grade" class="form-label">Grade:</label>
-                <input type="text" name="grade" id="grade" value="{{ student.grade }}" class="form-control">
+                {% if student.grade %}
+                {{ form.grade(class="form-control", value=student.grade) }}
+                {% else %}
+                {{ form.grade(class="form-control") }}
+                {% endif %}
             </div>
         </div>
 
         <!-- Comment Section -->
         <div class="mx-4 mt-3 mx-md-5">
-            <label for="comment" class="form-label">Leave a Comment:</label>
-            <textarea name="comment" id="comment" rows="4" class="form-control"></textarea>
+            <label for="comments" class="form-label">Leave a Comment:</label>
+            {{ form.comments(class="form-control", rows="3", **{"data-comment": student.comments}) }}
         </div>
+
+        <!-- <form id="remove_from_session_form" method="POST" action="{{ url_for('remove_from_session') }}" class="col">
+            <button type="submit" id="remove_from_session" class="btn btn-danger">Remove From Session</button>
+            <input type="hidden" name="student_id" value="{{ student.id }}">
+        </form> -->
 
         <!-- Action Buttons -->
         <div class="fixed-bottom row pb-2 bg-body">
+            <a href="{{ url_for('home') }}" class="btn btn-secondary col">Cancel</a>
             <button type="submit" class="btn btn-success col">Save Changes</button>
-            <a href="{{ url_for('home') }}" class="btn btn-danger col">Cancel</a>
+            <button type="button" class="btn btn-danger col" data-bs-toggle="modal" data-bs-target="#removeStudentModal">Remove Student</button>
         </div>
     </form>
+    {% include 'removeStudent.html'%}
 </div>
 
+<script src="{{url_for('static', filename='js/student.js')}}"></script>
 {% endblock %}
