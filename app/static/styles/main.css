@@ -96,6 +96,7 @@ body {
   --bs-modal-border-color: var(--text);
 }
 
+//Buttons
 .btn-primary {
   --bs-btn-color: var(--bs-white);
   --bs-btn-bg: var(--primary);
@@ -104,6 +105,16 @@ body {
   --bs-btn-hover-border-color: color-mix(in srgb, var(--primary), black 20%);
   --bs-btn-active-bg: color-mix(in srgb, var(--primary), black 25%);
   --bs-btn-active-border-color: color-mix(in srgb, var(--primary), black 25%);
+}
+
+.btn-secondary {
+  --bs-btn-color: var(--bs-white);
+  --bs-btn-bg: var(--secondary);
+  --bs-btn-border-color: var(--secondary);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--secondary), black 20%);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--secondary), black 20%);
+  --bs-btn-active-bg: color-mix(in srgb, var(--secondary), black 25%);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--secondary), black 25%);
 }
 
 .btn-success {
