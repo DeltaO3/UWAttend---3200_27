@@ -38,3 +38,8 @@ if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').match
     $(".modal").attr("data-bs-theme", "dark")
     $(".navbar").attr("data-bs-theme", "dark")
 }
+
+//Closes an alert 3 seconds after it pops up
+setTimeout(function () {
+    $('.alert').alert('close');
+}, 4000); 
