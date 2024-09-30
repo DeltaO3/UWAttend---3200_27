@@ -2,23 +2,27 @@
 {% block content %}
 
 <!-- Flash Messages -->
+
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
-{% for category, message in messages %} {%if category == 'error'%}
-<div class="alert alert-danger alert-dismissable fade show d-flex justify-content-between" role="alert">
-	{{ message }}
-	<button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+<div id="flashMessages">
+	{% for category, message in messages %}
+	{%if category == 'error'%}
+	<div class="alert alert-danger alert-dismissable fade show d-flex justify-content-between" role="alert">
+		{{ message }}
+		<button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+	{% else %}
+	<div class="alert alert-success alert-dismissable fade show d-flex justify-content-between" role="alert">
+		{{ message }}
+		<button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+	{% endif %}
 </div>
-{% else %}
-<div class="alert alert-success alert-dismissable fade show d-flex justify-content-between" role="alert">
-	{{ message }}
-	<button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-{% endif %} {% endfor %} {% endif %} {%
-endwith %}
+{% endfor %} {% endif %} {% endwith %}
 
 <div class="container-fluid">
-	<div class="row mt-2 mx-md-5 mx-2">
+	<div class="row mt-2 mx-md-5 mx-2 input-holder">
 		<div class="d-flex justify-content-center align-items-center col-md-4 order-md-2">
 			<h4>{{ current_session.unitID }}-{{ current_session.sessionName }}-{{ current_session.sessionDate }}/{{
 				current_session.sessionTime }}</h4>
@@ -46,32 +50,34 @@ endwith %}
 
 	{% include 'photoConsent.html'%}
 	<!-- Table element -->
-	<div class="mx-4 mt-3 mx-md-5" id="classTable">
-		{% if total_students > 0 %}
-		<div class="row d-none d-md-flex text-center lead table-heading">
-			<span class="col">Name</span>
-			<span class="col">ID</span>
-			<span class="col">Login</span>
-			<span class="col">Photo</span>
-		</div>
-		<!-- https://getbootstrap.com/docs/5.3/components/scrollspy/ probably what we want -->
+	<div class="d-flex justify-content-center">
+		<div class="mx-4 mt-3 mx-md-5 container" id="classTable">
+			{% if total_students > 0 %}
+			<div class="row d-none d-md-flex text-center lead table-heading">
+				<span class="col">Name</span>
+				<span class="col">ID</span>
+				<span class="col">Login</span>
+				<span class="col">Photo</span>
+			</div>
+			<!-- https://getbootstrap.com/docs/5.3/components/scrollspy/ probably what we want -->
 
-		{% for student in students%} <!-- onlick re-route to student page for this specific
+			{% for student in students%} <!-- onlick re-route to student page for this specific
 			student -->
-		<div class="row table-element text-center my-2 py-2" onclick="redirectToStudent('{{ student.id }}')">
-			<form id="studentForm_{{ student.id }}" action="/student" method="POST" style="display:none;">
-				<input type="hidden" name="student_id" value="{{ student.id }}">
-			</form>
-			<span class="col-md col-6">{{student.name}}</span>
-			<span class="col-md col-6">{{student.number}}</span>
-			<span class="d-none d-md-inline col-md">{{student.login}}</span>
-			<span class="d-none d-md-inline col-md">{{student.photo}}</span>
+			<div class="row table-element text-center my-2 py-2" onclick="redirectToStudent('{{ student.id }}')">
+				<form id="studentForm_{{ student.id }}" action="/student" method="POST" style="display:none;">
+					<input type="hidden" name="student_id" value="{{ student.id }}">
+				</form>
+				<span class="col-md col-6">{{student.name}}</span>
+				<span class="col-md col-6">{{student.number}}</span>
+				<span class="d-none d-md-inline col-md">{{student.login}}</span>
+				<span class="d-none d-md-inline col-md">{{student.photo}}</span>
+			</div>
+			{% endfor %}
+			{% endif %}
 		</div>
-		{% endfor %}
-		{% endif %}
 	</div>
 	{% include 'signOut.html'%}
-	<div class="fixed-bottom row bg-body">
+	<div class="row bg-body home-footer">
 		<button class="btn col-md-3 col">Sync</button>
 		<button id="signOutButton" class="btn btn-danger col">Sign All Out</button>
 		<button class="btn col-md-3 col">Download</button>

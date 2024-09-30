@@ -32,3 +32,25 @@ if (window.location.href.indexOf("session") != -1) {
     updateTime();
 
 }
+
+
+$(window).on("load resize", function () {
+    //!HARD CODED URL
+    if (top.location.pathname === '/home') {
+        usedHeight = 0;
+        if ($('#flashMessages').length > 0) {
+            usedHeight += $("flashMessages").height();
+        }
+        usedHeight += $("nav").height();
+        console.log($("nav").height());
+        usedHeight += $(".input-holder").height();
+        console.log($(".input-holder").height());
+        usedHeight += $(".home-footer").height();
+        console.log($(".home-footer").height())
+        remainingHeight = window.innerHeight - usedHeight - 40
+        console.log("total" + window.innerHeight + "used" + usedHeight + "remaining" + remainingHeight)
+        $("#classTable").height(remainingHeight + "px")
+
+    }
+
+})

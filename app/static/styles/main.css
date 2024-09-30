@@ -42,6 +42,11 @@ body {
 }
 
 /* Table elements */
+#classTable {
+  overflow-y: scroll;
+  height: 0px;
+}
+
 .table-heading {
   background-color: color-mix(in srgb, var(--bg) 75%, var(--text) 25%);
   border-radius: 0.5rem;
