@@ -33,26 +33,30 @@ endwith %}
             </div>
             <div class="row">
                 <div class="col-md-6">
-                    <div class="mb-3">
-                        {{ form.signInTime.label(class="form-label")}}
-                        {{ form.signInTime(class="form-control", type="time", step="1", value=student.signInTime) }}
-                    </div>
-                    <div class="mb-3">
-                        {{ form.signOutTime.label(class="form-label")}}
-                        {{ form.signOutTime(class="form-control", type="time", step="1", value=student.signOutTime) }}
+                    <div class="d-flex flex-md-column flex-row justify-content-between">
+                        <div class="mb-3 col-md-8 col-5">
+                            {{ form.signInTime.label(class="form-label")}}
+                            {{ form.signInTime(class="form-control", type="time", step="1", value=student.signInTime) }}
+                        </div>
+                        <div class="mb-3 col-md-8 col-5">
+                            {{ form.signOutTime.label(class="form-label")}}
+                            {{ form.signOutTime(class="form-control", type="time", step="1", value=student.signOutTime)
+                            }}
+                        </div>
                     </div>
                     <!-- Login Switch -->
                     <div class="d-flex gap-2 mb-3">
-                        {{form.login.label(class="form-label")}}
                         <input class="form-check-input" type="checkbox" name="login" id="login" {% if
                             student.login=='yes' %} checked {% endif %}>
+                        {{form.login.label(class="form-label")}}
+
                     </div>
 
                     <!-- Photo Switch -->
                     <div class="d-flex gap-2 mb-3">
-                        {{form.consent.label(class="form-label")}}
                         <input class="form-check-input" type="checkbox" name="consent" id="consent" {% if
                             student.consent=="yes" %} checked {% endif %}>
+                        {{form.consent.label(class="form-label")}}
                     </div>
                 </div>
 
