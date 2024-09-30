@@ -183,7 +183,7 @@ def admin():
 
     if form.validate_on_submit() and flask.request.method == 'POST':       
         
-        AddUser(userType=form.UserType.data, uwaID=form.uwaId.data, firstName=form.firstName.data, lastName=form.lastName.data, passwordHash=form.passwordHash.data)
+        AddUser(userType=form.UserType.data, email=form.email.data, firstName=form.firstName.data, lastName=form.lastName.data, passwordHash=form.passwordHash.data)
         return flask.redirect(flask.url_for('admin'))
     
     return flask.render_template('admin.html', form=form)
