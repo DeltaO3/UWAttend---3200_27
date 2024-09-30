@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileRequired
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, SelectMultipleField, HiddenField, FileField, DateField, widgets
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, SelectMultipleField, HiddenField, FileField, DateField, widgets, TextAreaField
 from wtforms.validators import DataRequired, ValidationError
 from app.database import unit_exists
 
@@ -100,4 +100,13 @@ class StudentSignInForm(FlaskForm):
     student_sign_in = StringField('Sign in Student', validators=[DataRequired()])
     consent_status = HiddenField('Consent Status', default="none")
     studentID = HiddenField('Student ID')  
-    sessionID = StringField('Session ID')  
+    session_id = HiddenField('Session ID')  
+
+class AttendanceChangesForm(FlaskForm):
+    student_id = HiddenField('Student ID')
+    signInTime = StringField('Sign in time')
+    signOutTime = StringField('Sign out time')
+    login = BooleanField('Login')
+    consent = BooleanField('Photo Consent')
+    grade = StringField('Grade')
+    comments = TextAreaField('Comment')
