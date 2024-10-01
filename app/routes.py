@@ -124,7 +124,7 @@ def session():
     # set session form select field options
     set_session_form_select_options(form)
 
-    return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
+    return flask.render_template('session.html', form=form, perth_time=formatted_perth_time, update=False)
 
 @app.route('/updatesession', methods=['GET', 'POST'])
 @login_required
@@ -161,7 +161,7 @@ def updatesession():
     current_unit = GetUnit(unitID=current_session.unitID)[0]
     set_updatesession_form_select_options(current_session, current_unit, form)
 
-    return flask.render_template('updatesession.html', form=form, perth_time=formatted_perth_time)
+    return flask.render_template('session.html', form=form, perth_time=formatted_perth_time, update=True)
 
 #ADMIN - /unitconfig /
 @app.route('/unitconfig', methods=['GET', 'POST'])
