@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container-fluid">
-    <div class="mt-2 mx-md-5 mx-2">
-        <h2>Add a Coordinator</h2>
-        <form method="POST" enctype="multipart/form-data" novalidate>
+    <div class="mt-2 mx-md-5 mx-2 d-flex flex-column align-items-center">
+        <h2 class="mb-3">Add a Coordinator</h2>
+        <form method="POST" enctype="multipart/form-data" novalidate class="container-fluid">
             {{ form.hidden_tag() }}
 
             {% if error %}
@@ -13,29 +13,24 @@
             {% endif %}
 
             {% for field in form %}
-            {% if field.type == "StringField" or field.type =="DateField" %}
-            <div class="mb-3">
-                {{ field.label(class="form-label") }}
-                {{ field(class="form-control") }}
-                {% for error in field.errors %}
-                <span class="text-danger"> {{error}} </span>
-                {% endfor %}
+            {% if field.type == "StringField"%}
+            <div class="mb-2 mb-md-4 row d-flex align-items-center">
+                {{ field.label(class="form-label col-md-2 text-md-end") }}
+                <div class="col-md-8 ">
+                    {{ field(class="form-control") }}
+                </div>
             </div>
-
-            {% elif field.type == "SelectField" %}
-            <div class="mb-3">
-                {{ field.label(class=" form-label") }}
-                {{ field(style="list-style-type: none;") }}
-                {% for error in field.errors %}
-                <span class="text-danger"> {{error}} </span>
-                {% endfor %}
+            {% for error in field.errors %}
+            <div class="row">
+                <div class="col-3 col-md-2"></div>
+                <span class="text-danger col"> {{error}} </span>
             </div>
-
+            {% endfor %}
             {% endif %}
             {% endfor %}
-
-            <br />
-            {{ form.submit(class="btn btn-primary") }}
+            <div class="d-flex justify-content-center">
+                {{ form.submit(class="btn btn-primary col-md-4 col-6") }}
+            </div>
         </form>
     </div>
 </div>
