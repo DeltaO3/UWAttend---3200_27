@@ -11,7 +11,7 @@
 
 		<div class="collapse navbar-collapse row ms-1 ms-md-0" id="navbarNav">
 			<!-- Left side -->
-			<div class="navbar-nav nav-underline col-md-6">
+			<div class="navbar-nav nav-underline col-lg-8 col-md-9">
 				<!-- Home link (everyone can see this) -->
 				<a class="nav-link {% if request.path == url_for('home') or request.path == '/' %}active"
 					aria-current="page {% endif %}" href="{{ url_for('home') }}">
@@ -38,7 +38,7 @@
 			</div>
 
 			<!-- Right side -->
-			<div class="navbar-nav d-flex justify-content-end col-md-6">
+			<div class="navbar-nav d-flex justify-content-end col-lg-4 col-md-3">
 				<span class="navbar-text fw-bold text-truncate me-3 d-none d-md-block">
 					{{ current_user.uwaID }}
 				</span>
