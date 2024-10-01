@@ -11,16 +11,16 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Log In')
 
 class SessionForm(FlaskForm):
-    session_name = SelectField(
-        'Session Name',
+    # for each select option, value is unit_id, option is unit_code (what user sees)
+    unit = SelectField(
+        'Unit Code',
         choices=[],
         validators=[DataRequired()],
         validate_choice=False
     )
 
-    # for each select option, value is unit_id, option is unit_code (what user sees)
-    unit = SelectField(
-        'Unit Code',
+    session_name = SelectField(
+        'Session Name',
         choices=[],
         validators=[DataRequired()],
         validate_choice=False
