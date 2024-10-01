@@ -27,22 +27,24 @@
 		</div>
 
 		<!-- Input element -->
-		<div class="col-md-8 order-md-1">
-			<h2>
-				{{ signed_in }} signed in of {{ total_students }}
-			</h2>
-			<form id="attendanceForm" method="POST" action="{{ url_for('add_student') }}">
-				{{ form.hidden_tag() }}
-				<div class="input-group">
-					{{ form.student_sign_in(id='student_search', placeholder="Enter name or ID...",
-					class="form-control", autocomplete="off") }}
-					{{ form.studentID(id='studentID') }}
-					{{ form.consent_status(id="consentStatus", type="hidden") }}
-					<input type="hidden" id="hidden_consent_indicator" value="no">
-					<button id="student_sign_in_button" type="submit" class="btn btn-primary">Submit</button>
-				</div>
-				<div id="suggestions_container" class="position-absolute col-9 col-lg-6 list-group mt-2"></div>
-			</form>
+		<div class="d-flex justify-content-center col-md-8 order-md-1 ">
+			<div class="col-10 col-md-12">
+				<h2>
+					{{ signed_in }} signed in of {{ total_students }}
+				</h2>
+				<form id="attendanceForm" method="POST" action="{{ url_for('add_student') }}">
+					{{ form.hidden_tag() }}
+					<div class="input-group">
+						{{ form.student_sign_in(id='student_search', placeholder="Enter name or ID...",
+						class="form-control", autocomplete="off") }}
+						{{ form.studentID(id='studentID') }}
+						{{ form.consent_status(id="consentStatus", type="hidden") }}
+						<input type="hidden" id="hidden_consent_indicator" value="no">
+						<button id="student_sign_in_button" type="submit" class="btn btn-primary">Submit</button>
+					</div>
+					<div id="suggestions_container" class="position-absolute col-9 col-lg-6 list-group mt-2"></div>
+				</form>
+			</div>
 		</div>
 	</div>
 
