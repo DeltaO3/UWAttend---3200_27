@@ -81,7 +81,6 @@ class AddUnitForm(FlaskForm):
     semester = StringField('Semester:', validators=[DataRequired()])
     startdate = DateField('Start Date', validators=[DataRequired(), date_check])
     enddate = DateField('End Date', validators=[DataRequired()])
-	#Need to add custom validators to check if files uploaded end in csv
     facilitatorfile = FileField('Facilitator List CSV upload', validators=[FileRequired(), FileAllowed(['csv'], "Only accepts .csv files")],render_kw={"accept": ".csv"})
     studentfile = FileField('Student List CSV Upload:', validators=[FileRequired(), FileAllowed(['csv'], "Only accepts .csv files")],render_kw={"accept": ".csv"})
     consentcheck = BooleanField('Photo Consent Required?')

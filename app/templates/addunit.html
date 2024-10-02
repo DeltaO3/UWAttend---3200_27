@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from 'macros.html' import input %}
 {% block content %}
 
 <!-- Flash Messages -->
@@ -21,53 +22,41 @@ endwith %}
     <div class="mt-2 justify-content-center d-flex">
         <h2>Add a Unit</h2>
     </div>
-    <form method="POST" enctype="multipart/form-data" novalidate class="row row-cols-2 row-cols-md-3">
+    <form method="POST" enctype="multipart/form-data" novalidate>
         {{ form.hidden_tag() }}
-
-        <div class="col">
-            Unit info
-
-            {% for field in form %}
-
-            {% if loop.index == 6 %}
+        <!-- Going to have to manually call each element to get proper placement working :( -->
+        <div class="row">
+            <div class="col-md-4 col-6">
+                {{ input(form.unitcode) }}
+            </div>
+            <div class="col-md-4 col-6">
+                {{ input(form.semester) }}
+            </div>
+            <div class="col-md-4 col-12">
+                {{ input(form.unitname) }}
+            </div>
         </div>
-        <div class="col">
-            Uploads
-
-            {% elif loop.index == 11 %}
-        </div>
-        <div class="col">
-            Session details
-            {% endif %}
-            {% if field.type !="SubmitField" and field.widget.input_type !="hidden" %} <div class="mb-3">
-
-                {{ field.label(class="form-label") }}
-                {% if field.type == "StringField" or field.type =="DateField" %}
-                {{ field(class="form-control") }}
-                {% elif field.type == "FileField" %}
-                {{ field(class="form-control-file") }}
-                {% elif field.type == "BooleanField" %}
-                {{ field(class="form-check-input") }}
-                {% elif field.type == "MultiCheckboxField" %}
-                {{ field(style="list-style-type: none;") }}
-                {% endif %}
+        <div class="row">
+            <div class="col-4">
+                {{ input(form.startdate) }}
+                {{ input(form.enddate) }}
+            </div>
+            <div class="col-4">
+                {{ input(form.facilitatorfile, type="FileField") }}
+                {{ input(form.studentfile, type="FileField") }}
+                {{ input(form.consentcheck, type="BooleanField") }}
+                {{ input(form.assessmentcheck, type="BooleanField") }}
+                {{ input(form.commentsenabled, type="BooleanField") }}
+            </div>
+            <div class="col-4">
+                {{ input(form.sessionnames) }}
+                {{ input(form.sessionoccurence, type="MultiCheckboxField") }}
+                {{ input(form.commentsuggestions) }}
 
             </div>
-            <div>
-                {% for error in field.errors %}
-                <div class="row">
-                    <div class="col-md-3 col-sm-3 "></div>
-                    <span class="text-danger col"> {{error}} </span>
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-            {% endfor %}
-
         </div>
-        <br />
-        {{ form.submit(class="btn btn-primary") }}
+
+        {{ form.submit(class="btn btn-primary w-100" ) }}
     </form>
-</div>
 </div>
 {% endblock %}
