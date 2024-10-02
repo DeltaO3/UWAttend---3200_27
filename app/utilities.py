@@ -44,20 +44,20 @@ def import_student_in_db(data, unit_id):
             title=record['Title'],
             preferredName=record['Preferred Given Name'],
             unitID=unit_id,  # Assuming a default unit ID, replace as needed
-            consent=0  # Setting consent to 0 as per your requirements
+            consent="no"  # Setting consent to no as per your requirements
         )
         print(f"Added student: {record['Given Names']} {record['Surname']} (ID: {student_number})")
 
 def import_facilitator_in_db(data, unit_id, current_user):
 
     for record in data:
-        facilitator = record['Facilitator ID']
+        facilitator = record['Facilitator Email']
         #Add facilitator as user if not in DB
-        if(not GetUser(uwaID=facilitator)):
+        if(not GetUser(email=facilitator)):
             print(f"Adding new user: {facilitator}")
-            AddUser(facilitator, "placeholder", "placeholder", facilitator, 3)
+            AddUser(facilitator, "placeholder", "placeholder", facilitator, "facilitator")
         #add this unit to facilator
-        if(int(facilitator) == current_user):
+        if(facilitator == current_user.email):
             print(f"skipping user {facilitator} as it is the currently logged in user.")
             continue
         print(f"Adding unit {unit_id} to facilitator {facilitator}")
@@ -152,7 +152,7 @@ def export_attendance_records_csv():
                 attendance.signOutTime.strftime('%H:%M:%S') if attendance.signOutTime else '',
                 attendance.marks if attendance.marks else '', # Marks, blank if none
                 attendance.comments if attendance.comments else '', # Comments, blank if none
-                'Yes' if attendance.consent_given else 'No' # Consent status ('Yes' or 'No')
+                attendance.consent_given # Consent give: yes, no or not required (if unit is configured to not ask consent)
             ]
             writer.writerow(row)
         return csvfile.getvalue()

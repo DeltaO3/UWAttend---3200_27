@@ -83,7 +83,7 @@ def generate_student_info(student, attendance_record):
         "number": student.studentNumber,
         "id": student.studentID,
         "login": login_status,  
-        "consent": "yes" if student.consent == 1 else "no",
+        "consent": student.consent,
         "signInTime": str(attendance_record.signInTime).split('.')[0], # this is because when I included the microseconds html's input type="time" wasn't formatting properly
         "signOutTime": str(attendance_record.signOutTime).split('.')[0],
         "grade": attendance_record.marks,

@@ -103,11 +103,11 @@ def AddAttendance(sessionID, studentID, signOutTime=None, facilitatorID=None, ma
 
     
 
-def AddUser(uwaID, firstName, lastName, passwordHash, userType):
+def AddUser(email, firstName, lastName, passwordHash, userType):
 
     try:
         UserEntry = User(
-            uwaID       = uwaID,
+            email       = email,
             firstName   = firstName,
             lastName    = lastName,
             passwordHash = "",
@@ -123,14 +123,13 @@ def AddUser(uwaID, firstName, lastName, passwordHash, userType):
         print(f'An error occurred: {e}')
 
 
-def AddUnit(unitCode, unitName, studyPeriod, active, startDate, endDate, sessionNames, sessionTimes, comments, marks, consent, commentSuggestions):
+def AddUnit(unitCode, unitName, studyPeriod, startDate, endDate, sessionNames, sessionTimes, comments, marks, consent, commentSuggestions):
 
     try:
         UnitEntry   = Unit(
             unitCode     = unitCode,
             unitName     = unitName,
             studyPeriod  = studyPeriod,
-            active       = active,
             startDate    = startDate,
             endDate      = endDate,
             sessionNames = sessionNames,
@@ -150,15 +149,15 @@ def AddUnit(unitCode, unitName, studyPeriod, active, startDate, endDate, session
         db.session.rollback()
         print(f'An error occurred: {e}')
 
-def AddUnitToCoordinator(userID, unitID):
-    user = db.session.query(User).filter_by(uwaID=userID).first()
+def AddUnitToCoordinator(email, unitID):
+    user = db.session.query(User).filter_by(email=email).first()
     unit = db.session.query(Unit).filter_by(unitID=unitID).first()
     user.unitsCoordinate.append(unit)
     unit.coordinators.append(user)
     db.session.commit()
 
-def AddUnitToFacilitator(userID, unitID):
-    user = db.session.query(User).filter_by(uwaID=userID).first()
+def AddUnitToFacilitator(email, unitID):
+    user = db.session.query(User).filter_by(email=email).first()
     unit = db.session.query(Unit).filter_by(unitID=unitID).first()
     user.unitsFacilitate.append(unit)
     unit.facilitators.append(user)
@@ -238,6 +237,7 @@ def GetSessionForExport(sessionID = None, unitID = None):
     attendance_records = query.all()
 
     return attendance_records
+
 def GetStudent(unitID = None, studentID = None, studentNumber = None):
 
     query = db.session.query(Student)
@@ -260,15 +260,15 @@ def GetStudent(unitID = None, studentID = None, studentNumber = None):
     
     return attendance_records
 
-def GetUser(userID = None, uwaID = None, userType = None):
+def GetUser(userID = None, email = None, userType = None):
 
     query = db.session.query(User)
     
     # handle the optional arguements, only one can be used 
     if userID is not None:
         query = query.filter(User.userID == userID)
-    elif uwaID is not None:
-        query = query.filter(User.uwaID == uwaID)
+    elif email is not None:
+        query = query.filter(User.email == email)
     elif userType is not None:
         query = query.filter(User.userType == userType)
     else:
@@ -307,14 +307,14 @@ def GetUnit(unitID = None, unitCode = None, studyPeriod = None):
     return unit_records
 
 
-def CheckPassword(uwaID, password):
+def CheckPassword(email, password):
 
     query = db.session.query(User)
     
-    if uwaID is not None:
-        query = query.filter(User.uwaID == uwaID)
+    if email is not None:
+        query = query.filter(User.email == email)
     else:
-        print("You did not submit a uwaID parameter.")
+        print("You did not submit an email parameter.")
         return False
 
     # Retrieve the user record
@@ -327,9 +327,9 @@ def CheckPassword(uwaID, password):
         return False
 
 #Is this function needed? dont see it used anywhere
-def SetPassword(uwaID, newPassword):
+def SetPassword(email, newPassword):
     
-    user = db.session.query(User).filter(User.uwaID == uwaID).first()
+    user = db.session.query(User).filter(User.email == email).first()
     
     if user is None:
         raise ValueError("User not found")    
@@ -356,6 +356,7 @@ def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, logi
     # Fetch the attendance record based on studentID
     attendance_record = db.session.query(Attendance).filter_by(studentID=studentID, sessionID=sessionID).first()
     unitID = GetSession(sessionID=sessionID)[0].unitID
+    consent_required_for_unit = GetUnit(unitID=unitID)[0].consent
     student_record = db.session.query(Student).filter_by(studentID=studentID, unitID=unitID).first()
 
     if not attendance_record:
@@ -389,7 +390,12 @@ def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, logi
             attendance_record.signOutTime = get_perth_time().time()
 
     if consent is not None:  # Boolean field
-        student_record.consent = 1 if consent else 0
+        student_record.consent = "yes" if consent else "no"
+        attendance_record.consent_given = "yes" if consent else "no"
+
+    if not consent_required_for_unit :
+        student_record.consent = "not required"
+        attendance_record.consent_given = "not required"
 
     if grade:
         attendance_record.marks = grade
