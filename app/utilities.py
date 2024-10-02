@@ -223,7 +223,6 @@ def export_attendance_records_columns():
                 grade_info = f";comment={comments}"
             else:
                 grade_info = ''
-            print(f"Grade Info for {unique_key} - Session {session_key}_Grade: {grade_info}")
 
             # Store grade_info under session_key + '_Grade'
             attendance_data[unique_key][f"{session_key}_Grade"] = grade_info
@@ -243,25 +242,18 @@ def export_attendance_records_columns():
                     else:
                         session_keys.add(key)
 
-        print(f"Session keys collected: {session_keys}")
-
         # Sort the session_keys and build headers
         sorted_session_keys = sorted(session_keys)
-        print(f"Sorted session keys: {sorted_session_keys}")
 
         for session_key in sorted_session_keys:
             headers.append(session_key)
             headers.append(f"{session_key}_Grade")
 
-        print(f"Final Headers: {headers}")
-
         # Create a list of rows (each row represents a unique student-unit combination)
         rows = []
         for student_unit_key, student_record in attendance_data.items():
             # Print the student record before creating the row
-            print(f"Student Record for {student_unit_key}: {student_record}")
             row = [student_record.get(header, '') for header in headers]
-            print(f"Row for {student_unit_key}: {row}")
             rows.append(row)
 
         # Convert to CSV with proper quoting
