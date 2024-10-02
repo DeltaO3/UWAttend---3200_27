@@ -75,13 +75,30 @@ body {
 .multi-check-box {
   list-style-type: none;
 }
+
 /* Bootstrap class css changes (all elements have this from version 5.2) */
 
-/* Form control changes */
+.form-control {
+  background-color: color-mix(in srgb, var(--bg), white 20%);
+  border-color: color-mix(in srgb, var(--text), var(--bg) 30%);
+  color: var(--text);
+}
+
+.form-control::placeholder {
+  color: var(--text);
+  opacity: 50%;
+}
+
 .form-control:focus {
   /* https://stackoverflow.com/a/76910228 */
+  background-color: color-mix(in srgb, var(--bg), white 25%);
+  color: var(--text);
   box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--primary) 25%, transparent);
-  border-color: var(--primary);
+  border-color: color-mix(in srgb, var(--primary) 25%, transparent);
+}
+
+.form-select {
+  background-color: color-mix(in srgb, var(--bg), white 20%);
 }
 
 .navbar {

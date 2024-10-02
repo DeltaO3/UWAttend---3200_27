@@ -35,8 +35,11 @@ if (window.location.href.indexOf("session") != -1) {
 
 //Works only on reload, but I doubt a user will be changing colour schemes and not expecting to have to reload
 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    $(".modal").attr("data-bs-theme", "dark")
-    $(".navbar").attr("data-bs-theme", "dark")
+    $(".modal").attr("data-bs-theme", "dark");
+    $(".navbar").attr("data-bs-theme", "dark");
+    $(".form-check-input").attr("data-bs-theme", "dark");
+    $(".form-control-file").attr("data-bs-theme", "dark");
+    $(".form-select-parent").attr("data-bs-theme", "dark");
 }
 
 //Closes an alert 3 seconds after it pops up
