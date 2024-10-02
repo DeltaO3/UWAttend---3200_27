@@ -87,11 +87,10 @@ class AddUnitForm(FlaskForm):
     assessmentcheck = BooleanField('Sessions Assessed?')
     commentsenabled = BooleanField('Comments Enabled?')
     sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
-    sessionoccurence = MultiCheckboxField(
+    sessionoccurence = SelectField(
 		'Session Occurence',
-		choices=[('Morning','Morning'), ('Afternoon', 'Afternoon')
-		],
-		validators=[validate_sessionoccurence])
+		choices=[('Morning/Afternoon','Morning/Afternoon'), ('Hours', 'Hours')],
+		validators=[DataRequired()], validate_choice=False)
     commentsuggestions = StringField('Comment Suggestions:', render_kw={"placeholder":"Optional; separate with |"})
     submit = SubmitField('Add Unit')
     

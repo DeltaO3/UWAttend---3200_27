@@ -72,10 +72,6 @@ body {
   background-color: var(--bg);
 }
 
-.multi-check-box {
-  list-style-type: none;
-}
-
 /* Bootstrap class css changes (all elements have this from version 5.2) */
 
 /* FORMS */
@@ -99,7 +95,8 @@ body {
 }
 
 .form-select {
-  background-color: color-mix(in srgb, var(--bg), white 10%);
+  background-color: color-mix(in srgb, var(--bg), white 5%);
+  border-color: color-mix(in srgb, var(--text), var(--bg) 30%);
 }
 
 .form-select:focus {

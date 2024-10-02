@@ -44,15 +44,16 @@ endwith %}
                 {{ input(form.commentsenabled, type="form-check-input") }}
             </div>
             <div class="col-md-4 col-6">
-                <!-- Doesn't seem to have any way, either via bootstrap or css, to be dark mode? -->
-                {{ input(form.sessionoccurence, type="multi-check-box") }}
-                {{ input(form.facilitatorfile, type="form-control-file w-100") }}
-                {{ input(form.studentfile, type="form-control-file w-100") }}
+                {{ input(form.sessionnames) }}
+                <div class="form-select-parent">
+                    {{ input(form.sessionoccurence, type="form-select") }}
+                </div>
 
             </div>
             <div class="col-md-4 col-12">
-                {{ input(form.sessionnames) }}
                 {{ input(form.commentsuggestions) }}
+                {{ input(form.facilitatorfile, type="form-control-file w-100") }}
+                {{ input(form.studentfile, type="form-control-file w-100") }}
 
             </div>
         </div>

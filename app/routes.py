@@ -217,9 +217,14 @@ def addunit():
         
         #convert session occurences to a | string
         occurences = ""
-        for time in sessionoccurence:
-            occurences += time + "|"
-        occurences = occurences[:-1]
+        if sessionoccurence == "Morning/Afternoon":
+            occurences = "Morning|Afternoon"
+        elif sessionoccurence == "Hours":
+            occurences = "8am|9am|10am|11am|12pm|1pm|2pm|3pm|4pm|5pm|6pm"
+        else:
+            print("No occurence, probable error")
+            flask.flash("Error with session occurence", 'error')
+            return flask.render_template('addunit.html', form=form)
         print(f"session occurence string: {occurences}")
 
          #read CSV file
