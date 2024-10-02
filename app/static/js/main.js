@@ -36,7 +36,7 @@ function checkServerStatus() {
         })
         .catch(error => {
             // If fetch fails (server down or disconnected), show an alert
-            ShowAlert("Warning: The server has disconnected!", "danger");
+            ShowAlert("Warning: The server has disconnected!", "close");
         });
 }
 
@@ -62,7 +62,7 @@ if (window.location.href.indexOf("session") != -1) {
 }
 
 // Check server status every 5 seconds
-setInterval(checkServerStatus, 2000);
+setInterval(checkServerStatus, 5000);
 // Initial check when the page loads
 checkServerStatus();
 
