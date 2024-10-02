@@ -78,6 +78,7 @@ body {
 
 /* Bootstrap class css changes (all elements have this from version 5.2) */
 
+/* FORMS */
 .form-control {
   background-color: color-mix(in srgb, var(--bg), white 20%);
   border-color: color-mix(in srgb, var(--text), var(--bg) 30%);
@@ -101,6 +102,26 @@ body {
   background-color: color-mix(in srgb, var(--bg), white 20%);
 }
 
+.form-check-input {
+  background-color: color-mix(in srgb, var(--bg), white 10%);
+}
+
+.form-control-file::file-selector-button {
+  background-color: color-mix(in srgb, var(--bg), var(--text) 10%) !important;
+  color: var(--text);
+  border-radius: 0.3rem;
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--text);
+  cursor: pointer;
+  padding: 5px 4px;
+}
+
+.form-control-file::file-selector-button:hover {
+  background-color: color-mix(in srgb, var(--bg), var(--text) 20%) !important;
+}
+
+/* Others */
 .navbar {
   background-color: color-mix(in srgb, var(--bg) 75%, var(--text) 25%);
   --bs-navbar-toggler-border-color: none;
@@ -145,4 +166,14 @@ body {
   --bs-btn-hover-border-color: color-mix(in srgb, var(--success), black 20%);
   --bs-btn-active-bg: color-mix(in srgb, var(--success), black 25%);
   --bs-btn-active-border-color: color-mix(in srgb, var(--success), black 25%);
+}
+
+.btn-danger {
+  --bs-btn-color: var(--bs-white);
+  --bs-btn-bg: var(--danger);
+  --bs-btn-border-color: var(--danger);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--danger), black 20%);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--danger), black 20%);
+  --bs-btn-active-bg: color-mix(in srgb, var(--danger), black 25%);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--danger), black 25%);
 }

@@ -38,7 +38,6 @@ if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').match
     $(".modal").attr("data-bs-theme", "dark");
     $(".navbar").attr("data-bs-theme", "dark");
     $(".form-check-input").attr("data-bs-theme", "dark");
-    $(".form-control-file").attr("data-bs-theme", "dark");
     $(".form-select-parent").attr("data-bs-theme", "dark");
 }
 
