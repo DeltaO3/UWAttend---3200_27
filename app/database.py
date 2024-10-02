@@ -2,7 +2,7 @@ import flask
 from app import app
 from app import db
 from .models import db, Student, User, Attendance, Session, Unit
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from app.helpers import get_perth_time
 
 # sql
@@ -428,4 +428,62 @@ def SignStudentOut(attendanceID):
     db.session.commit()
 
     return True
+
+def delete_expired_units():
+    # Wrap the function in the app context
+    with app.app_context():
+        try:
+            # The query will work now as it has a proper Flask context
+            today = date.today()
+            year_ago = today - timedelta(days=365)
+            expired_units = Unit.query.filter(Unit.endDate < year_ago).all()
+            
+            # Perform your deletion logic
+            for unit in expired_units:
+                # Delete the unit and associated records
+                perform_delete_unit(unit.unitID)
+                print(f"Deleted Unit ID: {unit.unitID}")
+            
+            db.session.commit()
+            print("Successfully deleted expired units")
+        except Exception as e:
+            print(f"Error deleting units: {e}")
+            db.session.rollback()
+
+      
+def perform_delete_unit(unit_id):
+    try:
+        # Step 1: Delete associated records from the Attendance table based on SessionID
+        session_records = Session.query.filter_by(unitID=unit_id).all()
+        for session in session_records:
+            attendance_records = Attendance.query.filter_by(sessionID=session.sessionID).all()
+            for attendance in attendance_records:
+                db.session.delete(attendance)
+                print(f"Deleting Attendance record for SessionID {session.sessionID}")
+
+        # Step 2: Delete associated students from the Student table
+        students = Student.query.filter_by(unitID=unit_id).all()
+        for student in students:
+            db.session.delete(student)  # Delete each student associated with the unit
+            print(f"Deleting Student {student.studentID}")
+
+        # Step 3: Delete associated records from the Sessions table
+        session_records = Session.query.filter_by(unitID=unit_id).all()
+        for session in session_records:
+            db.session.delete(session)
+            print(f"Deleting Session record for Unit {unit_id}")
+
+        # Step 4: Delete the unit record from the Units table
+        unit_record = Unit.query.filter_by(unitID=unit_id).first()
+        if unit_record:
+            db.session.delete(unit_record)
+            print(f"Deleting Unit record for Unit {unit_id}")
+
+        # Step 5: Commit all changes to the database
+        db.session.commit()
+        print(f"Successfully deleted Unit {unit_id} and all related records.")
+    except Exception as e:
+        # Rollback changes in case of an error
+        print(f"Error deleting unit {unit_id}: {e}")
+        db.session.rollback()
 
