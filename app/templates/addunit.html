@@ -3,48 +3,55 @@
 
 <!-- Flash Messages -->
 {% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %} 
+{% if messages %}
 {% for category, message in messages %} {%if category == 'error'%}
 <div class="alert alert-danger alert-dismissable fade show d-flex justify-content-between" role="alert">
-	{{ message }}
-	<button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+    {{ message }}
+    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 {% else %}
 <div class="alert alert-success alert-dismissable fade show d-flex justify-content-between" role="alert">
-	{{ message }}
-	<button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+    {{ message }}
+    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 {% endif %} {% endfor %} {% endif %} {%
 endwith %}
 
 <div class="container-fluid">
-    <div class="mt-2 mx-md-5 mx-2">
+    <div class="mt-2 justify-content-center d-flex">
         <h2>Add a Unit</h2>
-        <form method="POST" enctype="multipart/form-data" novalidate>
-            {{ form.hidden_tag() }}
+    </div>
+    <form method="POST" enctype="multipart/form-data" novalidate class="row row-cols-2 row-cols-md-3">
+        {{ form.hidden_tag() }}
 
-            </div>
+        <div class="col">
+            Unit info
 
             {% for field in form %}
 
-            {% if field.type != "SubmitField" and field.widget.input_type != "hidden" %}
-            <div class="mb-3">
-                <div class="row">
+            {% if loop.index == 6 %}
+        </div>
+        <div class="col">
+            Uploads
 
-                    {{ field.label(class="form-label col-md-3 col-sm-3 text-sm-end") }}
-                    <div class="col">
-                        {% if field.type == "StringField" or field.type =="DateField" %}
-                        {{ field(class="form-control") }}
-                        {% elif field.type == "FileField" %}
-                        {{ field(class="form-control-file") }}
-                        {% elif field.type == "BooleanField" %}
-                        {{ field(class="form-check-input") }}
-                        {% elif field.type == "MultiCheckboxField" %}
-                        {{ field(style="list-style-type: none;") }}
-                        {% endif %}
+            {% elif loop.index == 11 %}
+        </div>
+        <div class="col">
+            Session details
+            {% endif %}
+            {% if field.type !="SubmitField" and field.widget.input_type !="hidden" %} <div class="mb-3">
 
-                    </div>
-                </div>
+                {{ field.label(class="form-label") }}
+                {% if field.type == "StringField" or field.type =="DateField" %}
+                {{ field(class="form-control") }}
+                {% elif field.type == "FileField" %}
+                {{ field(class="form-control-file") }}
+                {% elif field.type == "BooleanField" %}
+                {{ field(class="form-check-input") }}
+                {% elif field.type == "MultiCheckboxField" %}
+                {{ field(style="list-style-type: none;") }}
+                {% endif %}
+
             </div>
             <div>
                 {% for error in field.errors %}
@@ -57,9 +64,10 @@ endwith %}
             {% endif %}
             {% endfor %}
 
-            <br />
-            {{ form.submit(class="btn btn-primary") }}
-        </form>
-    </div>
+        </div>
+        <br />
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+</div>
 </div>
 {% endblock %}
