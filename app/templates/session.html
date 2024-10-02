@@ -2,8 +2,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Session Configuration</h2>
-<p>You have no active sessions. Configure a new session below to view your class list.</p>
+<h2>Session Creation</h2>
 <form method="POST" action="{{ url_for('session') }}">
     {{ form.hidden_tag() }}
 

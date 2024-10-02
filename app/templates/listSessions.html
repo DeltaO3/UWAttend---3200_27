@@ -1,0 +1,46 @@
+<!-- File: templates/listSessions.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Active Sessions</h2>
+
+<p>You have no active sessions. Configure a new session below to view your class list.</p>
+
+<!-- Button to reset session ID -->
+<form method="POST" action="{{ url_for('reset_session') }}">
+    <button type="submit" class="btn btn-danger">Reset Session</button>
+</form>
+
+<!-- Table to display active sessions -->
+<table class="table table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>Session ID</th>
+            <th>Session Name</th>
+            <th>Session Time</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for session in active_sessions %}
+        <tr>
+            <td>{{ session.sessionID }}</td>
+            <td>{{ session.sessionName }}</td>
+            <td>{{ session.sessionTime }}</td>
+            <!-- Inside the loop where sessions are displayed -->
+            <td>
+                <form method="POST" action="{{ url_for('join_session') }}" style="display:inline;">
+                    <input type="hidden" name="join_session_id" value="{{ session.sessionID }}">
+                    <button type="submit" class="btn btn-primary">Join Session</button>
+                </form>                
+                <form method="GET" action="{{ url_for('updatesession', session_id=session.sessionID) }}" style="display:inline;">
+                    <button type="submit" class="btn btn-secondary">Update</button>
+                </form>
+            </td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

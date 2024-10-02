@@ -4,7 +4,7 @@
 {% block content %}
 <h2>Session Configuration</h2>
 <p>You are already in an active session. Update the session configuration below.</p>
-<form method="POST" action="{{ url_for('updatesession') }}">
+<form method="POST" action="{{ url_for('updatesession', session_id=session_id) }}">
     {{ form.hidden_tag() }}
 
     <!-- Unit Code -->

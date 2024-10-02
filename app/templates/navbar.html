@@ -18,10 +18,14 @@
 					Home
 				</a>
 
+				<!-- Sessions: List all current sessions -->
+				<a class="nav-link {% if request.path == url_for('listsessions') %}active" aria-current="page{% endif %}"
+					href="{{ url_for('listsessions') }}">Sessions</a>
+
 				<!-- Session Config: Visible to admins (1), coordinators (2), and facilitators (3) -->
 				
 				<a class="nav-link {% if request.path == url_for('session') %}active" aria-current="page{% endif %}"
-					href="{% if session['session_id']%}{{ url_for('updatesession')}}{% else %}{{ url_for('session') }}{% endif %}">Session Config</a>
+					href="{{ url_for('session')}}">Session Creation</a>
 				
 				<!-- Unit Config: Only visible to admins (1) and coordinators (2) -->
 				{% if current_user.userType == 'admin' or current_user.userType == 'coordinator' %}
