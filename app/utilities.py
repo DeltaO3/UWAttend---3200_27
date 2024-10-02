@@ -160,6 +160,115 @@ def export_attendance_records_csv():
         print("No attendance records found")
         return None
 
+def export_attendance_records_columns():
+    # Query the attendance records joined with students, sessions, and units
+    records = db.session.query(
+        Attendance,
+        Student,
+        Session,
+        Unit
+    ).join(
+        Student, Attendance.studentID == Student.studentID
+    ).join(
+        Session, Attendance.sessionID == Session.sessionID
+    ).join(
+        Unit, Student.unitID == Unit.unitID
+    ).all()
+
+    if records:
+        # Initialize a dictionary to store students, keyed by (studentNumber, unitCode) for uniqueness per unit
+        attendance_data = {}
+
+        # Iterate over the records and organize by unique student-unit combinations
+        for attendance, student, session, unit in records:
+            # Use a tuple (studentNumber, unitCode) as the key to ensure uniqueness per unit
+            unique_key = (student.studentNumber, unit.unitCode)
+            if unique_key not in attendance_data:
+                attendance_data[unique_key] = {
+                    'studentNumber': student.studentNumber,
+                    'firstName': student.firstName,
+                    'lastName': student.lastName,
+                    'title': student.title,
+                    'preferredName': student.preferredName,
+                    'unitCode': unit.unitCode,
+                    'consent': 'Yes' if attendance.consent_given else 'No',
+                }
+
+            # Format session data for attendance: [sessionName]signInTime;signOutTime
+            session_key = f"{session.sessionDate.strftime('%Y_%B_%d')}_{session.sessionTime}"
+            sign_in_time = (
+                attendance.signInTime.strftime('%H:%M:%S')
+                if attendance.signInTime
+                else ''
+            )
+            sign_out_time = (
+                attendance.signOutTime.strftime('%H:%M:%S')
+                if attendance.signOutTime
+                else ''
+            )
+            attendance_info = f"[{session.sessionName}]{sign_in_time};{sign_out_time}"
+
+            # Store attendance_info under session_key
+            attendance_data[unique_key][session_key] = attendance_info
+
+            # Format grade data according to your specified rules
+            marks = attendance.marks if attendance.marks else ''
+            comments = attendance.comments if attendance.comments else ''
+
+            if marks and comments:
+                grade_info = f"{marks};comment={comments}"
+            elif marks:
+                grade_info = f"{marks};"
+            elif comments:
+                grade_info = f";comment={comments}"
+            else:
+                grade_info = ''
+
+            # Store grade_info under session_key + '_Grade'
+            attendance_data[unique_key][f"{session_key}_Grade"] = grade_info
+
+        # Prepare the headers
+        headers = [
+            'studentNumber', 'firstName', 'lastName', 'title', 'preferredName', 'unitCode', 'consent'
+        ]
+
+        # Collect all session_keys
+        session_keys = set()
+        for student_record in attendance_data.values():
+            for key in student_record:
+                if key not in headers:
+                    if key.endswith('_Grade'):
+                        session_keys.add(key[:-6])  # Remove '_Grade' from key
+                    else:
+                        session_keys.add(key)
+
+        # Sort the session_keys and build headers
+        sorted_session_keys = sorted(session_keys)
+
+        for session_key in sorted_session_keys:
+            headers.append(session_key)
+            headers.append(f"{session_key}_Grade")
+
+        # Create a list of rows (each row represents a unique student-unit combination)
+        rows = []
+        for student_unit_key, student_record in attendance_data.items():
+            # Print the student record before creating the row
+            row = [student_record.get(header, '') for header in headers]
+            rows.append(row)
+
+        # Convert to CSV with proper quoting
+        csvfile = StringIO()
+        writer = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
+        writer.writerow(headers)  # Write the header
+        writer.writerows(rows)    # Write all student rows
+
+        return csvfile.getvalue()
+
+    else:
+        print("No attendance records found.")
+        return None
+
+
 # Export all tables to a single ZIP file containing multiple CSV files
 def export_all_to_zip(zip_filename):
     with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
@@ -199,5 +308,11 @@ def export_all_to_zip(zip_filename):
         if attendance_records_csv:
             zipf.writestr('attendancerecord.csv', attendance_records_csv)
             print("Exported attendancerecord.csv")
+
+        # Export the Attendance Records CSV
+        attendance_records_columns = export_attendance_records_columns()
+        if attendance_records_columns:
+            zipf.writestr('attendancerecordCOLUMNS.csv', attendance_records_columns)
+            print("Exported attendancerecordCOLUMNS.csv")
 
     print(f"All tables have been exported to {zip_filename}")
