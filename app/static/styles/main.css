@@ -33,3 +33,22 @@
 .list-group-item:nth-child(even) {
     background-color: #e9ecef; /* Slightly darker grey for even items */
 }
+
+/* buttons */
+.alert-custom {
+  padding: 15px 20px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  position: relative;
+  font-size: 16px;
+}
+
+.close-btn {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: #000;
+  cursor: pointer;
+}

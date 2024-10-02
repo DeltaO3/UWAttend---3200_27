@@ -36,20 +36,21 @@ function checkServerStatus() {
         })
         .catch(error => {
             // If fetch fails (server down or disconnected), show an alert
-            ShowAlert("Warning: The server has disconnected!", "close");
+            ShowAlert("Warning: The server has disconnected!", "danger");
         });
 }
 
 function ShowAlert(message, type) {
     const alertDiv = document.getElementById('serverAlert');
-    alertDiv.textContent = message;
-    alertDiv.className = `alert alert-${type}`; // Sets the type (success, danger, etc.)
+    
+    // Create a close button
+    const closeButton = '<span class="close-btn" aria-label="Close" onclick="this.parentElement.style.display=\'none\';">&times;</span>';    
+    // Set the message and include the close button
+    alertDiv.innerHTML = message + closeButton;
+    
+    // Set the class based on the type (success, danger, etc.)
+    alertDiv.className = `alert alert-${type} alert-custom`;
     alertDiv.style.display = 'block'; // Show the alert
-
-    // Automatically hide the alert after a few seconds
-    setTimeout(() => {
-        alertDiv.style.display = 'none';
-    }, 7000);
 }
 
 
