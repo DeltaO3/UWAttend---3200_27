@@ -14,6 +14,7 @@ $("#attendanceForm").submit(function (e) {
 
 //Calls an ajax function to a backend route, passing the consent in JSON format
 function addAttendance(consent = "none") {
+
 	// Set the consent value in the hidden field
     $("#consent_status").val(consent);
 
