@@ -85,7 +85,7 @@ class AddUnitForm(FlaskForm):
     studentfile = FileField('Student List CSV Upload:', validators=[FileRequired(), FileAllowed(['csv'], "Only accepts .csv files")],render_kw={"accept": ".csv"})
     consentcheck = BooleanField('Photo Consent Required?')
     assessmentcheck = BooleanField('Sessions Assessed?')
-    commentsenabled = BooleanField('Student Comments Enabled?')
+    commentsenabled = BooleanField('Comments Enabled?')
     sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
     sessionoccurence = MultiCheckboxField(
 		'Session Occurence',

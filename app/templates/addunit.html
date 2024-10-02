@@ -24,7 +24,6 @@ endwith %}
     </div>
     <form method="POST" enctype="multipart/form-data" novalidate>
         {{ form.hidden_tag() }}
-        <!-- Going to have to manually call each element to get proper placement working :( -->
         <div class="row">
             <div class="col-md-4 col-6">
                 {{ input(form.unitcode) }}
@@ -37,20 +36,21 @@ endwith %}
             </div>
         </div>
         <div class="row">
-            <div class="col-4">
+            <div class="col-md-4 col-6">
                 {{ input(form.startdate) }}
                 {{ input(form.enddate) }}
+                {{ input(form.consentcheck, type="form-check-input") }}
+                {{ input(form.assessmentcheck, type="form-check-input") }}
+                {{ input(form.commentsenabled, type="form-check-input") }}
             </div>
-            <div class="col-4">
-                {{ input(form.facilitatorfile, type="FileField") }}
-                {{ input(form.studentfile, type="FileField") }}
-                {{ input(form.consentcheck, type="BooleanField") }}
-                {{ input(form.assessmentcheck, type="BooleanField") }}
-                {{ input(form.commentsenabled, type="BooleanField") }}
+            <div class="col-md-4 col-6">
+                {{ input(form.sessionoccurence, type="multi-check-box") }}
+                {{ input(form.facilitatorfile, type="form-control-file w-100") }}
+                {{ input(form.studentfile, type="form-control-file w-100") }}
+
             </div>
-            <div class="col-4">
+            <div class="col-md-4 col-12">
                 {{ input(form.sessionnames) }}
-                {{ input(form.sessionoccurence, type="MultiCheckboxField") }}
                 {{ input(form.commentsuggestions) }}
 
             </div>

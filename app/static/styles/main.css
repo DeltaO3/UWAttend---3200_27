@@ -72,6 +72,9 @@ body {
   background-color: var(--bg);
 }
 
+.multi-check-box {
+  list-style-type: none;
+}
 /* Bootstrap class css changes (all elements have this from version 5.2) */
 
 /* Form control changes */
