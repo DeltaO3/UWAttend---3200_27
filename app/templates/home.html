@@ -52,7 +52,7 @@
 	{% include 'photoConsent.html'%}
 	<!-- Table Section -->
 	<div class="d-flex justify-content-center">
-		<div class="mx-4 mt-3 mx-md-5 container" id="classTable">
+		<div class="mx-4 mt-3 mx-md-5 container">
 			{% if total_students > 0 %}
 			<div class="row d-none d-md-flex text-center lead table-heading">
 				<span class="col">Name</span>
@@ -60,10 +60,14 @@
 				<span class="col">Login</span>
 				<span class="col">Photo</span>
 			</div>
-			<!-- https://getbootstrap.com/docs/5.3/components/scrollspy/ probably what we want -->
-
-			{% for student in students%} <!-- onlick re-route to student page for this specific
-			student -->
+			{% endif %}
+		</div>
+	</div>
+	<div class="d-flex justify-content-center">
+		<div class="mx-4 mt-0 mx-md-5 container" id="classTable">
+			{% if total_students > 0 %}
+			{% for student in students%}
+			<!-- onlick re-route to student page for this specific student -->
 			<div class="row table-element text-center my-2 py-2" onclick="redirectToStudent('{{ student.id }}')">
 				<form id="studentForm_{{ student.id }}" action="/student" method="POST" style="display:none;">
 					<input type="hidden" name="student_id" value="{{ student.id }}">
