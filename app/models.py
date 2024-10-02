@@ -24,11 +24,11 @@ Units_Facilitators_Table = db.Table(
 class User(UserMixin, db.Model):
     __tablename__ = 'user'
     userID: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    uwaID: Mapped[int] = mapped_column(unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(String(320), unique=True, nullable=False)
     firstName: Mapped[Optional[str]] = mapped_column(String(50))
     lastName: Mapped[Optional[str]] = mapped_column(String(50))
     passwordHash: Mapped[str] = mapped_column(String(256), nullable=False)
-    userType: Mapped[int] = mapped_column(nullable=False)   # 1 (admin), 2 (coordinator), 3 (facilitator)
+    userType: Mapped[str] = mapped_column(String((15)), nullable=False)   # "admin", "coordinator", "facilitator"
 
     unitsCoordinate: Mapped[List['Unit']] = relationship(secondary='Units_Coordinators_Table', back_populates='coordinators')
     unitsFacilitate: Mapped[List['Unit']] = relationship(secondary='Units_Facilitators_Table', back_populates='facilitators')
@@ -37,6 +37,8 @@ class User(UserMixin, db.Model):
         return str(self.userID)
     
     def is_password_correct(self, password_plaintext: str):
+        print(password_plaintext)
+        print(self.passwordHash)
         return check_password_hash(self.passwordHash, password_plaintext)
 
     def set_password(self, password_plaintext: str):
@@ -46,9 +48,8 @@ class Unit(db.Model) :
     __tablename__ = 'unit'
     unitID: Mapped[int] = mapped_column(primary_key=True)
     unitCode: Mapped[str] = mapped_column(String(50), nullable=False)
-    unitName: Mapped[Optional[str]] = mapped_column(String(50))
+    unitName: Mapped[str] = mapped_column(String(50), nullable=False)
     studyPeriod: Mapped[str] = mapped_column(String(50), nullable=False)
-    active: Mapped[bool] = mapped_column(nullable=False)
     startDate: Mapped[date] = mapped_column(nullable=False)
     endDate: Mapped[date] = mapped_column(nullable=False)
 
@@ -66,13 +67,13 @@ class Unit(db.Model) :
 class Student(db.Model) :
     __tablename__ = 'student'
     studentID: Mapped[int] = mapped_column(primary_key=True)
-    studentNumber: Mapped[int] = mapped_column(nullable=False)
+    studentNumber: Mapped[str] = mapped_column(String(15), nullable=False)
     firstName: Mapped[str] = mapped_column(String(50), nullable=False)
     lastName: Mapped[str] = mapped_column(String(50), nullable=False)
     title: Mapped[str] = mapped_column(String(50), nullable=False)
     preferredName: Mapped[str] = mapped_column(String(50), nullable=False)
     unitID: Mapped[int] = mapped_column(ForeignKey('unit.unitID'), nullable=False)
-    consent: Mapped[int] = mapped_column(nullable=False)   # 0 (no), 1 (yes), -1 (consent not required)
+    consent: Mapped[str] = mapped_column(String(50), nullable=False)    # "yes", "no", "not required"
 
 class Session(db.Model) :
     __tablename__ = 'session'
@@ -92,7 +93,7 @@ class Attendance(db.Model) :
     facilitatorID: Mapped[int] = mapped_column(ForeignKey('user.userID'), nullable=False)
     marks: Mapped[Optional[str]] = mapped_column(String(100))         # | separated string
     comments: Mapped[Optional[str]] = mapped_column(String(1000))     # | separated string
-    consent_given: Mapped[int] = mapped_column(nullable=False)
+    consent_given: Mapped[str] = mapped_column(String(50), nullable=False)  # "yes", "no", "not required"
 
 
 @login.user_loader
