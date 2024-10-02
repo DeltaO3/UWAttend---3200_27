@@ -328,6 +328,16 @@ def student():
     
     current_session = current_session[0]
 
+    unit = GetUnit(unitID=current_session.unitID)
+
+    if not unit:
+        flask.flash("Error loading unit") 
+        return flask.redirect(flask.url_for('home'))
+    
+    unit = unit[0]
+    comment_suggestions = unit.commentSuggestions
+    comment_list = comment_suggestions.split('|')
+
     attendance_record = GetAttendance(input_sessionID=current_session.sessionID, studentID=student_id)[0] 
 
     student_info = generate_student_info(student, attendance_record)
@@ -335,7 +345,7 @@ def student():
 
     print("consent", student.consent)
     
-    return flask.render_template('student.html', form=form, student=student_info, attendance=attendance_record)
+    return flask.render_template('student.html', form=form, student=student_info, attendance=attendance_record, comments=comment_list)
 
 @app.route('/remove_from_session', methods=['GET'])
 @login_required

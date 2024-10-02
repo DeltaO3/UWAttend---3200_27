@@ -16,3 +16,14 @@ function removeStudent(id) {
 
 	return false; // Ensure no unexpected behaviour
 }
+
+$(document).ready(function() {
+    $('.suggestion').on('click', function() {
+        var suggestedText = $(this).data('text');
+        var commentsField = $('#comments'); 
+
+        commentsField.val(function(i, text) {
+            return text + (text ? ', ' : '') + suggestedText; 
+        });
+    });
+});

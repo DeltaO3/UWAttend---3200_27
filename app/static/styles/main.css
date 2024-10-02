@@ -138,7 +138,7 @@ body {
   --bs-modal-border-color: var(--text);
 }
 
-//Buttons
+/* Buttons */
 .btn-primary {
   --bs-btn-color: var(--bs-white);
   --bs-btn-bg: var(--primary);
@@ -177,4 +177,32 @@ body {
   --bs-btn-hover-border-color: color-mix(in srgb, var(--danger), black 20%);
   --bs-btn-active-bg: color-mix(in srgb, var(--danger), black 25%);
   --bs-btn-active-border-color: color-mix(in srgb, var(--danger), black 25%);
+}
+
+/* Badges */
+
+.badge {
+  background-color: color-mix(in srgb, var(--bg), var(--primary) 15%);
+  color: var(--text);
+  border-radius: 0.5rem;
+  padding: 0.5em 1em;
+  transition: background-color 0.3s ease;
+}
+
+/* Adjustments for Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .badge {
+      background-color: color-mix(in srgb, var(--bg), var(--secondary) 15%);
+  }
+}
+
+/* Badge hover state */
+.badge:hover {
+  background-color: color-mix(in srgb, var(--primary), var(--text) 10%);
+}
+
+@media (prefers-color-scheme: dark) {
+  .badge:hover {
+      background-color: color-mix(in srgb, var(--secondary), var(--text) 10%);
+  }
 }
