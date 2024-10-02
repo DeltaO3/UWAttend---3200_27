@@ -36,10 +36,10 @@
 				<form id="attendanceForm" method="POST" action="{{ url_for('add_student') }}">
 					{{ form.hidden_tag() }}
 					<div class="input-group">
+						{{ form.studentID(id='studentID') }}
 						{{ form.student_sign_in(id='student_search', placeholder="Enter name or ID...",
 						class="form-control", autocomplete="off") }}
-						{{ form.studentID(id='studentID') }}
-						{{ form.consent_status(id="consentStatus", type="hidden") }}
+						{{ form.consent_status(type="hidden") }}
 						<input type="hidden" id="hidden_consent_indicator" value="no">
 						<button id="student_sign_in_button" type="submit" class="btn btn-primary">Submit</button>
 					</div>

@@ -57,7 +57,7 @@ def home():
             "number": student.studentNumber,
             "id": student.studentID,
             "login": login_status,  
-            "photo": "yes" if student.consent == 1 else "no",
+            "photo": student.consent,
             "time": attendance_record.signInTime
         }
         student_list.append(student_info)
@@ -167,7 +167,7 @@ def updatesession():
 @app.route('/unitconfig', methods=['GET', 'POST'])
 @login_required
 def unitconfig():
-    if current_user.userType == 3:
+    if current_user.userType == 'facilitator':
         return flask.redirect('home')
     
     return flask.render_template('unit.html')
@@ -176,14 +176,14 @@ def unitconfig():
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
 def admin():
-    if current_user.userType != 1:
+    if current_user.userType != 'admin':
         return flask.redirect('home')
 
     form = AddUserForm()
 
     if form.validate_on_submit() and flask.request.method == 'POST':       
         
-        AddUser(userType=form.UserType.data, uwaID=form.uwaId.data, firstName=form.firstName.data, lastName=form.lastName.data, passwordHash=form.passwordHash.data)
+        AddUser(userType=form.UserType.data, email=form.email.data, firstName=form.firstName.data, lastName=form.lastName.data, passwordHash=form.passwordHash.data)
         return flask.redirect(flask.url_for('admin'))
     
     return flask.render_template('admin.html', form=form)
@@ -192,7 +192,7 @@ def admin():
 @app.route('/addunit', methods=['GET', 'POST'])
 @login_required
 def addunit():
-    if current_user.userType == 3:
+    if current_user.userType == 'facilitator':
         return flask.redirect('home')
     
     form = AddUnitForm()
@@ -200,6 +200,7 @@ def addunit():
     if form.validate_on_submit() and flask.request.method == 'POST':
         #Form data held here
         newunit_code = form.unitcode.data
+        unit_name = form.unitname.data
         semester = form.semester.data
         consent_required = form.consentcheck.data
         start_date = form.startdate.data
@@ -247,7 +248,7 @@ def addunit():
             return flask.render_template('addunit.html', form=form)
         
         #add to database
-        unit_id = AddUnit(newunit_code, "placeholdername", semester, 1, start_date, end_date, 
+        unit_id = AddUnit(newunit_code, unit_name, semester, start_date, end_date, 
                 sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
         
         #Add from csv
@@ -255,8 +256,8 @@ def addunit():
         import_student_in_db(s_data, unit_id)
         import_facilitator_in_db(f_data, unit_id, current_user)
         
-        AddUnitToFacilitator(current_user.uwaID, unit_id)
-        AddUnitToCoordinator(current_user.uwaID, unit_id)
+        AddUnitToFacilitator(current_user.email, unit_id)
+        AddUnitToCoordinator(current_user.email, unit_id)
         
         return flask.redirect(flask.url_for('unitconfig'))
 	    
@@ -366,7 +367,7 @@ def login():
     
     form = LoginForm()
     if form.validate_on_submit():
-        user = database.GetUser(uwaID = form.username.data)          
+        user = database.GetUser(email = form.username.data)                
 
         if user is None or not user.is_password_correct(form.password.data):
             flask.flash('Invalid username or password')
@@ -436,6 +437,8 @@ def add_student():
         consent_status = form.consent_status.data
         # sessionID = form.sessionID.data
 
+        print(f'{studentID} consent as given in form: {consent_status}')
+
         session_id = flask.session.get('session_id')
         print("Session ID as found in add_student : ", session_id)
 
@@ -462,15 +465,23 @@ def add_student():
                     flask.flash(f"Error signing out {student.preferredName} {student.lastName}", 'error')
                 return flask.redirect(flask.url_for('home'))
             
-            if student.consent == 1:
-                consent_status = "yes"
-            
-            consent_int = 1 if consent_status == "yes" else 0
+            # consent will be none if it is already yes or not required i.e. no changes required
+            if consent_status != "none" :
+                student.consent = "yes" if consent_status == "yes" else "no"
 
-            student.consent = consent_int
+            unit = GetUnit(unitID=unitID)
+
+            if not unit :
+                flask.flash("Error loading unit details")
+                return flask.redirect(flask.url_for('home'))
+            
+            unit = unit[0]
+
+            if not unit.consent :
+                student.consent = "not required"
 
             # Add attendance for the current session
-            AddAttendance(sessionID=session_id, studentID=studentID, consent_given=1, facilitatorID=1) # TODO need to be replaced with actual facilitator ID logic
+            AddAttendance(sessionID=session_id, studentID=studentID, consent_given=student.consent, facilitatorID=current_user.userID)
             print(f"Logged {student.preferredName} {student.lastName} in")
 
             return flask.redirect(flask.url_for('home'))
@@ -533,31 +544,31 @@ def student_suggestions():
         first_last_name = f"{student.firstName} {student.lastName}"
         preferred_last_name = f"{student.preferredName} {student.lastName}"
         if query in student.lastName.lower() or query in student.preferredName.lower() or query in preferred_last_name.lower() or query in str(student.studentNumber):
-            consent_int = student.consent
+            consent = student.consent
             if existing_attendance:
-                consent_int = 1
+                consent = "yes"
             if not unit.consent:
-                consent_int = -1
-            print(consent_int)
+                consent = "not required"
+            print(consent)
             suggestions.append({
                 'name': f"{student.preferredName} {student.lastName}",
                 'id': student.studentID,
                 'number': student.studentNumber,
-                'consentNeeded': consent_int,
+                'consentNeeded': consent,
                 'signedIn': 1 if existing_attendance else 0,
             })
         elif query in student.firstName.lower() or query in first_last_name.lower():
-            consent_int = student.consent
+            consent = student.consent
             if existing_attendance:
-                consent_int = 1
+                consent = "yes"
             if not unit.consent:
-                consent_int = -1
-            print(consent_int)
+                consent = "not required"
+            print(consent)
             suggestions.append({
                 'name': f"{student.firstName} {student.lastName}",
                 'id': student.studentID,
                 'number': student.studentNumber,
-                'consentNeeded': consent_int,
+                'consentNeeded': consent,
                 'signedIn': 1 if existing_attendance else 0,
             })
 

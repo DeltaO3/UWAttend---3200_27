@@ -25,13 +25,13 @@
 					Config</a>
 
 				<!-- Unit Config: Only visible to admins (1) and coordinators (2) -->
-				{% if current_user.userType == 1 or current_user.userType == 2 %}
+				{% if current_user.userType == 'admin' or current_user.userType == 'coordinator' %}
 				<a class="nav-link {% if request.path == url_for('unitconfig') %}active" aria-current="page{% endif %}"
 					href="{{ url_for('unitconfig') }}">Unit Config</a>
 				{% endif %}
 
 				<!-- Administration: Only visible to admins (1) -->
-				{% if current_user.userType == 1 %}
+				{% if current_user.userType == 'admin' %}
 				<a class="nav-link {% if request.path == url_for('admin') %}active" aria-current="page{% endif %}"
 					href="{{ url_for('admin') }}">Administration</a>
 				{% endif %}
@@ -40,7 +40,7 @@
 			<!-- Right side -->
 			<div class="navbar-nav d-flex justify-content-end col-lg-4 col-md-3">
 				<span class="navbar-text fw-bold text-truncate me-3 d-none d-md-block">
-					{{ current_user.uwaID }}
+					{{ current_user.firstName }} {{ current_user.lastName}}
 				</span>
 				<a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
 			</div>
