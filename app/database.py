@@ -407,8 +407,7 @@ def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, logi
     if grade:
         attendance_record.marks = grade
 
-    if comments:
-        attendance_record.comments = comments
+    attendance_record.comments = comments
 
     # Commit the changes to the database
     try:
