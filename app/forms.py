@@ -82,7 +82,7 @@ class CreateAccountForm(FlaskForm):
     firstName   = StringField('First name:', validators=[DataRequired()])
     lastName    = StringField('Last name:', validators=[DataRequired()])
     password1 = PasswordField('Password:', validators=[DataRequired()])
-    password2 = PasswordField('Confirm password:', validators=[DataRequired()])
+    password2 = PasswordField('Confirm password:', validators=[DataRequired(), password_check])
     submit = SubmitField('Create Account')
 
 class AddUnitForm(FlaskForm):
