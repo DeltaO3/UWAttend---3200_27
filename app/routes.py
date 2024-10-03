@@ -612,5 +612,7 @@ def sign_all_out():
 @app.route('/exitSession', methods=['GET'])
 @login_required
 def exitSession():
+    print(f"removing session cookie for session ID {flask.session.pop('session_id')}")
     flask.session.pop('session_id', default=None)
-    return flask.redirect(flask.url_for('session'))
+    print("successfully removed session cookie")
+    return flask.redirect(url_for('session'))

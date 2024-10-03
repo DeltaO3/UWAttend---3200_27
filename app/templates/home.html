@@ -72,7 +72,7 @@ endwith %}
 		<button class="btn col-md-3 col">Sync</button>
 		<button id="signOutButton" class="btn btn-danger col">Sign All Out</button>
 		<button class="btn col-md-3 col">Download</button>
-		<button id="exitSessionButtonHome" class="exitSessionButton btn btn-danger col">Exit Session</button>
+		<button id="exitSessionButtonHome" class="exitSessionButton btn btn-danger col" onclick="exitSession()">Exit Session</button>
 	</div>
 	{% include 'signOut.html'%}
 </div>
@@ -80,4 +80,5 @@ endwith %}
 <script src="{{url_for('static', filename='js/consent.js')}}"></script>
 <script src="{{ url_for('static', filename='js/student_suggestions.js') }}"></script>
 <script src="{{ url_for('static', filename='js/sign_out.js') }}"></script>
+<script src="{{url_for('static', filename='js/exit_session.js')}}"></script>
 {% endblock %}
