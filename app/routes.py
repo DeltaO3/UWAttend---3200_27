@@ -1,6 +1,7 @@
 import flask
 
 from app import app
+from app import mail
 from .forms import *
 from .helpers import *
 from .models import *
@@ -12,6 +13,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 import os
 from datetime import datetime, date
 import sqlalchemy as sa
+from flask_mail import Message
 
 # HOME -   /home/
 @app.route('/', methods=['GET'])
@@ -604,3 +606,10 @@ def sign_all_out():
 
     print("Successfully signed out all users")
     return flask.redirect(flask.url_for('home'))
+
+@app.route("/send-email")
+def send_email():
+    msg = Message("Hello from Flask", recipients=["23159504@student.uwa.edu.au", "roweisabella702@gmail.com"])
+    msg.body = "This is a test email sent from a Flask app using Amazon SES."
+    mail.send(msg)
+    return "Email sent!"

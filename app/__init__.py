@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_apscheduler import APScheduler
+from flask_mail import Mail, Message
 from sqlalchemy import MetaData
 import os
 
@@ -41,9 +42,11 @@ scheduler.add_job(
     hours=24  
 )
 
-MAIL_SERVER = 'email-smtp.us-east-1.amazonaws.com'  # Choose your SES region
+mail = Mail(app)
+
+MAIL_SERVER = 'email-smtp.southeast-1.amazonaws.com'  
 MAIL_PORT = 587
 MAIL_USE_TLS = True
 MAIL_USERNAME = os.environ.get('SES_SMTP_USERNAME')  # Set as environment variables
 MAIL_PASSWORD = os.environ.get('SES_SMTP_PASSWORD')
-MAIL_DEFAULT_SENDER = ('Your Name', 'your-email@your-domain.com')
+MAIL_DEFAULT_SENDER = ('UWAttend Team', 'your-email@your-domain.com')
