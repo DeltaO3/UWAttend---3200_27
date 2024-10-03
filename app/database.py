@@ -389,7 +389,7 @@ def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, logi
         if not login and not attendance_record.signOutTime:
             attendance_record.signOutTime = get_perth_time().time()
         if login and attendance_record.signOutTime:
-            message = f"Student temporarily signed out between {attendance_record.signOutTime} and {str(get_perth_time().time()).split('.')[0]}"
+            message = f"Student temporarily signed out between {str(attendance_record.signOutTime).split('.')[0]} and {str(get_perth_time().time()).split('.')[0]}"
             if comments: 
                 comments = comments + f" | {message}"
             else:
@@ -441,7 +441,7 @@ def RemoveSignOutTime(attendanceID):
 
     comments = attendance.comments
 
-    message = f"Student temporarily signed out between {attendance.signOutTime} and {str(get_perth_time().time()).split('.')[0]}"
+    message = f"Student temporarily signed out between {str(attendance.signOutTime).split('.')[0]} and {str(get_perth_time().time()).split('.')[0]}"
     if comments: 
         comments = comments + f" | {message}"
     else:
