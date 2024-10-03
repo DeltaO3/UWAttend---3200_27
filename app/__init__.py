@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_apscheduler import APScheduler
 from sqlalchemy import MetaData
+import os
 
 convention = {
     "ix": 'ix_%(column_0_label)s',
@@ -39,3 +40,10 @@ scheduler.add_job(
     trigger='interval',  
     hours=24  
 )
+
+MAIL_SERVER = 'email-smtp.us-east-1.amazonaws.com'  # Choose your SES region
+MAIL_PORT = 587
+MAIL_USE_TLS = True
+MAIL_USERNAME = os.environ.get('SES_SMTP_USERNAME')  # Set as environment variables
+MAIL_PASSWORD = os.environ.get('SES_SMTP_PASSWORD')
+MAIL_DEFAULT_SENDER = ('Your Name', 'your-email@your-domain.com')
