@@ -370,6 +370,7 @@ def create_account():
     
     form = CreateAccountForm()
     if form.validate_on_submit():
+        #TODO: Add email logic
         #Uses a placeholder email - perhaps this should be included in the route as a ?email=email parameter?
         #feels unsafe, feel free to change some things. 
         email = form.firstName.data + "@placeholder.com"
@@ -378,7 +379,21 @@ def create_account():
         login_user(GetUser(email = email))
         return flask.redirect(flask.url_for('home'))
     
-    return flask.render_template('createaccount.html', form=form)
+    return flask.render_template('createAccount.html', form=form)
+
+#FORGOT PASSWORD - /forgot_password
+@app.route('/forgot_password', methods=['GET'])
+def forgot_password():
+    if current_user.is_authenticated:
+        return flask.redirect('home')
+    #TODO: add backend logic for email
+    return flask.render_template('forgotPassword.html')
+
+#RESET PASSWORD - /reset_password
+@app.route('/reset_password', methods=['GET'])
+def reset_password():
+    return flask.render_template('resetPassword.html')
+
 
 # LOGIN - /login/ 
 @app.route('/login', methods=['GET', 'POST'])
