@@ -2,7 +2,7 @@ import flask
 from app import app
 from app import db
 from .models import db, Student, User, Attendance, Session, Unit
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from app.helpers import get_perth_time
 
 # sql
@@ -103,11 +103,11 @@ def AddAttendance(sessionID, studentID, signOutTime=None, facilitatorID=None, ma
 
     
 
-def AddUser(uwaID, firstName, lastName, passwordHash, userType):
+def AddUser(email, firstName, lastName, passwordHash, userType):
 
     try:
         UserEntry = User(
-            uwaID       = uwaID,
+            email       = email,
             firstName   = firstName,
             lastName    = lastName,
             passwordHash = "",
@@ -123,14 +123,13 @@ def AddUser(uwaID, firstName, lastName, passwordHash, userType):
         print(f'An error occurred: {e}')
 
 
-def AddUnit(unitCode, unitName, studyPeriod, active, startDate, endDate, sessionNames, sessionTimes, comments, marks, consent, commentSuggestions):
+def AddUnit(unitCode, unitName, studyPeriod, startDate, endDate, sessionNames, sessionTimes, comments, marks, consent, commentSuggestions):
 
     try:
         UnitEntry   = Unit(
             unitCode     = unitCode,
             unitName     = unitName,
             studyPeriod  = studyPeriod,
-            active       = active,
             startDate    = startDate,
             endDate      = endDate,
             sessionNames = sessionNames,
@@ -150,15 +149,15 @@ def AddUnit(unitCode, unitName, studyPeriod, active, startDate, endDate, session
         db.session.rollback()
         print(f'An error occurred: {e}')
 
-def AddUnitToCoordinator(userID, unitID):
-    user = db.session.query(User).filter_by(uwaID=userID).first()
+def AddUnitToCoordinator(email, unitID):
+    user = db.session.query(User).filter_by(email=email).first()
     unit = db.session.query(Unit).filter_by(unitID=unitID).first()
     user.unitsCoordinate.append(unit)
     unit.coordinators.append(user)
     db.session.commit()
 
-def AddUnitToFacilitator(userID, unitID):
-    user = db.session.query(User).filter_by(uwaID=userID).first()
+def AddUnitToFacilitator(email, unitID):
+    user = db.session.query(User).filter_by(email=email).first()
     unit = db.session.query(Unit).filter_by(unitID=unitID).first()
     user.unitsFacilitate.append(unit)
     unit.facilitators.append(user)
@@ -238,6 +237,7 @@ def GetSessionForExport(sessionID = None, unitID = None):
     attendance_records = query.all()
 
     return attendance_records
+
 def GetStudent(unitID = None, studentID = None, studentNumber = None):
 
     query = db.session.query(Student)
@@ -260,15 +260,15 @@ def GetStudent(unitID = None, studentID = None, studentNumber = None):
     
     return attendance_records
 
-def GetUser(userID = None, uwaID = None, userType = None):
+def GetUser(userID = None, email = None, userType = None):
 
     query = db.session.query(User)
     
     # handle the optional arguements, only one can be used 
     if userID is not None:
         query = query.filter(User.userID == userID)
-    elif uwaID is not None:
-        query = query.filter(User.uwaID == uwaID)
+    elif email is not None:
+        query = query.filter(User.email == email)
     elif userType is not None:
         query = query.filter(User.userType == userType)
     else:
@@ -307,14 +307,14 @@ def GetUnit(unitID = None, unitCode = None, studyPeriod = None):
     return unit_records
 
 
-def CheckPassword(uwaID, password):
+def CheckPassword(email, password):
 
     query = db.session.query(User)
     
-    if uwaID is not None:
-        query = query.filter(User.uwaID == uwaID)
+    if email is not None:
+        query = query.filter(User.email == email)
     else:
-        print("You did not submit a uwaID parameter.")
+        print("You did not submit an email parameter.")
         return False
 
     # Retrieve the user record
@@ -327,9 +327,9 @@ def CheckPassword(uwaID, password):
         return False
 
 #Is this function needed? dont see it used anywhere
-def SetPassword(uwaID, newPassword):
+def SetPassword(email, newPassword):
     
-    user = db.session.query(User).filter(User.uwaID == uwaID).first()
+    user = db.session.query(User).filter(User.email == email).first()
     
     if user is None:
         raise ValueError("User not found")    
@@ -339,4 +339,151 @@ def SetPassword(uwaID, newPassword):
     
     # Commit the changes to the database
     db.session.commit()
+
+
+def RemoveStudentFromSession(studentID, sessionID):
+    attendance_record = db.session.query(Attendance).filter_by(studentID=studentID, sessionID=sessionID).first()
+
+    if attendance_record:
+        db.session.delete(attendance_record)
+        db.session.commit()
+        return True
+
+    else:
+        return False
+    
+def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, login=None, consent=None, grade=None, comments=None):
+    # Fetch the attendance record based on studentID
+    attendance_record = db.session.query(Attendance).filter_by(studentID=studentID, sessionID=sessionID).first()
+    unitID = GetSession(sessionID=sessionID)[0].unitID
+    consent_required_for_unit = GetUnit(unitID=unitID)[0].consent
+    student_record = db.session.query(Student).filter_by(studentID=studentID, unitID=unitID).first()
+
+    if not attendance_record:
+        message = f"Attendance record for student ID {studentID} not found."
+        return message
+    
+    if signOutTime and signInTime:
+        if signOutTime < signInTime:
+            message = "Sign out time cannot be before sign in time."
+            return message
+
+    # Update only the fields that are passed
+    if signInTime:
+        try:
+            # Convert signInTime string to a Python time object
+            attendance_record.signInTime = datetime.strptime(signInTime, '%H:%M:%S').time()
+        except ValueError:
+            message = f"Invalid time format for signInTime: {signInTime}"
+            return message
+
+    if signOutTime:
+        try:
+            # Convert signOutTime string to a Python time object
+            attendance_record.signOutTime = datetime.strptime(signOutTime, '%H:%M:%S').time()
+        except ValueError:
+            message = f"Invalid time format for signOutTime: {signOutTime}"
+            return message
+
+    if login is not None:  # Boolean field
+        if not login and not attendance_record.signOutTime:
+            attendance_record.signOutTime = get_perth_time().time()
+
+    if consent is not None:  # Boolean field
+        student_record.consent = "yes" if consent else "no"
+        attendance_record.consent_given = "yes" if consent else "no"
+
+    if not consent_required_for_unit :
+        student_record.consent = "not required"
+        attendance_record.consent_given = "not required"
+
+    if grade:
+        attendance_record.marks = grade
+
+    if comments:
+        attendance_record.comments = comments
+
+    # Commit the changes to the database
+    try:
+        db.session.commit()
+        print(f"Attendance record for student ID {studentID} updated successfully.")
+        return "True"
+    except Exception as e:
+        db.session.rollback()
+        message = f"Error updating attendance record for student ID {studentID}: {e}"
+        return message
+
+
+
+
+def SignStudentOut(attendanceID):
+
+    attendance = db.session.query(Attendance).filter(Attendance.attendanceID == attendanceID).first()
+
+    if attendance is None:
+        return False
+
+    attendance.signOutTime = get_perth_time().time()
+
+    db.session.commit()
+
+    return True
+
+def delete_expired_units():
+    # Wrap the function in the app context
+    with app.app_context():
+        try:
+            # The query will work now as it has a proper Flask context
+            today = date.today()
+            year_ago = today - timedelta(days=365)
+            expired_units = Unit.query.filter(Unit.endDate < year_ago).all()
+            
+            # Perform your deletion logic
+            for unit in expired_units:
+                # Delete the unit and associated records
+                perform_delete_unit(unit.unitID)
+                print(f"Deleted Unit ID: {unit.unitID}")
+            
+            db.session.commit()
+            print("Successfully deleted expired units")
+        except Exception as e:
+            print(f"Error deleting units: {e}")
+            db.session.rollback()
+
+      
+def perform_delete_unit(unit_id):
+    try:
+        # Step 1: Delete associated records from the Attendance table based on SessionID
+        session_records = Session.query.filter_by(unitID=unit_id).all()
+        for session in session_records:
+            attendance_records = Attendance.query.filter_by(sessionID=session.sessionID).all()
+            for attendance in attendance_records:
+                db.session.delete(attendance)
+                print(f"Deleting Attendance record for SessionID {session.sessionID}")
+
+        # Step 2: Delete associated students from the Student table
+        students = Student.query.filter_by(unitID=unit_id).all()
+        for student in students:
+            db.session.delete(student)  # Delete each student associated with the unit
+            print(f"Deleting Student {student.studentID}")
+
+        # Step 3: Delete associated records from the Sessions table
+        session_records = Session.query.filter_by(unitID=unit_id).all()
+        for session in session_records:
+            db.session.delete(session)
+            print(f"Deleting Session record for Unit {unit_id}")
+
+        # Step 4: Delete the unit record from the Units table
+        unit_record = Unit.query.filter_by(unitID=unit_id).first()
+        if unit_record:
+            db.session.delete(unit_record)
+            print(f"Deleting Unit record for Unit {unit_id}")
+
+        # Step 5: Commit all changes to the database
+        db.session.commit()
+        print(f"Successfully deleted Unit {unit_id} and all related records.")
+    except Exception as e:
+        # Rollback changes in case of an error
+        print(f"Error deleting unit {unit_id}: {e}")
+        db.session.rollback()
 

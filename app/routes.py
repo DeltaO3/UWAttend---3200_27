@@ -57,7 +57,7 @@ def home():
             "number": student.studentNumber,
             "id": student.studentID,
             "login": login_status,  
-            "photo": "yes" if student.consent == 1 else "no",
+            "photo": student.consent,
             "time": attendance_record.signInTime
         }
         student_list.append(student_info)
@@ -127,6 +127,7 @@ def session():
     return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
 
 @app.route('/updatesession', methods=['GET', 'POST'])
+@login_required
 def updatesession():
 
     # if session doesn't exist, redirect to /session
@@ -166,7 +167,7 @@ def updatesession():
 @app.route('/unitconfig', methods=['GET', 'POST'])
 @login_required
 def unitconfig():
-    if current_user.userType == 3:
+    if current_user.userType == 'facilitator':
         return flask.redirect('home')
     
     # Query all units with their coordinators
@@ -205,14 +206,14 @@ def unitconfig():
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
 def admin():
-    if current_user.userType != 1:
+    if current_user.userType != 'admin':
         return flask.redirect('home')
 
     form = AddUserForm()
 
     if form.validate_on_submit() and flask.request.method == 'POST':       
         
-        AddUser(userType=form.UserType.data, uwaID=form.uwaId.data, firstName=form.firstName.data, lastName=form.lastName.data, passwordHash=form.passwordHash.data)
+        AddUser(userType=form.UserType.data, email=form.email.data, firstName=form.firstName.data, lastName=form.lastName.data, passwordHash=form.passwordHash.data)
         return flask.redirect(flask.url_for('admin'))
     
     return flask.render_template('admin.html', form=form)
@@ -221,7 +222,7 @@ def admin():
 @app.route('/addunit', methods=['GET', 'POST'])
 @login_required
 def addunit():
-    if current_user.userType == 3:
+    if current_user.userType == 'facilitator':
         return flask.redirect('home')
     
     form = AddUnitForm()
@@ -229,12 +230,13 @@ def addunit():
     if form.validate_on_submit() and flask.request.method == 'POST':
         #Form data held here
         newunit_code = form.unitcode.data
+        unit_name = form.unitname.data
         semester = form.semester.data
         consent_required = form.consentcheck.data
         start_date = form.startdate.data
         end_date = form.enddate.data
         student_file = form.studentfile.data
-        facilitator_list = form.facilitatorlist.data
+        facilitator_file = form.facilitatorfile.data
         sessionnames = form.sessionnames.data
         sessionoccurence = form.sessionoccurence.data
         assessmentcheck = form.assessmentcheck.data
@@ -250,35 +252,42 @@ def addunit():
         occurences = occurences[:-1]
         print(f"session occurence string: {occurences}")
 
-        #add to database
-        unitID = AddUnit(newunit_code, "placeholdername", semester, 1, start_date, end_date, 
-                sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
-        
          #read CSV file
         if student_file.filename != '':
             student_file.save(student_file.filename)
-            filename = student_file.filename
-            process_csv(filename, unitID)
+            student_filename = student_file.filename
+            print(f"Student filename: {student_filename}")
         else:
             print("Submitted no file, probable error.")
-            error = "No file submitted"
-            return flask.render_template('addunit.html', form=form, error=error)
+            flask.flash("Error, no student file submitted", 'error')
+            return flask.render_template('addunit.html', form=form)
         
-        #Handle facilitators
-        #TODO: handle emailing facilitators, handle differentiating between facilitator and coordinator
-        facilitators = facilitator_list.split('|')
-        for facilitator in facilitators:
-            if(not GetUser(uwaID=facilitator)):
-                print(f"Adding new user: {facilitator}")
-                AddUser(facilitator, "placeholder", "placeholder", facilitator, 3) #Do we assign coordinators?
-            #add this unit to facilator
-            if(int(facilitator) == current_user.uwaID):
-                print(f"skipping user {facilitator} as it is the currently logged in user.")
-                continue
-            print(f"Adding unit {unitID} to facilitator {facilitator}")
-            AddUnitToFacilitator(facilitator, unitID)
-        AddUnitToFacilitator(current_user.uwaID, unitID)
-        AddUnitToCoordinator(current_user.uwaID, unitID)
+        if facilitator_file.filename != '':
+            facilitator_file.save(facilitator_file.filename)
+            facilitator_filename = facilitator_file.filename
+            print(f"Facilitator filename: {facilitator_filename}")
+        else:
+            print("Submitted no file, probable error.")
+            flask.flash("Error, no facilitator file submitted", 'error')
+            return flask.render_template('addunit.html', form=form)
+     
+        #Process csvs
+        s_data, f_data, error = process_csvs(student_filename, facilitator_filename)
+        if error:
+            flask.flash(error, 'error')
+            return flask.render_template('addunit.html', form=form)
+        
+        #add to database
+        unit_id = AddUnit(newunit_code, unit_name, semester, start_date, end_date, 
+                sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
+        
+        #Add from csv
+        #TODO: handle emailing facilitators - should go in the correct process csv function
+        import_student_in_db(s_data, unit_id)
+        import_facilitator_in_db(f_data, unit_id, current_user)
+        
+        AddUnitToFacilitator(current_user.email, unit_id)
+        AddUnitToCoordinator(current_user.email, unit_id)
         
         return flask.redirect(flask.url_for('unitconfig'))
 	    
@@ -320,12 +329,20 @@ def export_data():
 
 # STUDENT - /student/
 @app.route('/student', methods=['POST'])
+@login_required
 def student():
+    form = AttendanceChangesForm()
+
     student_id = flask.request.form['student_id']
 
-    student = GetStudent(studentID=student_id)[0]
+    student = GetStudent(studentID=student_id)
 
-    # TODO will need to be replaced with actual session logic later
+    if not student:
+        flask.flash("Error - Student not found")
+        return flask.redirect(flask.url_for('home'))
+    
+    student = student[0]
+
     session_id = flask.session.get('session_id')
     print(f"Session ID as found in student : {session_id}")
     current_session = GetSession(sessionID=session_id)
@@ -338,22 +355,37 @@ def student():
 
     attendance_record = GetAttendance(input_sessionID=current_session.sessionID, studentID=student_id)[0] 
 
-    login_status = "no" if attendance_record.signOutTime else "yes"
+    student_info = generate_student_info(student, attendance_record)
+    print("comments", student_info["comments"])
 
-    if not student:
-        flask.flash("Error - Student not found")
+    print("consent", student.consent)
+    
+    return flask.render_template('student.html', form=form, student=student_info, attendance=attendance_record)
+
+@app.route('/remove_from_session', methods=['GET'])
+@login_required
+def remove_from_session():
+    # Access form data
+    student_id = flask.request.args.get('student_id')
+
+    session = flask.session.get('session_id')
+
+    current_session = GetSession(session)
+
+    if not current_session:
+        flask.flash("Error loading session") 
         return flask.redirect(flask.url_for('home'))
     
-    student_info = {
-        "name": f"{student.preferredName} {student.lastName}",
-        "number": student.studentNumber,
-        "id": student.studentID,
-        "login": login_status,  
-        "photo": "yes" if student.consent == 1 else "no",
-        "time": attendance_record.signInTime
-    }
+    current_session = current_session[0]
 
-    return flask.render_template('student.html', student=student_info)
+    status = RemoveStudentFromSession(student_id, current_session.sessionID)
+
+    if status:
+        flask.flash("Student removed from session")
+    else:
+        flask.flash("Error removing student from session")
+        
+    return flask.redirect(flask.url_for('home'))
 	
 # LOGIN - /login/ 
 @app.route('/login', methods=['GET', 'POST'])
@@ -365,7 +397,7 @@ def login():
     
     form = LoginForm()
     if form.validate_on_submit():
-        user = database.GetUser(uwaID = form.username.data)                
+        user = database.GetUser(email = form.username.data)                
 
         if user is None or not user.is_password_correct(form.password.data):
             flask.flash('Invalid username or password')
@@ -376,18 +408,56 @@ def login():
 
     return flask.render_template('login.html', form=form)
 
-@app.route('/save_changes', methods=['POST'])
-def save_changes():
-    # Access form data 
-    grade = flask.request.form.get('grade')
-    comment = flask.request.form.get('comment')
-    photo = flask.request.form.get('photo')
+@app.route('/edit_student_details', methods=['POST'])
+@login_required
+def edit_student_details():
 
-    # Process form data here (save changes to db)
+    form = AttendanceChangesForm()
 
-    return flask.redirect('home') 
+    session = flask.session.get('session_id')
+
+    current_session = GetSession(session)
+
+    if not current_session:
+        flask.flash("Error loading session") 
+        return flask.redirect(flask.url_for('home'))
+    
+    current_session = current_session[0]
+
+    if form.validate_on_submit():
+
+        # Build the dictionary with only non-empty/None values
+        update_data = { 
+            'sessionID': current_session.sessionID,
+            'studentID': form.student_id.data,
+            'signInTime': form.signInTime.data or None,
+            'signOutTime': form.signOutTime.data or None,
+            'login': form.login.data if form.login.data is not None else None,
+            'consent': form.consent.data if form.consent.data is not None else None,
+            'grade': form.grade.data or None,
+            'comments': form.comments.data or None
+        }
+
+        # Remove keys with None values to pass only filled data
+        update_data = {k: v for k, v in update_data.items() if v is not None}
+
+        if update_data:
+            message = EditAttendance(**update_data)   
+
+            if message == "True":
+                flask.flash("Student details updated", category='success')
+            else:
+                flask.flash(message, category='error')
+                student = GetStudent(studentID=form.student_id.data)
+                attendance_record = GetAttendance(input_sessionID=current_session.sessionID, studentID=form.student_id.data)
+                if not student or not attendance_record:
+                    return flask.redirect(flask.url_for('home'))
+                return flask.render_template('student.html', form=form, student=generate_student_info(student[0], attendance_record[0]), attendance=attendance_record[0])
+
+    return flask.redirect(flask.url_for('home'))
 
 @app.route('/add_student', methods=['POST'])
+@login_required
 def add_student():
     form = StudentSignInForm() # TODO still need a front-end prevention method for false sign ins 
 
@@ -396,6 +466,8 @@ def add_student():
         studentID = form.studentID.data
         consent_status = form.consent_status.data
         # sessionID = form.sessionID.data
+
+        print(f'{studentID} consent as given in form: {consent_status}')
 
         session_id = flask.session.get('session_id')
         print("Session ID as found in add_student : ", session_id)
@@ -416,27 +488,42 @@ def add_student():
             existing_attendance = GetAttendance(input_sessionID=session_id, studentID=studentID)
             
             if existing_attendance:
-                flask.flash("User already signed in", category='error')
+                status = SignStudentOut(attendanceID=existing_attendance[0].attendanceID)
+                if status:
+                    flask.flash(f"Signed out {student.preferredName} {student.lastName}", 'success')
+                else:
+                    flask.flash(f"Error signing out {student.preferredName} {student.lastName}", 'error')
                 return flask.redirect(flask.url_for('home'))
             
-            consent_int = 1 if consent_status == "yes" else 0
+            # consent will be none if it is already yes or not required i.e. no changes required
+            if consent_status != "none" :
+                student.consent = "yes" if consent_status == "yes" else "no"
 
-            student.consent = consent_int
-            db.session.commit()
+            unit = GetUnit(unitID=unitID)
+
+            if not unit :
+                flask.flash("Error loading unit details")
+                return flask.redirect(flask.url_for('home'))
+            
+            unit = unit[0]
+
+            if not unit.consent :
+                student.consent = "not required"
 
             # Add attendance for the current session
-            AddAttendance(sessionID=session_id, studentID=studentID, consent_given=1, facilitatorID=1) # TODO need to be replaced with actual facilitator ID logic
-            print(f"Logged {student.firstName} {student.lastName} in")
+            AddAttendance(sessionID=session_id, studentID=studentID, consent_given=student.consent, facilitatorID=current_user.userID)
+            print(f"Logged {student.preferredName} {student.lastName} in")
 
             return flask.redirect(flask.url_for('home'))
 
         else:
-            flask.flash(f"Invalid student information", 'error')
+            flask.flash("Invalid student information", 'error')
 
     # Redirect back to home page when done
     return flask.redirect(flask.url_for('home'))
 
 @app.route('/get_session_details/<unitID>')
+@login_required
 def get_session_details(unitID) :
 
     # get unit by unitID
@@ -462,6 +549,7 @@ def get_session_details(unitID) :
     return flask.jsonify({'session_name_choices': session_name_choices, 'session_time_choices': session_time_choices})
 
 @app.route('/student_suggestions', methods=['GET'])
+@login_required
 def student_suggestions(): 
     # get the search query from the request
     query = flask.request.args.get('q', '').strip().lower()
@@ -469,6 +557,8 @@ def student_suggestions():
     # TODO will need to be replaced with actual session logic later 
     session_id = flask.session.get('session_id')
     current_session = GetSession(sessionID=session_id)[0] 
+    unit = GetUnit(unitID=current_session.unitID)[0]
+    print(unit.consent)
 
     # get students in the unit associated with the session
     students = GetStudent(unitID=current_session.unitID)
@@ -478,24 +568,38 @@ def student_suggestions():
     for student in students:
         existing_attendance = GetAttendance(input_sessionID=current_session.sessionID, studentID=student.studentID)
 
-        if existing_attendance:
+        if existing_attendance and existing_attendance[0].signOutTime:
             continue
 
         first_last_name = f"{student.firstName} {student.lastName}"
         preferred_last_name = f"{student.preferredName} {student.lastName}"
         if query in student.lastName.lower() or query in student.preferredName.lower() or query in preferred_last_name.lower() or query in str(student.studentNumber):
+            consent = student.consent
+            if existing_attendance:
+                consent = "yes"
+            if not unit.consent:
+                consent = "not required"
+            print(consent)
             suggestions.append({
                 'name': f"{student.preferredName} {student.lastName}",
                 'id': student.studentID,
                 'number': student.studentNumber,
-                'consentNeeded': student.consent
+                'consentNeeded': consent,
+                'signedIn': 1 if existing_attendance else 0,
             })
         elif query in student.firstName.lower() or query in first_last_name.lower():
+            consent = student.consent
+            if existing_attendance:
+                consent = "yes"
+            if not unit.consent:
+                consent = "not required"
+            print(consent)
             suggestions.append({
                 'name': f"{student.firstName} {student.lastName}",
                 'id': student.studentID,
                 'number': student.studentNumber,
-                'consentNeeded': student.consent
+                'consentNeeded': consent,
+                'signedIn': 1 if existing_attendance else 0,
             })
 
     return flask.jsonify(suggestions)
@@ -507,6 +611,7 @@ def logout():
     return flask.redirect(flask.url_for('login'))
 
 @app.route('/sign_all_out', methods=['POST'])
+@login_required
 def sign_all_out():
     session_id = flask.session.get('session_id')
 
