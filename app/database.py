@@ -487,3 +487,42 @@ def perform_delete_unit(unit_id):
         print(f"Error deleting unit {unit_id}: {e}")
         db.session.rollback()
 
+def EditUnit(unitID, unitCode=None, unitName=None, studyPeriod=None, startDate=None, endDate=None, sessionNames=None, sessionTimes=None, comments=None, marks=None, consent=None, commentSuggestions=None):
+    # Fetch the unit record based on unitID
+    unit_record = db.session.query(Unit).filter_by(unitID=unitID).first()
+
+    if not unit_record:
+        return f"Unit with ID {unitID} not found."
+
+    # Update only the fields that are provided
+    if unitCode:
+        unit_record.unitCode = unitCode
+    if unitName:
+        unit_record.unitName = unitName
+    if studyPeriod:
+        unit_record.studyPeriod = studyPeriod
+    if startDate:
+        unit_record.startDate = startDate
+    if endDate:
+        unit_record.endDate = endDate
+    if sessionNames:
+        unit_record.sessionNames = sessionNames
+    if sessionTimes:
+        unit_record.sessionTimes = sessionTimes
+    if comments:
+        unit_record.comments = comments
+    if marks is not None:  # marks could be 0 or other falsy value
+        unit_record.marks = marks
+    if consent is not None:  # consent could be False, so we check for None
+        unit_record.consent = consent
+    if commentSuggestions:
+        unit_record.commentSuggestions = commentSuggestions
+
+    # Commit the changes to the database
+    try:
+        db.session.commit()
+        return f"Unit {unitID} updated successfully."
+    except Exception as e:
+        db.session.rollback()
+        return f"Error updating unit {unitID}: {e}"
+

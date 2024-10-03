@@ -17,7 +17,7 @@
             <span class="col">End Date</span>
         </div>
         {% for unit in units %}
-        <a href="{{ url_for('update_unit', unit_code=unit.code) }}" class="text-decoration-none text-dark">
+        <a href="{{ url_for('updateunit', unit_id=unit.unit_id) }}" class="text-decoration-none text-dark">
             <div class="row table-element text-center my-2 py-2 rounded border border-primary">
                 <span class="col-md col-6">{{ unit.code }}</span>
                 <span class="col-md col-6">{{ unit.name }}</span>

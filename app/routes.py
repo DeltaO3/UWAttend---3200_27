@@ -197,10 +197,90 @@ def unitconfig():
             "study_period": unit.studyPeriod,
             "start_date": unit.startDate.strftime('%Y-%m-%d'),
             "end_date": unit.endDate.strftime('%Y-%m-%d'),
+            "unit_id": unit.unitID
         }
         units_data.append(unit_info)
     
     return flask.render_template('unit.html', units=units_data)
+
+@app.route('/updateunit/<int:unit_id>', methods=['GET', 'POST'])
+@login_required
+def updateunit(unit_id):
+    if current_user.userType == 'facilitator':
+        return flask.redirect('home')
+    
+    # Retrieve the unit details using the helper function
+    unit_data = GetUnit(unitID=unit_id)
+    
+    if not unit_data:
+        flask.flash("Unit not found", "error")
+        return flask.redirect(flask.url_for('unitconfig'))
+    
+    unit = unit_data[0]  # Since GetUnit returns a list, get the first item
+
+    # Initialize the form with the existing unit data as defaults
+    form = AddUnitForm(
+        unitcode=unit.unitCode,
+        unitname=unit.unitName,
+        semester=unit.studyPeriod,
+        startdate=unit.startDate,
+        enddate=unit.endDate,
+        sessionnames=unit.sessionNames,
+        commentsenabled=unit.comments,
+        assessmentcheck=unit.marks,
+        consentcheck=unit.consent,
+        commentsuggestions=unit.commentSuggestions,
+        sessionoccurence=unit.sessionTimes
+        
+    )
+
+    if form.validate_on_submit() and flask.request.method == 'POST':
+        # Update logic goes here, process form data
+        unitCode = form.unitcode.data
+        unitName = form.unitname.data
+        studyPeriod = form.semester.data
+        startDate = form.startdate.data
+        endDate = form.enddate.data
+        sessionNames = form.sessionnames.data
+        comments = form.commentsenabled.data
+        marks = form.assessmentcheck.data
+        consent = form.consentcheck.data
+        commentSuggestions = form.commentsuggestions.data
+        sessionTimes = form.sessionoccurence.data
+
+        # For file fields, check if new files were uploaded and process accordingly
+        if form.studentfile.data:
+            student_file = form.studentfile.data
+            student_file.save(student_file.filename)
+            student_filename = student_file.filename
+            print(f"New student file: {student_filename}")
+        
+        if form.facilitatorfile.data:
+            facilitator_file = form.facilitatorfile.data
+            facilitator_file.save(facilitator_file.filename)
+            facilitator_filename = facilitator_file.filename
+            print(f"New facilitator file: {facilitator_filename}")
+        
+        # Update the unit's database record with the new form data
+        EditUnit(
+            unitID=unit_id,
+            unitCode=unitCode,
+            unitName=unitName,
+            studyPeriod=studyPeriod,
+            startDate=startDate,
+            endDate=endDate,
+            sessionNames=sessionNames,
+            sessionTimes=sessionTimes,
+            comments=comments,
+            marks=marks,
+            consent=consent,
+            commentSuggestions=commentSuggestions
+        )
+
+        flask.flash("Unit updated successfully", "success")
+        return flask.redirect(flask.url_for('unitconfig'))
+
+    return flask.render_template('updateunit.html', form=form, unit=unit)
 
 # add users
 @app.route('/admin', methods=['GET', 'POST'])
@@ -635,20 +715,4 @@ def sign_all_out():
     print("Successfully signed out all users")
     return flask.redirect(flask.url_for('home'))
 
-@app.route('/updateunit/<unit_code>', methods=['GET', 'POST'])
-@login_required
-def update_unit(unit_code):
-    # Query the unit based on the provided unit code
-    unit = db.session.query(Unit).filter_by(unitCode=unit_code).first()
 
-    if not unit:
-        flask.flash('Unit not found!', 'danger')
-        return flask.redirect(flask.url_for('unitconfig'))
-
-    # If POST request, process form data for updating the unit
-    if flask.request.method == 'POST':
-        # Add your logic to process the form data and update the unit
-        pass
-    
-    # Render the updateunit.html template with the unit data
-    return flask.render_template('updateunit.html', unit=unit)

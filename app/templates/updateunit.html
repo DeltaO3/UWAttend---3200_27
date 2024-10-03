@@ -1,15 +1,44 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container-fluid">
-    <h2>Update Unit: {{ unit.unitCode }}</h2>
-    <form method="POST">
-        <!-- Add form fields to update the unit information here -->
-        <div class="mb-3">
-            <label for="unitName" class="form-label">Unit Name</label>
-            <input type="text" class="form-control" id="unitName" name="unitName" value="{{ unit.unitName }}">
-        </div>
-        <!-- Other fields for updating -->
-        <button type="submit" class="btn btn-primary">Update Unit</button>
-    </form>
+    <div class="mt-2 mx-md-5 mx-2">
+        <h2>Update Unit</h2>
+        <form method="POST" enctype="multipart/form-data" novalidate>
+            {{ form.hidden_tag() }}
+
+            {% for field in form %}
+            {% if field.type != "SubmitField" and field.widget.input_type != "hidden" %}
+            <div class="mb-3">
+                <div class="row">
+                    {{ field.label(class="form-label col-md-3 col-sm-3 text-sm-end") }}
+                    <div class="col">
+                        {% if field.type == "StringField" or field.type == "DateField" %}
+                        {{ field(class="form-control", value=field.data) }}
+                        {% elif field.type == "FileField" %}
+                        <p>Current file: {{ field.data }}</p>
+                        {{ field(class="form-control-file") }}
+                        {% elif field.type == "BooleanField" %}
+                        {{ field(class="form-check-input", checked=field.data) }}
+                        {% elif field.type == "MultiCheckboxField" %}
+                        {{ field(style="list-style-type: none;") }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div>
+                {% for error in field.errors %}
+                <div class="row">
+                    <div class="col-md-3 col-sm-3 "></div>
+                    <span class="text-danger col"> {{error}} </span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endfor %}
+
+            <br />
+            {{ form.submit(class="btn btn-primary") }}
+        </form>
+    </div>
 </div>
 {% endblock %}
