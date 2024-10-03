@@ -608,3 +608,9 @@ def sign_all_out():
 
     print("Successfully signed out all users")
     return flask.redirect(flask.url_for('home'))
+
+@app.route('/exitSession', methods=['GET'])
+@login_required
+def exitSession():
+    flask.session.pop('session_id', default=None)
+    return flask.redirect(flask.url_for('session'))
