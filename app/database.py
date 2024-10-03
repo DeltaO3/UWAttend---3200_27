@@ -419,9 +419,6 @@ def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, logi
         message = f"Error updating attendance record for student ID {studentID}: {e}"
         return message
 
-
-
-
 def SignStudentOut(attendanceID):
 
     attendance = db.session.query(Attendance).filter(Attendance.attendanceID == attendanceID).first()
@@ -430,6 +427,27 @@ def SignStudentOut(attendanceID):
         return False
 
     attendance.signOutTime = get_perth_time().time()
+
+    db.session.commit()
+
+    return True
+
+def RemoveSignOutTime(attendanceID):
+
+    attendance = db.session.query(Attendance).filter(Attendance.attendanceID == attendanceID).first()
+
+    if attendance is None:
+        return False
+
+    comments = attendance.comments
+
+    message = f"Student temporarily signed out between {attendance.signOutTime} and {str(get_perth_time().time()).split('.')[0]}"
+    if comments: 
+        comments = comments + f" | {message}"
+    else:
+        comments = message
+    attendance.signOutTime = None
+    attendance.comments = comments
 
     db.session.commit()
 
