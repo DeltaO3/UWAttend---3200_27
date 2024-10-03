@@ -2,10 +2,9 @@
 {% block content %}
 <div class="container-fluid ">
     <div class="mt-2 mx-md-5 mx-2">
-        <h2>Unit configuration</h2>
+        <h2>Unit Configuration</h2>
         <br>
         <a href="{{ url_for('addunit') }}" class="btn btn-primary">Add Unit</a>
-
         <a href="{{ url_for('export_data') }}" class="btn btn-primary">Export Database</a>
     </div>
     <div class="mx-4 mt-3 mx-md-5" id="unitsTable">
@@ -18,18 +17,19 @@
             <span class="col">End Date</span>
         </div>
         {% for unit in units %}
-        <div class="row table-element text-center my-2 py-2 rounded border border-primary">
-            <span class="col-md col-6">{{ unit.code }}</span>
-            <span class="col-md col-6">{{ unit.name }}</span>
-            <span class="col-md">{{ unit.study_period }}</span>
-            <span class="col-md">{{ unit.start_date }}</span>
-            <span class="col-md">{{ unit.end_date }}</span>
-        </div>
+        <a href="{{ url_for('update_unit', unit_code=unit.code) }}" class="text-decoration-none text-dark">
+            <div class="row table-element text-center my-2 py-2 rounded border border-primary">
+                <span class="col-md col-6">{{ unit.code }}</span>
+                <span class="col-md col-6">{{ unit.name }}</span>
+                <span class="col-md">{{ unit.study_period }}</span>
+                <span class="col-md">{{ unit.start_date }}</span>
+                <span class="col-md">{{ unit.end_date }}</span>
+            </div>
+        </a>
         {% endfor %}
         {% else %}
         <p class="text-center">No units available.</p>
         {% endif %}
     </div>
 </div>
-
 {% endblock %}

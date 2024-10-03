@@ -171,7 +171,7 @@ def unitconfig():
         return flask.redirect('home')
     
     # Query all units with their coordinators
-    if current_user.userType == 2:
+    if current_user.userType == 'coordinator':
         units_list = (
             db.session.query(Unit)
             .join(Unit.coordinators)
@@ -179,7 +179,7 @@ def unitconfig():
             .all()
         )
     # Query all units for admins
-    if current_user.userType == 1:
+    if current_user.userType == 'admin':
         units_list = (
             db.session.query(Unit)
             .join(Unit.coordinators)
@@ -634,3 +634,21 @@ def sign_all_out():
 
     print("Successfully signed out all users")
     return flask.redirect(flask.url_for('home'))
+
+@app.route('/updateunit/<unit_code>', methods=['GET', 'POST'])
+@login_required
+def update_unit(unit_code):
+    # Query the unit based on the provided unit code
+    unit = db.session.query(Unit).filter_by(unitCode=unit_code).first()
+
+    if not unit:
+        flask.flash('Unit not found!', 'danger')
+        return flask.redirect(flask.url_for('unitconfig'))
+
+    # If POST request, process form data for updating the unit
+    if flask.request.method == 'POST':
+        # Add your logic to process the form data and update the unit
+        pass
+    
+    # Render the updateunit.html template with the unit data
+    return flask.render_template('updateunit.html', unit=unit)

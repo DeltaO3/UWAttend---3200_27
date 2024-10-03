@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+    <h2>Update Unit: {{ unit.unitCode }}</h2>
+    <form method="POST">
+        <!-- Add form fields to update the unit information here -->
+        <div class="mb-3">
+            <label for="unitName" class="form-label">Unit Name</label>
+            <input type="text" class="form-control" id="unitName" name="unitName" value="{{ unit.unitName }}">
+        </div>
+        <!-- Other fields for updating -->
+        <button type="submit" class="btn btn-primary">Update Unit</button>
+    </form>
+</div>
+{% endblock %}
