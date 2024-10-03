@@ -1,65 +1,66 @@
 {% extends "base.html" %}
+{% from 'macros.html' import input %}
 {% block content %}
 
 <!-- Flash Messages -->
 {% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %} 
+{% if messages %}
 {% for category, message in messages %} {%if category == 'error'%}
 <div class="alert alert-danger alert-dismissable fade show d-flex justify-content-between" role="alert">
-	{{ message }}
-	<button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+    {{ message }}
+    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 {% else %}
 <div class="alert alert-success alert-dismissable fade show d-flex justify-content-between" role="alert">
-	{{ message }}
-	<button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+    {{ message }}
+    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 {% endif %} {% endfor %} {% endif %} {%
 endwith %}
 
 <div class="container-fluid">
-    <div class="mt-2 mx-md-5 mx-2">
+    <div class="mt-2 justify-content-center d-flex">
         <h2>Add a Unit</h2>
-        <form method="POST" enctype="multipart/form-data" novalidate>
-            {{ form.hidden_tag() }}
-
-            </div>
-
-            {% for field in form %}
-
-            {% if field.type != "SubmitField" and field.widget.input_type != "hidden" %}
-            <div class="mb-3">
-                <div class="row">
-
-                    {{ field.label(class="form-label col-md-3 col-sm-3 text-sm-end") }}
-                    <div class="col">
-                        {% if field.type == "StringField" or field.type =="DateField" %}
-                        {{ field(class="form-control") }}
-                        {% elif field.type == "FileField" %}
-                        {{ field(class="form-control-file") }}
-                        {% elif field.type == "BooleanField" %}
-                        {{ field(class="form-check-input") }}
-                        {% elif field.type == "MultiCheckboxField" %}
-                        {{ field(style="list-style-type: none;") }}
-                        {% endif %}
-
-                    </div>
-                </div>
-            </div>
-            <div>
-                {% for error in field.errors %}
-                <div class="row">
-                    <div class="col-md-3 col-sm-3 "></div>
-                    <span class="text-danger col"> {{error}} </span>
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-            {% endfor %}
-
-            <br />
-            {{ form.submit(class="btn btn-primary") }}
-        </form>
     </div>
+    <form method="POST" enctype="multipart/form-data" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="row">
+            <div class="col-md-4 col-6">
+                {{ input(form.unitcode) }}
+            </div>
+            <div class="col-md-4 col-6">
+                {{ input(form.semester) }}
+            </div>
+            <div class="col-md-4 col-12">
+                {{ input(form.unitname) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 col-6">
+                {{ input(form.startdate) }}
+                {{ input(form.enddate) }}
+                {{ input(form.consentcheck, type="form-check-input") }}
+                {{ input(form.assessmentcheck, type="form-check-input") }}
+                {{ input(form.commentsenabled, type="form-check-input") }}
+            </div>
+            <div class="col-md-4 col-6">
+                {{ input(form.sessionnames) }}
+                <div class="form-select-parent">
+                    {{ input(form.sessionoccurence, type="form-select") }}
+                </div>
+
+            </div>
+            <div class="col-md-4 col-12">
+                {{ input(form.commentsuggestions) }}
+                {{ input(form.facilitatorfile, type="form-control-file w-100") }}
+                {{ input(form.studentfile, type="form-control-file w-100") }}
+
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center mt-3">
+            {{ form.submit(class="btn btn-primary w-50" ) }}
+        </div>
+    </form>
 </div>
 {% endblock %}
