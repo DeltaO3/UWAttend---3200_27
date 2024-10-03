@@ -57,13 +57,16 @@ def unit_check(form, field):
     if unit_exists(form.unitcode.data, form.startdate.data):
        raise ValidationError("Unit and start date combo already exist in db")
      
+def password_check(form, field):
+    if form.password1.data != form.password2.data:
+        raise ValidationError("Passwords do not match")
+
 def date_check(form, field):
 	print(f"checking date validity, {form.startdate.data}, {form.enddate.data}")
 	if form.startdate.data > form.enddate.data:
 		raise ValidationError("Start date must be before end date")
 
 class AddUserForm(FlaskForm):
-    
     UserType = SelectField(
     'User Type',
     choices=[('admin', 'Administrator'), ('coordinator', 'Coordinator'), ('facilitator', 'Facilitator')],
@@ -74,7 +77,14 @@ class AddUserForm(FlaskForm):
     lastName    = StringField('Last name:', validators=[DataRequired()])
     passwordHash = StringField('Password:', validators=[DataRequired()])
     submit      = SubmitField('Add User')
-    
+
+class CreateAccountForm(FlaskForm):
+    firstName   = StringField('First name:', validators=[DataRequired()])
+    lastName    = StringField('Last name:', validators=[DataRequired()])
+    password1 = PasswordField('Password:', validators=[DataRequired()])
+    password2 = PasswordField('Confirm password:', validators=[DataRequired()])
+    submit = SubmitField('Create Account')
+
 class AddUnitForm(FlaskForm):
     unitcode = StringField('Unit Code:', validators=[DataRequired(), unit_check])
     unitname = StringField('Unit Name:', validators=[DataRequired()])

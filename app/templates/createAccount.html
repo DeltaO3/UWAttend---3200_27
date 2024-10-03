@@ -1,0 +1,24 @@
+{% from 'macros.html' import input %}
+{% extends "base.html" %}
+{% block content %}
+
+<div class="vh-100 d-flex justify-content-center align-items-center login-bg">
+	<div class=" rounded-4 shadow-lg d-flex flex-column login-box
+	justify-content-center align-items-center py-3 px-4">
+		<h3 class="fw-bold">Please add your user details</h3>
+		<!-- Add any flash /error html here :) -->
+		<form method="POST" novalidate class="w-100">
+			{{ form.hidden_tag() }}
+			{% for field in form %}
+			{% if field.type == "StringField" or field.type == "PasswordField" %}
+			{{ input(field) }}
+			{% endif %}
+			{% endfor %}
+			<div class="d-flex flex-column align-items-center">
+				{{ form.submit(class="btn btn-success mb-3 rounded-5 w-100") }}
+			</div>
+		</form>
+	</div>
+</div>
+
+{% endblock %}

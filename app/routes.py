@@ -361,7 +361,19 @@ def remove_from_session():
         flask.flash("Error removing student from session")
         
     return flask.redirect(flask.url_for('home'))
-	
+
+# CREATE ACCOUNT - /create_account
+@app.route('/create_account', methods=['GET', 'POST'])
+def create_account():
+    if current_user.is_authenticated:
+        return flask.redirect('home')
+    
+    form = CreateAccountForm()
+    if form.validate_on_submit():
+        print("validate here")
+    
+    return flask.render_template('createaccount.html', form=form)
+
 # LOGIN - /login/ 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

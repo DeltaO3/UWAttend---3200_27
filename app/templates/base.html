@@ -11,7 +11,7 @@
 </head>
 
 <body>
-	{% if request.path != url_for('login')%}
+	{% if request.path != url_for('login') and request.path != url_for("create_account") %}
 	{% include 'navbar.html' %}
 	{% endif %}
 	{% block content %} {% endblock %}
