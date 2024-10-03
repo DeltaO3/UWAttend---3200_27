@@ -38,7 +38,7 @@ def home():
     logged_in_student_ids = [str(record.studentID) for record in attendance_records]
 
     # get only the students who have logged in
-    students = db.session.query(Student).filter(Student.studentID.in_(logged_in_student_ids)).all() # TODO should there be a database function for this?
+    students = GetStudentList(student_ids=logged_in_student_ids) # TODO should there be a database function for this?
 
     student_list = []
     signed_in_count = 0

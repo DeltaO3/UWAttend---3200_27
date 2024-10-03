@@ -260,6 +260,22 @@ def GetStudent(unitID = None, studentID = None, studentNumber = None):
     
     return attendance_records
 
+def GetStudentList(student_ids):
+
+    query = db.session.query(Student)
+    
+    # handle the optional arguements, only one can be used 
+    if student_ids is not None:
+        query = query.filter(Student.studentID.in_(student_ids))
+    else:
+        # no parameters were supplied.
+        print("You did not submit a parameter to use so returning all student records")
+
+    
+    attendance_records = query.all()
+    
+    return attendance_records
+
 def GetUser(userID = None, email = None, userType = None):
 
     query = db.session.query(User)

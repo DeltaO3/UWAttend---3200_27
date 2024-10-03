@@ -45,6 +45,16 @@ endwith %}
 
 	</div>
 
+	<div class="mx-4 mt-3 mx-md-5">
+		<div class="input-group">
+			<span class="input-group-text bg-white border-end-0">
+				<i class="bi bi-search"></i> 
+			</span>
+			<input type="text" id="search-bar" name="search-bar" class="form-control rounded-end" placeholder="Search class list...">
+		</div>
+		  
+	</div>
+
 	<!-- Table element -->
 	<div class="mx-4 mt-3 mx-md-5" id="classTable">
 		{% if total_students > 0 %}
@@ -79,4 +89,24 @@ endwith %}
 <script src="{{url_for('static', filename='js/consent.js')}}"></script>
 <script src="{{ url_for('static', filename='js/student_suggestions.js') }}"></script>
 <script src="{{ url_for('static', filename='js/sign_out.js') }}"></script>
+<script>
+	$(document).ready(function() {
+    $('#search-bar').on('input', function() {
+        let query = $(this).val().toLowerCase();
+        
+        $('.table-element').each(function() {
+            let studentName = $(this).find('span').eq(0).text().toLowerCase(); 
+            let studentID = $(this).find('span').eq(1).text().toLowerCase();   
+            
+			// By doing it this way - the original ordering of the list should be preserved (so don't have to re-sort later)
+            if (studentName.includes(query) || studentID.includes(query)) {
+                $(this).show();  
+            } else {
+                $(this).hide();  
+            }
+        });
+    });
+});
+
+</script>
 {% endblock %}
