@@ -11,6 +11,11 @@
                 {{error}}
             </div>
             {% endif %}
+            <div class="d-flex justify-content-center align-items-center mb-4 form-select-parent">
+                <div class="form-select-parent">
+                    {{ form.UserType(class="form-select") }}
+                </div>
+            </div>
 
             {% for field in form %}
             {% if field.type == "StringField"%}
