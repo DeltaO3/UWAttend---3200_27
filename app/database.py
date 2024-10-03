@@ -388,6 +388,13 @@ def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, logi
     if login is not None:  # Boolean field
         if not login and not attendance_record.signOutTime:
             attendance_record.signOutTime = get_perth_time().time()
+        if login and attendance_record.signOutTime:
+            message = f"Student temporarily signed out between {attendance_record.signOutTime} and {str(get_perth_time().time()).split('.')[0]}"
+            if comments: 
+                comments = comments + f" | {message}"
+            else:
+                comments = message
+            attendance_record.signOutTime = None
 
     if consent is not None:  # Boolean field
         student_record.consent = "yes" if consent else "no"
