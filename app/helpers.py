@@ -55,7 +55,7 @@ def set_session_form_select_options(form):
 
     form.session_date.default = get_perth_time()
 
-    form.submit.label.text = "Configure Session"
+    form.submit.label.text = "Configure"
 
     form.process()
 
@@ -87,7 +87,7 @@ def set_updatesession_form_select_options(current_session, current_unit, form):
     form.session_time.default = current_session.sessionTime
     form.session_date.default = current_session.sessionDate
 
-    form.submit.label.text = "Save Changes"
+    form.submit.label.text = "Change"
 
     form.process()
 

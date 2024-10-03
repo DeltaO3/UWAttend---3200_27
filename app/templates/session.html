@@ -27,6 +27,15 @@
                 </div>
             </div>
             {% endif %}
+
+            {% if field.type == "DateField" %}
+            <div class="mb-4 d-flex justify-content-between align-items-center gap-3">
+                {{ field.label(class="form-label text-end") }}
+                <div>
+                    {{ field(class="form-control") }}
+                </div>
+            </div>
+            {% endif %}
             {% endfor %}
 
             <!-- Current Time -->
