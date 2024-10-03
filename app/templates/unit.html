@@ -17,15 +17,16 @@
             <span class="col">End Date</span>
         </div>
         {% for unit in units %}
-        <a href="{{ url_for('updateunit', unit_id=unit.unit_id) }}" class="text-decoration-none text-dark">
-            <div class="row table-element text-center my-2 py-2 rounded border border-primary">
+        <form action="{{ url_for('set_unit_id') }}" method="post" class="text-decoration-none text-dark" style="display: inline;">
+            <input type="hidden" name="unit_id" value="{{ unit.unit_id }}">
+            <div class="row table-element text-center my-2 py-2 rounded border border-primary" style="cursor: pointer;" onclick="this.closest('form').submit();">
                 <span class="col-md col-6">{{ unit.code }}</span>
                 <span class="col-md col-6">{{ unit.name }}</span>
                 <span class="col-md">{{ unit.study_period }}</span>
                 <span class="col-md">{{ unit.start_date }}</span>
                 <span class="col-md">{{ unit.end_date }}</span>
             </div>
-        </a>
+        </form>
         {% endfor %}
         {% else %}
         <p class="text-center">No units available.</p>

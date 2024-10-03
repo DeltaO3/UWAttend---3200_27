@@ -5,7 +5,7 @@
         <h2>Update Unit</h2>
         <form method="POST" enctype="multipart/form-data" novalidate>
             {{ form.hidden_tag() }}
-
+            <input type="hidden" name="form_name" value="updateform">
             {% for field in form %}
             {% if field.type != "SubmitField" and field.widget.input_type != "hidden" %}
             <div class="mb-3">
@@ -14,7 +14,7 @@
                     <div class="col">
                         {% if field.type == "StringField" or field.type == "DateField" %}
                         {{ field(class="form-control", value=field.data) }}
-                        {% elif field.type == "FileField" %}
+                        {% elif field.type == "FileField" %} 
                         <p>Current file: {{ field.data }}</p>
                         {{ field(class="form-control-file") }}
                         {% elif field.type == "BooleanField" %}

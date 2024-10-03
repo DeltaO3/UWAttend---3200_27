@@ -487,36 +487,25 @@ def perform_delete_unit(unit_id):
         print(f"Error deleting unit {unit_id}: {e}")
         db.session.rollback()
 
-def EditUnit(unitID, unitCode=None, unitName=None, studyPeriod=None, startDate=None, endDate=None, sessionNames=None, sessionTimes=None, comments=None, marks=None, consent=None, commentSuggestions=None):
+def EditUnit(unitID, unitCode, unitName, studyPeriod, startDate, endDate, sessionNames, sessionTimes, comments, marks, consent, commentSuggestions):
     # Fetch the unit record based on unitID
     unit_record = db.session.query(Unit).filter_by(unitID=unitID).first()
 
     if not unit_record:
         return f"Unit with ID {unitID} not found."
 
-    # Update only the fields that are provided
-    if unitCode:
-        unit_record.unitCode = unitCode
-    if unitName:
-        unit_record.unitName = unitName
-    if studyPeriod:
-        unit_record.studyPeriod = studyPeriod
-    if startDate:
-        unit_record.startDate = startDate
-    if endDate:
-        unit_record.endDate = endDate
-    if sessionNames:
-        unit_record.sessionNames = sessionNames
-    if sessionTimes:
-        unit_record.sessionTimes = sessionTimes
-    if comments:
-        unit_record.comments = comments
-    if marks is not None:  # marks could be 0 or other falsy value
-        unit_record.marks = marks
-    if consent is not None:  # consent could be False, so we check for None
-        unit_record.consent = consent
-    if commentSuggestions:
-        unit_record.commentSuggestions = commentSuggestions
+    # Directly update all fields
+    unit_record.unitCode = unitCode
+    unit_record.unitName = unitName
+    unit_record.studyPeriod = studyPeriod
+    unit_record.startDate = startDate
+    unit_record.endDate = endDate
+    unit_record.sessionNames = sessionNames
+    unit_record.sessionTimes = sessionTimes
+    unit_record.comments = comments
+    unit_record.marks = marks  # marks could be 0 or other falsy value
+    unit_record.consent = consent  # consent could be False, so we can assign it directly
+    unit_record.commentSuggestions = commentSuggestions
 
     # Commit the changes to the database
     try:

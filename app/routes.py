@@ -186,6 +186,9 @@ def unitconfig():
             .all()
         )
 
+    # Little form for storing unitID so that updateunit can use it to update the correct unit
+    form = UnitForm()
+
     # Create a list to hold unit information
     units_data = []
 
@@ -201,17 +204,29 @@ def unitconfig():
         }
         units_data.append(unit_info)
     
-    return flask.render_template('unit.html', units=units_data)
+    return flask.render_template('unit.html', units=units_data, form=form)
 
-@app.route('/updateunit/<int:unit_id>', methods=['GET', 'POST'])
+#Little helper route to set the unit id as a session variable so unitconfig can use it
+@app.route('/set_unit_id', methods=['POST'])
 @login_required
-def updateunit(unit_id):
+def set_unit_id():
+    unit_id = flask.request.form.get('unit_id')
+    flask.session['unit_id'] = unit_id  # Set the unit_id in the session
+    return flask.redirect(flask.url_for('updateunit'))  # Redirect to the update unit page
+
+#UPDATE UNIT FORM
+@app.route('/updateunit', methods=['GET', 'POST'])
+@login_required
+def updateunit():
+
     if current_user.userType == 'facilitator':
         return flask.redirect('home')
     
-    # Retrieve the unit details using the helper function
+    unit_id = flask.session.get('unit_id')  # Get the unit_id from the session
+
+    # Retrieve the unit details using GetUnit, since we used the unitID there should only be 1 unit retrieved
     unit_data = GetUnit(unitID=unit_id)
-    
+
     if not unit_data:
         flask.flash("Unit not found", "error")
         return flask.redirect(flask.url_for('unitconfig'))
@@ -219,7 +234,7 @@ def updateunit(unit_id):
     unit = unit_data[0]  # Since GetUnit returns a list, get the first item
 
     # Initialize the form with the existing unit data as defaults
-    form = AddUnitForm(
+    form = UpdateUnitForm(
         unitcode=unit.unitCode,
         unitname=unit.unitName,
         semester=unit.studyPeriod,
@@ -231,11 +246,10 @@ def updateunit(unit_id):
         consentcheck=unit.consent,
         commentsuggestions=unit.commentSuggestions,
         sessionoccurence=unit.sessionTimes
-        
     )
 
     if form.validate_on_submit() and flask.request.method == 'POST':
-        # Update logic goes here, process form data
+        # Update unit variables from update unit form
         unitCode = form.unitcode.data
         unitName = form.unitname.data
         studyPeriod = form.semester.data
@@ -248,7 +262,13 @@ def updateunit(unit_id):
         commentSuggestions = form.commentsuggestions.data
         sessionTimes = form.sessionoccurence.data
 
-        # For file fields, check if new files were uploaded and process accordingly
+        #convert session occurences to a | string
+        occurences = ""
+        for time in sessionTimes:
+            occurences += time + "|"
+        occurences = occurences[:-1]
+
+        # Update each csv upload but currently needs csv handling for each specific file type current implementation is for both at once
         if form.studentfile.data:
             student_file = form.studentfile.data
             student_file.save(student_file.filename)
@@ -260,21 +280,24 @@ def updateunit(unit_id):
             facilitator_file.save(facilitator_file.filename)
             facilitator_filename = facilitator_file.filename
             print(f"New facilitator file: {facilitator_filename}")
+
         
+        print(f"Updating unit ID: {unit_id}, Code: {unitCode}, Name: {unitName}")
+
         # Update the unit's database record with the new form data
         EditUnit(
-            unitID=unit_id,
-            unitCode=unitCode,
-            unitName=unitName,
-            studyPeriod=studyPeriod,
-            startDate=startDate,
-            endDate=endDate,
-            sessionNames=sessionNames,
-            sessionTimes=sessionTimes,
-            comments=comments,
-            marks=marks,
-            consent=consent,
-            commentSuggestions=commentSuggestions
+            unit_id,
+            unitCode,
+            unitName,
+            studyPeriod,
+            startDate,
+            endDate,
+            sessionNames,
+            occurences,
+            comments,
+            marks,
+            consent,
+            commentSuggestions
         )
 
         flask.flash("Unit updated successfully", "success")
