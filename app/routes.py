@@ -62,7 +62,7 @@ def home():
         }
         student_list.append(student_info)
 
-    student_list.sort(key=lambda x: x['time'], reverse=True)
+    student_list.sort(key=lambda x: (x['login'] == "yes", x['time']), reverse=True)
 
     return flask.render_template('home.html', form=form, students=student_list, current_session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=current_session.sessionID) 
 	
