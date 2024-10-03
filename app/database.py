@@ -166,6 +166,11 @@ def AddUnitToFacilitator(email, unitID):
 
 #Do get functions need primary key IDs?
 
+def GetAttendanceByIDAndFacilitator(sessionID, facilitatorID):
+    query = db.session.query(Attendance).filter(Attendance.sessionID == sessionID, Attendance.facilitatorID == facilitatorID)
+    attendance_records = query.all()
+    return attendance_records
+
 def GetAttendance(attendanceID = None, input_sessionID = None, studentID = None):
 
     query = db.session.query(Attendance)

@@ -133,8 +133,8 @@ def session():
 def updatesession():
 
     # if session doesn't exist, redirect to /session
-    session_id = flask.session.get('session_id')
-    existing_session = GetSession(session_id)
+    current_session_id = flask.session.get('session_id')
+    existing_session = GetSession(current_session_id)
     if not existing_session:
         return redirect(url_for('session'))
 
@@ -158,7 +158,37 @@ def updatesession():
         print(f"Session Date: {session_date}")
         print(f"Unit Id: {unit_id}")
 
-        # TODO: implement update session logic
+        # Check if the session already exists
+        new_session = GetUniqueSession(unit_id, session_name, session_time, session_date)
+
+        if new_session is not None :
+            print("Session already exists. Joining existing session.")
+        else :
+            print("Session doesn't exist... creating new session with new details.")
+            new_session = AddSession(unit_id, session_name, session_time, session_date)
+            if new_session is None :
+                print("An error has occurred. The session was not created. Please try again.")
+                return flask.redirect(flask.url_for('home'))
+
+        print("Current session details:")
+        print(f"Session name: {new_session.sessionName}")
+        print(f"Session time: {new_session.sessionTime}")
+        print(f"Session date: {new_session.sessionDate}")
+
+        # Update attendance records with current session id and where facilitator is current user
+        attendance_records = GetAttendanceByIDAndFacilitator(current_session_id, current_user.userID)
+
+        for record in attendance_records :
+            record.sessionID = new_session.sessionID
+
+        db.session.commit()
+        
+        # Update session cookie
+        flask.session['session_id'] = new_session.sessionID
+        print(f"Saving session id: {new_session.sessionID} to global variable")
+
+        # Redirect back to home page
+        return flask.redirect(flask.url_for('home'))
 
     # set updatesession form select fields to match current session's details
     current_session = existing_session[0]
