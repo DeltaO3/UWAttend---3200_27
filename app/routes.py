@@ -604,3 +604,9 @@ def sign_all_out():
 
     print("Successfully signed out all users")
     return flask.redirect(flask.url_for('home'))
+
+@app.errorhandler(Exception)
+def handle_exception(error):
+    print(f"An error occurred: {error}")
+    
+    return flask.render_template('error.html', error=error), 500
