@@ -126,7 +126,7 @@ def session():
     # set session form select field options
     set_session_form_select_options(form)
 
-    return flask.render_template('session.html', form=form, perth_time=formatted_perth_time, default_date=perth_time.strftime("%Y-%m-%d"))
+    return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
 
 @app.route('/updatesession', methods=['GET', 'POST'])
 @login_required
@@ -170,7 +170,7 @@ def updatesession():
                 print("An error has occurred. The session was not created. Please try again.")
                 return flask.redirect(flask.url_for('home'))
 
-        print("Current session details:")
+        print("New session details:")
         print(f"Session name: {new_session.sessionName}")
         print(f"Session time: {new_session.sessionTime}")
         print(f"Session date: {new_session.sessionDate}")
@@ -182,7 +182,7 @@ def updatesession():
             record.sessionID = new_session.sessionID
 
         db.session.commit()
-        
+
         # Update session cookie
         flask.session['session_id'] = new_session.sessionID
         print(f"Saving session id: {new_session.sessionID} to global variable")
@@ -195,7 +195,7 @@ def updatesession():
     current_unit = GetUnit(unitID=current_session.unitID)[0]
     set_updatesession_form_select_options(current_session, current_unit, form)
 
-    return flask.render_template('updatesession.html', form=form, perth_time=formatted_perth_time, default_date=current_session.sessionDate)
+    return flask.render_template('updatesession.html', form=form, perth_time=formatted_perth_time)
 
 #ADMIN - /unitconfig /
 @app.route('/unitconfig', methods=['GET', 'POST'])
