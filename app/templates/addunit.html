@@ -56,6 +56,10 @@ endwith %}
                 {{ input(form.studentfile, type="form-control-file w-100") }}
 
             </div>
+            <div class="col-md-4 col-12">
+                <a href="{{ url_for('download_facilitator_template') }}" class="btn btn-secondary">Download facilitator template</a>
+                <a href="{{ url_for('download_student_template') }}" class="btn btn-secondary">Download student template</a>
+            </div>
         </div>
 
         <div class="d-flex justify-content-center mt-3">
