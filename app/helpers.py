@@ -9,6 +9,15 @@ def get_perth_time():
     perth_time = pytz.utc.localize(utc_time).astimezone(perth_tz)
     return perth_time
 
+def check_unit_is_current(unit) :
+    current_date = get_perth_time().date()
+    if current_date > unit.endDate or current_date < unit.startDate :
+        print(f"not showing {unit.unitCode} as it is not current")
+        return False
+    else :
+        print(f"showing {unit.unitCode} as it is current")
+        return True
+
 def set_session_form_select_options(form):
 
     # gets units for the facilitator (i.e. the current user)
@@ -16,7 +25,8 @@ def set_session_form_select_options(form):
     unit_choices = []
     for unit in units :
         # format with unitID as value, unitCode as option string name
-        unit_choices.append((unit.unitID, unit.unitCode))
+        if check_unit_is_current(unit) :
+            unit_choices.append((unit.unitID, unit.unitCode))
 
     session_name_choices = []
     session_time_choices = []
