@@ -2,9 +2,11 @@
 {% block content %}
 
 <!-- Flash Messages -->
+
 {% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %} 
-{% for category, message in messages %} {%if category == 'error'%}
+{% if messages %}
+{% for category, message in messages %}
+{%if category == 'error'%}
 <div class="alert alert-danger alert-dismissable fade show d-flex justify-content-between" role="alert">
 	{{ message }}
 	<button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -14,70 +16,82 @@
 	{{ message }}
 	<button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
-{% endif %} {% endfor %} {% endif %} {%
-endwith %}
+{% endif %}
+{% endfor %} {% endif %} {% endwith %}
 
 <div class="container-fluid">
+	<!-- Top section -->
 	<div class="row mt-2 mx-md-5 mx-2">
 		<div class="d-flex justify-content-center align-items-center col-md-4 order-md-2">
-			<h4>{{ current_session.unitID }}-{{ current_session.sessionName }}-{{ current_session.sessionDate }}/{{ current_session.sessionTime }}</h4>
-		</div>
-		
-		<div class="col-md-8 order-md-1">
-			<h2>
-				{{ signed_in }} signed in of {{ total_students }}
-			</h2>
-			<!-- Use Flask forms?-->
-			<form id="attendanceForm" method="POST" action="{{ url_for('add_student') }}">
-				{{ form.hidden_tag() }}
-				<div class="input-group">
-					<label for="studentSignIn" class="form-label visually-hidden">{{ form.student_sign_in.label }}</label>
-					{{ form.studentID(id='studentID') }}
-					{{ form.student_sign_in(id='student_search', class="form-control", placeholder="Enter name or ID...") }}
-					{{ form.consent_status(type="hidden") }}
-					<input type="hidden" id="hidden_consent_indicator" value="no">
-					<button id="student_sign_in_button" type="submit" class="btn btn-primary">Submit</button>
-				</div>
-				<div id="suggestions_container" class="list-group mt-2"></div>
-			</form>
-			{% include 'photoConsent.html'%}
+			<h4>{{ current_session.unitID }}-{{ current_session.sessionName }}-{{ current_session.sessionDate }}/{{
+				current_session.sessionTime }}</h4>
 		</div>
 
+		<!-- Input element -->
+		<div class="d-flex justify-content-center col-md-8 order-md-1 ">
+			<div class="col-10 col-md-12">
+				<h2>
+					{{ signed_in }} signed in of {{ total_students }}
+				</h2>
+				<form id="attendanceForm" method="POST" action="{{ url_for('add_student') }}">
+					{{ form.hidden_tag() }}
+					<div class="input-group">
+						{{ form.student_sign_in(id='student_search', placeholder="Enter name or ID...",
+						class="form-control", autocomplete="off") }}
+						{{ form.studentID(id='studentID') }}
+						{{ form.consent_status(type="hidden") }}
+						<input type="hidden" id="hidden_consent_indicator" value="no">
+						<button id="student_sign_in_button" type="submit" class="btn btn-primary">Submit</button>
+					</div>
+					<div id="suggestions_container" class="position-absolute col-9 col-lg-6 list-group mt-2"></div>
+				</form>
+			</div>
+		</div>
 	</div>
 
-	<!-- Table element -->
-	<div class="mx-4 mt-3 mx-md-5" id="classTable">
-		{% if total_students > 0 %}
-		<div class="row d-none d-md-flex text-center lead bg-dark-subtle rounded">
-			<span class="col">Name</span>
-			<span class="col">ID</span>
-			<span class="col">Login</span>
-			<span class="col">Photo</span>
+	{% include 'photoConsent.html'%}
+	<!-- Table Section -->
+	<div class="d-flex justify-content-center">
+		<div class="mx-4 mt-3 mx-md-5 container">
+			{% if total_students > 0 %}
+			<div class="row d-none d-md-flex text-center lead table-heading">
+				<span class="col">Name</span>
+				<span class="col">ID</span>
+				<span class="col">Login</span>
+				<span class="col">Photo</span>
+			</div>
+			{% endif %}
 		</div>
-		{% for student in students%} <!-- onlick re-route to student page for this specific student -->
-		<div class="row table-element text-center my-2 py-2 rounded border border-primary" onclick="redirectToStudent('{{ student.id }}')">
-			<form id="studentForm_{{ student.id }}" action="/student" method="POST" style="display:none;">
-				<input type="hidden" name="student_id" value="{{ student.id }}">
-			</form>
-			<span class="col-md col-6">{{student.name}}</span>
-			<span class="col-md col-6">{{student.number}}</span>
-			<span class="d-none d-md-inline col-md">{{student.login}}</span>
-			<span class="d-none d-md-inline col-md">{{student.photo}}</span>
-		</div>
-		{% endfor %}
-		{% endif %}
 	</div>
 
-	<div class="fixed-bottom row pb-2 bg-body">
-		<button class="btn col-md-3 col">Sync</button>
-		<button id="signOutButton" class="btn btn-danger col">Sign All Out</button>
-		<button class="btn col-md-3 col">Download</button>
-		<button id="exitSessionButtonHome" class="exitSessionButton btn btn-danger col" onclick="exitSession()">Exit Session</button>
+	<div class="d-flex justify-content-center">
+		<div class="mx-4 mt-0 mx-md-5 container" id="classTable">
+			{% if total_students > 0 %}
+			{% for student in students%}
+			<!-- onlick re-route to student page for this specific student -->
+			<div class="row table-element text-center my-2 py-2" onclick="redirectToStudent('{{ student.id }}')">
+				<form id="studentForm_{{ student.id }}" action="/student" method="POST" style="display:none;">
+					<input type="hidden" name="student_id" value="{{ student.id }}">
+				</form>
+				<span class="col-md col-6">{{student.name}}</span>
+				<span class="col-md col-6">{{student.number}}</span>
+				<span class="d-none d-md-inline col-md">{{student.login}}</span>
+				<span class="d-none d-md-inline col-md">{{student.photo}}</span>
+			</div>
+			{% endfor %}
+			{% endif %}
+		</div>
 	</div>
 	{% include 'signOut.html'%}
+	<!-- Bottom button -->
+	<div class="fixed-bottom d-flex justify-content-center home-footer mb-2">
+		<button id="signOutButton" class="btn btn-danger w-50">Sign All Out</button>
+		<button id="exitSessionButtonHome" class="exitSessionButton btn btn-danger col" onclick="exitSession()">Exit Session</button>
+	</div>
 </div>
 
-<script src="{{url_for('static', filename='js/consent.js')}}"></script>
+<script src="{{ url_for('static', filename='js/home.js') }}"></script>
+<script src="{{ url_for('static', filename='js/consent.js') }}"></script>
 <script src="{{ url_for('static', filename='js/student_suggestions.js') }}"></script>
 <script src="{{ url_for('static', filename='js/sign_out.js') }}"></script>
 <script src="{{url_for('static', filename='js/exit_session.js')}}"></script>
