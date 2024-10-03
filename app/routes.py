@@ -390,9 +390,19 @@ def forgot_password():
     return flask.render_template('forgotPassword.html')
 
 #RESET PASSWORD - /reset_password
-@app.route('/reset_password', methods=['GET'])
+@app.route('/reset_password', methods=['GET', 'POST'])
 def reset_password():
-    return flask.render_template('resetPassword.html')
+    if current_user.is_authenticated:
+        return flask.redirect('home')
+    
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        #TODO: add email into logic (similar to what create account does)
+        print("resetting password...")
+        SetPassword("admin@admin.com", form.password2.data)
+        return flask.redirect(flask.url_for('login'))
+
+    return flask.render_template('resetPassword.html', form=form)
 
 
 # LOGIN - /login/ 

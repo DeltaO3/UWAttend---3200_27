@@ -85,6 +85,11 @@ class CreateAccountForm(FlaskForm):
     password2 = PasswordField('Confirm password:', validators=[DataRequired(), password_check])
     submit = SubmitField('Create Account')
 
+class ResetPasswordForm(FlaskForm):
+    password1 = PasswordField('New password:', validators=[DataRequired()])
+    password2 = PasswordField('Confirm new password:', validators=[DataRequired(), password_check])
+    submit = SubmitField('Reset Password')
+
 class AddUnitForm(FlaskForm):
     unitcode = StringField('Unit Code:', validators=[DataRequired(), unit_check])
     unitname = StringField('Unit Name:', validators=[DataRequired()])

@@ -306,26 +306,6 @@ def GetUnit(unitID = None, unitCode = None, studyPeriod = None):
 
     return unit_records
 
-
-def CheckPassword(email, password):
-
-    query = db.session.query(User)
-    
-    if email is not None:
-        query = query.filter(User.email == email)
-    else:
-        print("You did not submit an email parameter.")
-        return False
-
-    # Retrieve the user record
-    user_record = query.first()
-
-    # If a record is found, check the password
-    if user_record and user_record.passwordHash == password:
-        return True
-    else:
-        return False
-
 #Is this function needed? dont see it used anywhere
 def SetPassword(email, newPassword):
     
@@ -335,7 +315,7 @@ def SetPassword(email, newPassword):
         raise ValueError("User not found")    
 
     # Set the new password hash
-    user.passwordHash = newPassword
+    user.set_password(newPassword)
     
     # Commit the changes to the database
     db.session.commit()
