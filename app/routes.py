@@ -400,6 +400,7 @@ def reset_password():
         #TODO: add email into logic (similar to what create account does)
         print("resetting password...")
         SetPassword("admin@admin.com", form.password2.data)
+        flask.flash('Password changed successfully', category="success")
         return flask.redirect(flask.url_for('login'))
 
     return flask.render_template('resetPassword.html', form=form)
@@ -418,7 +419,7 @@ def login():
         user = database.GetUser(email = form.username.data)                
 
         if user is None or not user.is_password_correct(form.password.data):
-            flask.flash('Invalid username or password')
+            flask.flash('Invalid username or password', category="error")
             return flask.redirect('login')
         
         login_user(user, remember=form.remember_me.data)

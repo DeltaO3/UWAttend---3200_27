@@ -7,13 +7,14 @@
         <h3 class="fw-bold">Welcome to UWAttend!</h3>
         <p class="mb-2">Please log in to access the app.</p>
 
-        {% with messages = get_flashed_messages() %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-        <div class="alert alert-danger py-1 mb-3 text-center w-100">
-            {% for message in messages %}
+        {% for category, message in messages %}
+        <div
+            class="alert {% if category == 'error' %} alert-danger {% else %} alert-success {% endif %} py-1 mb-3 text-center w-100">
             {{ message }}
-            {% endfor %}
         </div>
+        {% endfor %}
         {% endif %}
         {% endwith %}
 
