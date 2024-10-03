@@ -25,6 +25,12 @@
         {{ form.session_time(class="form-select") }}
     </div>    
 
+    <!-- Session Date -->
+    <div class="mb-3">
+        {{ form.session_date.label(class="form-label") }}
+        {{ form.session_date(class="form-select", value=default_date) }}
+    </div> 
+
     <!-- Current Time -->
     <div>
         <label for="current_time_display" class="form-label">Current Time:</label>
