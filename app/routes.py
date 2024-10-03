@@ -370,7 +370,13 @@ def create_account():
     
     form = CreateAccountForm()
     if form.validate_on_submit():
-        print("validate here")
+        #Uses a placeholder email - perhaps this should be included in the route as a ?email=email parameter?
+        #feels unsafe, feel free to change some things. 
+        email = form.firstName.data + "@placeholder.com"
+        AddUser(email, form.firstName.data, form.lastName.data, form.password2.data, "facilitator" )
+        print(f"Added user" + form.firstName.data)
+        login_user(GetUser(email = email))
+        return flask.redirect(flask.url_for('home'))
     
     return flask.render_template('createaccount.html', form=form)
 
