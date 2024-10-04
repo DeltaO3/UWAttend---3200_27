@@ -388,6 +388,13 @@ def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, logi
     if login is not None:  # Boolean field
         if not login and not attendance_record.signOutTime:
             attendance_record.signOutTime = get_perth_time().time()
+        if login and attendance_record.signOutTime:
+            message = f"Student temporarily signed out between {str(attendance_record.signOutTime).split('.')[0]} and {str(get_perth_time().time()).split('.')[0]}"
+            if comments: 
+                comments = comments + f" | {message}"
+            else:
+                comments = message
+            attendance_record.signOutTime = None
 
     if consent is not None:  # Boolean field
         student_record.consent = "yes" if consent else "no"
@@ -400,8 +407,7 @@ def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, logi
     if grade:
         attendance_record.marks = grade
 
-    if comments:
-        attendance_record.comments = comments
+    attendance_record.comments = comments
 
     # Commit the changes to the database
     try:
@@ -413,9 +419,6 @@ def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, logi
         message = f"Error updating attendance record for student ID {studentID}: {e}"
         return message
 
-
-
-
 def SignStudentOut(attendanceID):
 
     attendance = db.session.query(Attendance).filter(Attendance.attendanceID == attendanceID).first()
@@ -424,6 +427,27 @@ def SignStudentOut(attendanceID):
         return False
 
     attendance.signOutTime = get_perth_time().time()
+
+    db.session.commit()
+
+    return True
+
+def RemoveSignOutTime(attendanceID):
+
+    attendance = db.session.query(Attendance).filter(Attendance.attendanceID == attendanceID).first()
+
+    if attendance is None:
+        return False
+
+    comments = attendance.comments
+
+    message = f"Student temporarily signed out between {str(attendance.signOutTime).split('.')[0]} and {str(get_perth_time().time()).split('.')[0]}"
+    if comments: 
+        comments = comments + f" | {message}"
+    else:
+        comments = message
+    attendance.signOutTime = None
+    attendance.comments = comments
 
     db.session.commit()
 
