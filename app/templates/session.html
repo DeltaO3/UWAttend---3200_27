@@ -25,15 +25,6 @@
                 <div class="form-select-parent">
                     {{ field(class="form-select") }}
 
-                    {% for error in field.errors if field.errors %}
-                    <span class="form-text text-danger">{{ error }}</span>
-                    <!-- Elif breaks jinja fsr -->
-                    {% else %}
-                    {% if type != "form-check-input" %}
-                    <span class="form-text invisible">No error</span>
-                    {% endif %}
-                    {% endfor %}
-
                 </div>
             </div>
             {% endif %}
