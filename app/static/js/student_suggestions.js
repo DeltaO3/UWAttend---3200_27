@@ -71,3 +71,21 @@ function redirectToStudent(studentId) {
     // Find the form for the specific student and submit it
     document.getElementById('studentForm_' + studentId).submit();
 }
+
+$(document).ready(function() {
+    $('#search-bar').on('input', function() {
+        let query = $(this).val().toLowerCase();
+        
+        $('.table-element').each(function() {
+            let studentName = $(this).find('span').eq(0).text().toLowerCase(); 
+            let studentID = $(this).find('span').eq(1).text().toLowerCase();   
+            
+			// By doing it this way - the original ordering of the list should be preserved (so don't have to re-sort later)
+            if (studentName.includes(query) || studentID.includes(query)) {
+                $(this).show();  
+            } else {
+                $(this).hide();  
+            }
+        });
+    });
+});

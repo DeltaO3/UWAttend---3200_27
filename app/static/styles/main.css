@@ -74,6 +74,12 @@ body {
 
 /* Bootstrap class css changes (all elements have this from version 5.2) */
 
+.image-parent {
+  border-color: color-mix(in srgb, var(--text), var(--bg) 30%);
+  background-color: color-mix(in srgb, var(--bg), white 5%);
+  color: var(--text);
+}
+
 /* FORMS */
 .form-control {
   background-color: color-mix(in srgb, var(--bg), white 5%);
