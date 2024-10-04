@@ -1,3 +1,30 @@
+/* Variables */
+:root {
+  --primary: var(--bs-primary);
+  --secondary: var(--bs-secondary);
+  --danger: var(--bs-danger);
+  --success: var(--bs-success);
+  --bg: var(--bs-body-bg);
+  --text: var(--bs-body-color);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: var(--bs-primary);
+    --secondary: var(--bs-secondary);
+    --danger: var(--bs-danger);
+    --success: var(--bs-teal);
+    --bg: var(--bs-gray-900);
+    --text: var(--bs-gray-300);
+  }
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
 /* Invalid input for configuration fields */
 .input-error {
   border: 2px solid red;
@@ -14,22 +41,146 @@
   }
 }
 
+/* Table elements */
+#classTable {
+  overflow-y: scroll;
+  height: 0px;
+}
+
+.table-heading {
+  background-color: color-mix(in srgb, var(--bg) 75%, var(--text) 25%);
+  border-radius: 0.5rem;
+}
 
 .table-element {
+  background-color: color-mix(in srgb, var(--bg) 90%, var(--text) 10%);
+  border-radius: 0.5rem;
   cursor: pointer;
   transition: background-color 0.3s ease-in-out;
 }
 
-
 .table-element:hover {
-  background-color: var(--bs-primary);
+  background-color: color-mix(in srgb, var(--primary) 60%, transparent);
 }
 
-/* Darker grey for odd and even items for the student-suggestions on homepage */
-.list-group-item:nth-child(odd) {
-    background-color: #f8f9fa; /* Light grey for odd items */
+/* Login page elements */
+.login-bg {
+  background-color: color-mix(in srgb, var(--bg) 90%, var(--text) 10%);
 }
 
-.list-group-item:nth-child(even) {
-    background-color: #e9ecef; /* Slightly darker grey for even items */
+.login-box {
+  background-color: var(--bg);
+}
+
+/* Bootstrap class css changes (all elements have this from version 5.2) */
+
+.image-parent {
+  border-color: color-mix(in srgb, var(--text), var(--bg) 30%);
+  background-color: color-mix(in srgb, var(--bg), white 5%);
+  color: var(--text);
+}
+
+/* FORMS */
+.form-control {
+  background-color: color-mix(in srgb, var(--bg), white 5%);
+  border-color: color-mix(in srgb, var(--text), var(--bg) 30%);
+  color: var(--text);
+}
+
+.form-control::placeholder {
+  color: var(--text);
+  opacity: 50%;
+}
+
+.form-control:focus {
+  /* https://stackoverflow.com/a/76910228 */
+  background-color: color-mix(in srgb, var(--bg), white 10%);
+  color: var(--text);
+  box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--primary) 25%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 25%, transparent);
+}
+
+.form-select {
+  background-color: color-mix(in srgb, var(--bg), white 5%);
+  border-color: color-mix(in srgb, var(--text), var(--bg) 30%);
+}
+
+.form-select:focus {
+  box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--primary) 25%, transparent);
+}
+
+.form-check-input {
+  background-color: color-mix(in srgb, var(--bg), white 10%);
+}
+
+.form-control-file::file-selector-button {
+  background-color: color-mix(in srgb, var(--bg), var(--text) 10%) !important;
+  color: var(--text);
+  border-radius: 0.3rem;
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--text);
+  cursor: pointer;
+  padding: 5px 4px;
+}
+
+.form-control-file::file-selector-button:hover {
+  background-color: color-mix(in srgb, var(--bg), var(--text) 20%) !important;
+}
+
+/* Others */
+.navbar {
+  background-color: color-mix(in srgb, var(--bg) 75%, var(--text) 25%);
+  --bs-navbar-toggler-border-color: none;
+  --bs-navbar-toggler-focus-width: 1px;
+  --bs-navbar-hover-color: color-mix(in srgb, var(--text) 75%, transparent);
+  --bs-navbar-color: var(--text);
+  --bs-navbar-brand-color: var(--text);
+}
+
+.modal {
+  --bs-modal-color: var(--text);
+  --bs-modal-bg: var(--bg);
+  --bs-modal-border-color: var(--text);
+}
+
+//Buttons
+.btn-primary {
+  --bs-btn-color: var(--bs-white);
+  --bs-btn-bg: var(--primary);
+  --bs-btn-border-color: var(--primary);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--primary), black 20%);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--primary), black 20%);
+  --bs-btn-active-bg: color-mix(in srgb, var(--primary), black 25%);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--primary), black 25%);
+}
+
+.btn-secondary {
+  --bs-btn-color: var(--bs-white);
+  --bs-btn-bg: var(--secondary);
+  --bs-btn-border-color: var(--secondary);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--secondary), black 20%);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--secondary), black 20%);
+  --bs-btn-active-bg: color-mix(in srgb, var(--secondary), black 25%);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--secondary), black 25%);
+}
+
+.btn-success {
+  --bs-btn-color: var(--bs-white);
+  --bs-btn-bg: var(--success);
+  --bs-btn-border-color: var(--success);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--success), black 20%);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--success), black 20%);
+  --bs-btn-active-bg: color-mix(in srgb, var(--success), black 25%);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--success), black 25%);
+}
+
+.btn-danger {
+  --bs-btn-color: var(--bs-white);
+  --bs-btn-bg: var(--danger);
+  --bs-btn-border-color: var(--danger);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--danger), black 20%);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--danger), black 20%);
+  --bs-btn-active-bg: color-mix(in srgb, var(--danger), black 25%);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--danger), black 25%);
 }

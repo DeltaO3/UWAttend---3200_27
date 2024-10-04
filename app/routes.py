@@ -38,7 +38,7 @@ def home():
     logged_in_student_ids = [str(record.studentID) for record in attendance_records]
 
     # get only the students who have logged in
-    students = db.session.query(Student).filter(Student.studentID.in_(logged_in_student_ids)).all() # TODO should there be a database function for this?
+    students = GetStudentList(student_ids=logged_in_student_ids) # TODO should there be a database function for this?
 
     student_list = []
     signed_in_count = 0
@@ -62,7 +62,7 @@ def home():
         }
         student_list.append(student_info)
 
-    student_list.sort(key=lambda x: x['time'], reverse=True)
+    student_list.sort(key=lambda x: (x['login'] == "yes", x['time']), reverse=True)
 
     return flask.render_template('home.html', form=form, students=student_list, current_session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=current_session.sessionID) 
 	
@@ -124,7 +124,7 @@ def session():
     # set session form select field options
     set_session_form_select_options(form)
 
-    return flask.render_template('session.html', form=form, perth_time=formatted_perth_time)
+    return flask.render_template('session.html', form=form, perth_time=formatted_perth_time, update=False)
 
 @app.route('/updatesession', methods=['GET', 'POST'])
 @login_required
@@ -161,7 +161,7 @@ def updatesession():
     current_unit = GetUnit(unitID=current_session.unitID)[0]
     set_updatesession_form_select_options(current_session, current_unit, form)
 
-    return flask.render_template('updatesession.html', form=form, perth_time=formatted_perth_time)
+    return flask.render_template('session.html', form=form, perth_time=formatted_perth_time, update=True)
 
 #ADMIN - /unitconfig /
 @app.route('/unitconfig', methods=['GET', 'POST'])
@@ -350,9 +350,14 @@ def addunit():
         
         #convert session occurences to a | string
         occurences = ""
-        for time in sessionoccurence:
-            occurences += time + "|"
-        occurences = occurences[:-1]
+        if sessionoccurence == "Morning/Afternoon":
+            occurences = "Morning|Afternoon"
+        elif sessionoccurence == "Hours":
+            occurences = "8am|9am|10am|11am|12pm|1pm|2pm|3pm|4pm|5pm|6pm"
+        else:
+            print("No occurence, probable error")
+            flask.flash("Error with session occurence", 'error')
+            return flask.render_template('addunit.html', form=form)
         print(f"session occurence string: {occurences}")
 
          #read CSV file
@@ -591,11 +596,14 @@ def add_student():
             existing_attendance = GetAttendance(input_sessionID=session_id, studentID=studentID)
             
             if existing_attendance:
-                status = SignStudentOut(attendanceID=existing_attendance[0].attendanceID)
-                if status:
-                    flask.flash(f"Signed out {student.preferredName} {student.lastName}", 'success')
+                if not existing_attendance[0].signOutTime:
+                    status = SignStudentOut(attendanceID=existing_attendance[0].attendanceID)
+                    if status:
+                        flask.flash(f"Signed out {student.preferredName} {student.lastName}", 'success')
+                    else:
+                        flask.flash(f"Error signing out {student.preferredName} {student.lastName}", 'error')
                 else:
-                    flask.flash(f"Error signing out {student.preferredName} {student.lastName}", 'error')
+                    status = RemoveSignOutTime(attendanceID=existing_attendance[0].attendanceID)
                 return flask.redirect(flask.url_for('home'))
             
             # consent will be none if it is already yes or not required i.e. no changes required
@@ -671,9 +679,6 @@ def student_suggestions():
     for student in students:
         existing_attendance = GetAttendance(input_sessionID=current_session.sessionID, studentID=student.studentID)
 
-        if existing_attendance and existing_attendance[0].signOutTime:
-            continue
-
         first_last_name = f"{student.firstName} {student.lastName}"
         preferred_last_name = f"{student.preferredName} {student.lastName}"
         if query in student.lastName.lower() or query in student.preferredName.lower() or query in preferred_last_name.lower() or query in str(student.studentNumber):
@@ -682,13 +687,16 @@ def student_suggestions():
                 consent = "yes"
             if not unit.consent:
                 consent = "not required"
-            print(consent)
+            signedIn = 0 
+            if existing_attendance:
+                if not existing_attendance[0].signOutTime:
+                    signedIn = 1
             suggestions.append({
                 'name': f"{student.preferredName} {student.lastName}",
                 'id': student.studentID,
                 'number': student.studentNumber,
                 'consentNeeded': consent,
-                'signedIn': 1 if existing_attendance else 0,
+                'signedIn': signedIn,
             })
         elif query in student.firstName.lower() or query in first_last_name.lower():
             consent = student.consent
@@ -696,13 +704,16 @@ def student_suggestions():
                 consent = "yes"
             if not unit.consent:
                 consent = "not required"
-            print(consent)
+            signedIn = 0 
+            if existing_attendance:
+                if not existing_attendance[0].signOutTime:
+                    signedIn = 1
             suggestions.append({
                 'name': f"{student.firstName} {student.lastName}",
                 'id': student.studentID,
                 'number': student.studentNumber,
                 'consentNeeded': consent,
-                'signedIn': 1 if existing_attendance else 0,
+                'signedIn': signedIn,
             })
 
     return flask.jsonify(suggestions)
