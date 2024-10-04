@@ -3,8 +3,8 @@ import pytz
 from flask_login import current_user
 
 sessionTimeDefinitions = {
-    "Morning" : (datetime.strptime('7:30', '%H:%M').time(), datetime.strptime('11:30', '%H:%M').time()),
-    "Afternoon" : (datetime.strptime('11:45', '%H:%M').time(), datetime.strptime('18:30', '%H:%M').time()),
+    "Morning" : (datetime.strptime('7:45', '%H:%M').time(), datetime.strptime('13:00', '%H:%M').time()),
+    "Afternoon" : (datetime.strptime('13:01', '%H:%M').time(), datetime.strptime('18:30', '%H:%M').time()),
     "8am" : (datetime.strptime('7:45', '%H:%M').time(), datetime.strptime('8:15', '%H:%M').time()),
     "9am" : (datetime.strptime('8:45', '%H:%M').time(), datetime.strptime('9:15', '%H:%M').time()),
     "10am" : (datetime.strptime('9:45', '%H:%M').time(), datetime.strptime('10:15', '%H:%M').time()),
