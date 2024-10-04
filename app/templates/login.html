@@ -1,42 +1,53 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="vh-100 d-flex justify-content-center align-items-center login-bg">
+    <!-- !!!Change colours to custom css!!! -->
+    <div class=" rounded-4 shadow-lg d-flex flex-column login-box
+         justify-content-center align-items-center py-3 px-4">
 
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <div class="alert alert-danger">
+        <h3 class="fw-bold">Welcome to UWAttend!</h3>
+        <p class="mb-2">Please log in to access the app.</p>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert alert-danger py-1 mb-3 text-center w-100">
             {% for message in messages %}
-                <p>{{ message }}</p>
+            {{ message }}
             {% endfor %}
         </div>
-    {% endif %}
-{% endwith %}
+        {% endif %}
+        {% endwith %}
 
-<p>Welcome to UWAttend. Please log in to access the app.</p>
+        <form method="POST" novalidate class="w-100">
+            {{ form.hidden_tag() }}
+            <div class="mb-1">
+                {{ form.username.label(class="form-label")}}
+                {{ form.username(class="form-control") }}
 
-<form method="POST" novalidate>
-    {{ form.hidden_tag() }}
+                {% for error in form.username.errors if form.username.errors %}
+                <span class="form-text text-danger">{{ error }}</span>
+                {% else %}
+                <span class="form-text invisible">No error</span>
+                {% endfor %}
+            </div>
+            <div class="mb-1">
+                {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control") }}
 
-    {{ form.username.label}}
-    {{ form.username }}
-    <br>
+                {% for error in form.password.errors if form.password.errors %}
+                <span class="form-text text-danger">{{ error }}</span>
+                {% else %}
+                <span class="form-text invisible">No error</span>
+                {% endfor %}
+            </div>
+            <div class="d-flex flex-column align-items-center">
+                {{ form.submit(class="btn btn-success mb-3 rounded-5 w-100") }}
 
-    {% for error in form.username.errors %}
-    <span>{{ error }}</span><br>
-    {% endfor %}
+                <!-- Replace href with forgot password logic -->
+                <a class="" href="{{ url_for('login') }}">Forgot password?</a>
+            </div>
 
-    {{ form.password.label }}
-    {{ form.password }}
-    <br>
-
-    {% for error in form.password.errors %}
-    <span>{{ error }}</span><br>
-    {% endfor %}
-
-    {{ form.remember_me() }} {{ form.remember_me.label}}
-    <br>
-    
-    {{ form.submit() }}
-
-</form>
-
+        </form>
+    </div>
+</div>
 {% endblock %}
