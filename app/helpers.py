@@ -87,7 +87,7 @@ def set_updatesession_form_select_options(current_session, current_unit, form):
     form.session_time.default = current_session.sessionTime
     form.session_date.default = current_session.sessionDate
 
-    form.submit.label.text = "Change"
+    form.submit.label.text = "Confirm"
 
     form.process()
 
