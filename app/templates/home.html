@@ -84,9 +84,11 @@
 	</div>
 	{% include 'signOut.html'%}
 	<!-- Bottom button -->
-	<div class="fixed-bottom d-flex justify-content-center home-footer mb-2">
-		<button id="signOutButton" class="btn btn-danger w-50">Sign All Out</button>
-		<button id="exitSessionButtonHome" class="exitSessionButton btn btn-danger col" onclick="exitSession()">Exit Session</button>
+	<div class="fixed-bottom d-flex justify-content-around home-footer mb-2">
+		<button id="exitSessionButtonHome" class="exitSessionButton btn btn-secondary col-md-3 col-4"
+			onclick="exitSession()">Exit Session</button>
+		<button id="signOutButton" class="btn btn-danger col-md-4 col-5">Sign All Out</button>
+
 	</div>
 </div>
 
