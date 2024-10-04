@@ -48,23 +48,35 @@ endwith %}
                 <div class="form-select-parent">
                     {{ input(form.sessionoccurence, type="form-select") }}
                 </div>
-
+                <div class="d-md-block d-none">
+                    <a href="{{ url_for('download_facilitator_template') }}" class="btn btn-secondary mb-2">Download
+                        facilitator
+                        template</a>
+                    <a href="{{ url_for('download_student_template') }}" class="btn btn-secondary">Download student
+                        template</a>
+                </div>
             </div>
-            <div class="col-md-4 col-12">
+            <div class="col-md-4 col-12 row">
                 {{ input(form.commentsuggestions) }}
-                {{ input(form.facilitatorfile, type="form-control-file w-100") }}
-                {{ input(form.studentfile, type="form-control-file w-100") }}
-
+                <div class="col-md-12 col-7">
+                    {{ input(form.facilitatorfile, type="form-control-file w-100") }}
+                    {{ input(form.studentfile, type="form-control-file w-100") }}
+                </div>
+                <div class="d-md-none d-block col-5">
+                    <a href="{{ url_for('download_facilitator_template') }}" class="btn btn-secondary mb-2">Download
+                        facilitator
+                        template</a>
+                    <a href="{{ url_for('download_student_template') }}" class="btn btn-secondary">Download student
+                        template</a>
+                </div>
             </div>
-            <div class="col-md-4 col-12">
-                <a href="{{ url_for('download_facilitator_template') }}" class="btn btn-secondary">Download facilitator template</a>
-                <a href="{{ url_for('download_student_template') }}" class="btn btn-secondary">Download student template</a>
-            </div>
-        </div>
 
-        <div class="d-flex justify-content-center mt-3">
-            {{ form.submit(class="btn btn-primary w-50" ) }}
         </div>
-    </form>
+</div>
+
+<div class="d-flex justify-content-center mt-3">
+    {{ form.submit(class="btn btn-primary w-50" ) }}
+</div>
+</form>
 </div>
 {% endblock %}
