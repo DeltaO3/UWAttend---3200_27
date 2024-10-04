@@ -9,7 +9,7 @@
     </div>
     <div class="mx-4 mt-3 mx-md-5" id="unitsTable">
         {% if units|length > 0 %}
-        <div class="row d-none d-md-flex text-center lead bg-dark-subtle rounded">
+        <div class="row d-none d-md-flex text-center lead table-heading">
             <span class="col">Unit Code</span>
             <span class="col">Unit Name</span>
             <span class="col">Study Period</span>
@@ -17,14 +17,14 @@
             <span class="col">End Date</span>
         </div>
         {% for unit in units %}
-        <form action="{{ url_for('set_unit_id') }}" method="post" class="text-decoration-none text-dark" style="display: inline;">
+        <form action="{{ url_for('set_unit_id') }}" method="post">
             <input type="hidden" name="unit_id" value="{{ unit.unit_id }}">
-            <div class="row table-element text-center my-2 py-2 rounded border border-primary" style="cursor: pointer;" onclick="this.closest('form').submit();">
+            <div class="row table-element text-center my-2 py-2" onclick="this.closest('form').submit();">
                 <span class="col-md col-6">{{ unit.code }}</span>
                 <span class="col-md col-6">{{ unit.name }}</span>
-                <span class="col-md">{{ unit.study_period }}</span>
-                <span class="col-md">{{ unit.start_date }}</span>
-                <span class="col-md">{{ unit.end_date }}</span>
+                <span class="col-md d-none d-md-inline">{{ unit.study_period }}</span>
+                <span class="col-md d-none d-md-inline">{{ unit.start_date }}</span>
+                <span class="col-md d-none d-md-inline">{{ unit.end_date }}</span>
             </div>
         </form>
         {% endfor %}
