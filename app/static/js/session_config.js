@@ -21,7 +21,13 @@ function getSessionDetails() {
             }
             
             for (let session_time of data.session_time_choices) {
-                session_time_optionHTML += `<option value="${session_time}">${session_time}</option>`
+                if (session_time == data.session_time_default) {
+                    session_time_optionHTML += `<option selected value="${session_time}">${session_time}</option>`
+                }
+                else {
+                    session_time_optionHTML += `<option value="${session_time}">${session_time}</option>`
+                }
+                
             }
 
             // inserts the HTML
