@@ -44,9 +44,11 @@ scheduler.add_job(
 
 mail = Mail(app)
 
-MAIL_SERVER = 'email-smtp.southeast-1.amazonaws.com'  
-MAIL_PORT = 587
-MAIL_USE_TLS = True
-MAIL_USERNAME = os.environ.get('SES_SMTP_USERNAME')  # Set as environment variables
-MAIL_PASSWORD = os.environ.get('SES_SMTP_PASSWORD')
-MAIL_DEFAULT_SENDER = ('UWAttend Team', 'your-email@your-domain.com')
+app.config['MAIL_SERVER'] = 'email-smtp.southeast-1.amazonaws.com'  
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+# iam user name = ses-smtp-user.20241005-095520
+app.config['MAIL_USERNAME'] = "AKIA2OAJUBZK3JARIQLH" # Set as environment variables
+app.config['MAIL_PASSWORD'] = "BLE5JQxOT4Wa8xD9rSIJ5ojIHFz4jGltinRShK8jUz1c"
+# MAIL_PASSWORD = "os.environ.get('SES_SMTP_PASSWORD')"
+app.config['MAIL_DEFAULT_SENDER'] = ('UWAttend Team', 'noreply@uwaengineeringprojects.com')

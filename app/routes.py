@@ -1,7 +1,6 @@
 import flask
 
 from app import app
-from app import mail
 from .forms import *
 from .helpers import *
 from .models import *
@@ -607,9 +606,85 @@ def sign_all_out():
     print("Successfully signed out all users")
     return flask.redirect(flask.url_for('home'))
 
-@app.route("/send-email")
+@app.route('/send-email', methods=['GET'])
 def send_email():
-    msg = Message("Hello from Flask", recipients=["23159504@student.uwa.edu.au", "roweisabella702@gmail.com"])
-    msg.body = "This is a test email sent from a Flask app using Amazon SES."
-    mail.send(msg)
-    return "Email sent!"
+    from app import mail
+
+    msg = Message(
+        "Hello from Flask",
+        recipients=["23159504@student.uwa.edu.au", "roweisabella702@gmail.com"],
+        body="This is a test email sent from a Flask app using Amazon SES."
+    )
+    try:
+        mail.send(msg)
+        return "Email sent!"
+    except Exception as e:
+        return f"Failed to send email. Error: {str(e)}"
+    
+
+def send_email_ses(sender, recipient, subject, body_text, body_html):
+    import boto3
+    from botocore.exceptions import ClientError
+    
+    # Set up the SES client with the correct region
+    ses_client = boto3.client(
+        'ses',
+        region_name="us-east-1",  # Change to your AWS region
+        aws_access_key_id='YOUR_AWS_ACCESS_KEY_ID',  # From IAM
+        aws_secret_access_key='YOUR_AWS_SECRET_ACCESS_KEY'  # From IAM
+    )
+
+    CHARSET = "UTF-8"
+    try:
+        response = ses_client.send_email(
+            Destination={
+                'ToAddresses': [recipient],
+            },
+            Message={
+                'Body': {
+                    'Html': {
+                        'Charset': CHARSET,
+                        'Data': body_html,
+                    },
+                    'Text': {
+                        'Charset': CHARSET,
+                        'Data': body_text,
+                    },
+                },
+                'Subject': {
+                    'Charset': CHARSET,
+                    'Data': subject,
+                },
+            },
+            Source=sender,
+        )
+        return response
+    except ClientError as e:
+        print(f"Error: {e.response['Error']['Message']}")
+        return None
+    
+@app.route('/send-email2', methods=['GET'])
+def send_email2():
+    # Define the sender, recipient, subject, and body content
+    sender = "noreply@uwaengineeringprojects.com"  # The verified SES sender email
+    recipient = "23159504@student.uwa.edu.au"  # The recipient's email address
+    subject = "Welcome to UWAttend"  # Subject of the email
+    body_text = "Hello,\nThis is a plain text email body for UWAttend."
+    body_html = """
+    <html>
+    <head></head>
+    <body>
+    <h1>Hello!</h1>
+    <p>This is the HTML version of the email for UWAttend.</p>
+    </body>
+    </html>
+    """
+
+    # Call the function
+    response = send_email_ses(sender, recipient, subject, body_text, body_html)
+
+    # Check the response
+    if response:
+        print("Email sent successfully!")
+    else:
+        print("Failed to send email.")
