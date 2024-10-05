@@ -30,17 +30,17 @@ function checkServerStatus() {
             if (response.ok) {
                 // If server is running, do nothing
                 $("#serverAlert").addClass("d-none")
-                resize_table()
+                if (typeof resize_table === "function") resize_table();
             } else {
                 // If server is down, show an alert
                 $("#serverAlert").removeClass("d-none")
-                resize_table()
+                if (typeof resize_table === "function") resize_table();
             }
         })
         .catch(error => {
             // If fetch fails (server down or disconnected), show an alert
             $("#serverAlert").removeClass("d-none")
-            resize_table()
+            if (typeof resize_table === "function") resize_table();
         });
 }
 
