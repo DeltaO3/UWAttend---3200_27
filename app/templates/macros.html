@@ -1,7 +1,11 @@
-{% macro input(field, type="form-control") %}
+{% macro input(field, type="form-control", tooltip=none) %}
 <div>
 	{{ field.label(class="form-label") }}
+	{% if tooltip is not none %}
+	{{ field(class=type, **{'data-bs-toggle':"tooltip", 'data-bs-title':tooltip})}}
+	{% else %}
 	{{ field(class=type)}}
+	{% endif %}
 	{% for error in field.errors if field.errors %}
 	<span class="form-text text-danger">{{ error }}</span>
 	<!-- Elif breaks jinja fsr -->
