@@ -68,6 +68,10 @@ if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').match
     $(".form-control").attr("data-bs-theme", "dark");
 }
 
+//initialises tooltips (Copied straight from bootstrap docs)
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
 //Closes an alert 3 seconds after it pops up
 setTimeout(function () {
     $('.alert:not(#serverAlert)').alert('close');
