@@ -29,28 +29,19 @@ function checkServerStatus() {
         .then(response => {
             if (response.ok) {
                 // If server is running, do nothing
+                $("#serverAlert").addClass("d-none")
+                resize_table()
             } else {
                 // If server is down, show an alert
-                ShowAlert("Warning: The server has disconnected!", "danger");
+                $("#serverAlert").removeClass("d-none")
+                resize_table()
             }
         })
         .catch(error => {
             // If fetch fails (server down or disconnected), show an alert
-            ShowAlert("Warning: The server has disconnected!", "danger");
+            $("#serverAlert").removeClass("d-none")
+            resize_table()
         });
-}
-
-function ShowAlert(message, type) {
-    const alertDiv = document.getElementById('serverAlert');
-
-    // Create a close button
-    const closeButton = '<span class="close-btn" aria-label="Close" onclick="this.parentElement.style.display=\'none\';">&times;</span>';
-    // Set the message and include the close button
-    alertDiv.innerHTML = message + closeButton;
-
-    // Set the class based on the type (success, danger, etc.)
-    alertDiv.className = `alert alert-${type} alert-custom`;
-    alertDiv.style.display = 'block'; // Show the alert
 }
 
 
@@ -78,5 +69,5 @@ if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').match
 
 //Closes an alert 3 seconds after it pops up
 setTimeout(function () {
-    $('.alert').alert('close');
+    $('.alert:not(#serverAlert)').alert('close');
 }, 3000); 
