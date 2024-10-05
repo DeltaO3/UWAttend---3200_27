@@ -29,6 +29,15 @@ def read_csv_file(file_path):
 
 # Imports students into the database given a .csv file
 def import_student_in_db(data, unit_id):
+
+    unit = GetUnit(unitID=unit_id)
+
+    if not unit:
+        print("Student cannot be added to unit until unit is initialised")
+        return
+    
+    unit = unit[0]
+
     for record in data:
 
         student_number = record['Person ID']
@@ -44,7 +53,7 @@ def import_student_in_db(data, unit_id):
             title=record['Title'],
             preferredName=record['Preferred Given Name'],
             unitID=unit_id,  # Assuming a default unit ID, replace as needed
-            consent="no"  # Setting consent to no as per your requirements
+            consent='no' if unit.consent else 'not required' # Setting consent to no as per your requirements
         )
         print(f"Added student: {record['Given Names']} {record['Surname']} (ID: {student_number})")
 
@@ -74,7 +83,7 @@ def process_csvs(student_file_path, facilitator_file_path):
             # Import the data to the database
             #Ensure passed csv file is correct type 
             errors = []
-            if len(s_data[0]) != 6:
+            if len(s_data[0]) != 5:
                 print("Not a student csv!")
                 errors.append("Student csv format is incorrect")
             if len(f_data[0]) != 1:
