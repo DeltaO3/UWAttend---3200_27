@@ -64,7 +64,10 @@ def home():
 
     student_list.sort(key=lambda x: (x['login'] == "yes", x['time']), reverse=True)
 
-    return flask.render_template('home.html', form=form, students=student_list, current_session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=current_session.sessionID) 
+    # check if consent is required
+    consent_required = GetUnit(unitID=current_session.unitID)[0].consent
+
+    return flask.render_template('home.html', form=form, students=student_list, current_session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=current_session.sessionID, consent_required=consent_required) 
 	
 # CONFIGURATION - /session/ /admin/
 @app.route('/session', methods=['GET', 'POST'])
