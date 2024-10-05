@@ -662,6 +662,10 @@ def download_student_template():
     # Serve the student template from the static folder or any desired directory
     return flask.send_from_directory('static/files', 'student_template.csv', as_attachment=True)
 
+@app.route('/ping')
+def check_status():
+    return "OK"
+
 @app.route('/exitSession', methods=['GET'])
 @login_required
 def exitSession():
