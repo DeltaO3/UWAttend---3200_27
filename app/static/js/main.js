@@ -67,7 +67,7 @@ if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').match
     $(".form-select-parent").attr("data-bs-theme", "dark");
 }
 
-//initialises tooltips
+//initialises tooltips (Copied straight from bootstrap docs)
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
 const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 

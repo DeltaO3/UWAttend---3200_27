@@ -2,7 +2,8 @@
 <div>
 	{{ field.label(class="form-label") }}
 	{% if tooltip is not none %}
-	{{ field(class=type, **{'data-bs-toggle':"tooltip", 'data-bs-title':tooltip})}}
+	{{ field(class=type, **{'data-bs-toggle':"tooltip", 'data-bs-title':tooltip,
+	'data-bs-custom-class':"custom-tooltip"})}}
 	{% else %}
 	{{ field(class=type)}}
 	{% endif %}
