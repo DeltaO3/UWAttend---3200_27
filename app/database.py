@@ -74,7 +74,7 @@ def AddSession(unitID, sessionName, sessionTime, sessionDate):
         db.session.rollback()
         print(f'An error occurred: {e}')
 
-    return GetUniqueSession(unitID, sessionName, sessionTime, sessionDate.date())
+    return GetUniqueSession(unitID, sessionName, sessionTime, sessionDate)
 
    
 
@@ -166,6 +166,11 @@ def AddUnitToFacilitator(email, unitID):
 
 #Do get functions need primary key IDs?
 
+def GetAttendanceByIDAndFacilitator(sessionID, facilitatorID):
+    query = db.session.query(Attendance).filter(Attendance.sessionID == sessionID, Attendance.facilitatorID == facilitatorID)
+    attendance_records = query.all()
+    return attendance_records
+
 def GetAttendance(attendanceID = None, input_sessionID = None, studentID = None):
 
     query = db.session.query(Attendance)
@@ -196,7 +201,7 @@ def GetUniqueSession(unitID, sessionName, sessionTime, sessionDate):
     session = db.session.query(Session).filter(Session.unitID == unitID,
                                              Session.sessionName == sessionName,
                                              Session.sessionTime == sessionTime,
-                                             func.DATE(Session.sessionDate) == sessionDate
+                                             Session.sessionDate == sessionDate
                                              ).first()
     return session
 
@@ -251,6 +256,22 @@ def GetStudent(unitID = None, studentID = None, studentNumber = None):
         query = query.filter(Student.studentID == studentID)
     elif studentNumber is not None:
         query = query.filter(Student.studentNumber == studentNumber)
+    else:
+        # no parameters were supplied.
+        print("You did not submit a parameter to use so returning all student records")
+
+    
+    attendance_records = query.all()
+    
+    return attendance_records
+
+def GetStudentList(student_ids):
+
+    query = db.session.query(Student)
+    
+    # handle the optional arguements, only one can be used 
+    if student_ids is not None:
+        query = query.filter(Student.studentID.in_(student_ids))
     else:
         # no parameters were supplied.
         print("You did not submit a parameter to use so returning all student records")
@@ -388,6 +409,13 @@ def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, logi
     if login is not None:  # Boolean field
         if not login and not attendance_record.signOutTime:
             attendance_record.signOutTime = get_perth_time().time()
+        if login and attendance_record.signOutTime:
+            message = f"Student temporarily signed out between {str(attendance_record.signOutTime).split('.')[0]} and {str(get_perth_time().time()).split('.')[0]}"
+            if comments: 
+                comments = comments + f" | {message}"
+            else:
+                comments = message
+            attendance_record.signOutTime = None
 
     if consent is not None:  # Boolean field
         student_record.consent = "yes" if consent else "no"
@@ -400,8 +428,7 @@ def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, logi
     if grade:
         attendance_record.marks = grade
 
-    if comments:
-        attendance_record.comments = comments
+    attendance_record.comments = comments
 
     # Commit the changes to the database
     try:
@@ -413,9 +440,6 @@ def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, logi
         message = f"Error updating attendance record for student ID {studentID}: {e}"
         return message
 
-
-
-
 def SignStudentOut(attendanceID):
 
     attendance = db.session.query(Attendance).filter(Attendance.attendanceID == attendanceID).first()
@@ -424,6 +448,27 @@ def SignStudentOut(attendanceID):
         return False
 
     attendance.signOutTime = get_perth_time().time()
+
+    db.session.commit()
+
+    return True
+
+def RemoveSignOutTime(attendanceID):
+
+    attendance = db.session.query(Attendance).filter(Attendance.attendanceID == attendanceID).first()
+
+    if attendance is None:
+        return False
+
+    comments = attendance.comments
+
+    message = f"Student temporarily signed out between {str(attendance.signOutTime).split('.')[0]} and {str(get_perth_time().time()).split('.')[0]}"
+    if comments: 
+        comments = comments + f" | {message}"
+    else:
+        comments = message
+    attendance.signOutTime = None
+    attendance.comments = comments
 
     db.session.commit()
 

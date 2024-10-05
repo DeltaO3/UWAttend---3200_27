@@ -11,28 +11,14 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Log In')
 
 class SessionForm(FlaskForm):
-    session_name = SelectField(
-        'Session Name',
-        choices=[],
-        validators=[DataRequired()],
-        validate_choice=False
-    )
 
     # for each select option, value is unit_id, option is unit_code (what user sees)
-    unit = SelectField(
-        'Unit Code',
-        choices=[],
-        validators=[DataRequired()],
-        validate_choice=False
-    )
+    unit = SelectField('Unit Code', choices=[], validators=[DataRequired()], validate_choice=False)
+    session_name = SelectField('Session Name', choices=[], validators=[DataRequired()], validate_choice=False)
+    session_time = SelectField('Session Time', choices=[], validators=[DataRequired()], validate_choice=False)
+    session_date = DateField('Session Date', validators=[DataRequired()])  
 
-    session_time = SelectField(
-        'Session Time',
-        choices=[],
-        validators=[DataRequired()],
-        validate_choice=False
-    )
-
+    # set submit button text later depending on update or config new session
     submit = SubmitField('')
 
 #straight up copied from https://wtforms.readthedocs.io/en/3.0.x/specific_problems/?highlight=listwidget#specialty-field-tricks
@@ -81,18 +67,16 @@ class AddUnitForm(FlaskForm):
     semester = StringField('Semester:', validators=[DataRequired()])
     startdate = DateField('Start Date', validators=[DataRequired(), date_check])
     enddate = DateField('End Date', validators=[DataRequired()])
-	#Need to add custom validators to check if files uploaded end in csv
-    sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
-    facilitatorfile = FileField('Facilitator IDs', validators=[FileRequired(), FileAllowed(['csv'], "Only accepts .csv files")],render_kw={"accept": ".csv"})
+    facilitatorfile = FileField('Facilitator List CSV upload', validators=[FileRequired(), FileAllowed(['csv'], "Only accepts .csv files")],render_kw={"accept": ".csv"})
     studentfile = FileField('Student List CSV Upload:', validators=[FileRequired(), FileAllowed(['csv'], "Only accepts .csv files")],render_kw={"accept": ".csv"})
     consentcheck = BooleanField('Photo Consent Required?')
-    sessionoccurence = MultiCheckboxField(
-		'Session Occurence',
-		choices=[('Morning','Morning'), ('Afternoon', 'Afternoon')
-		],
-		validators=[validate_sessionoccurence])
     assessmentcheck = BooleanField('Sessions Assessed?')
-    commentsenabled = BooleanField('Student Comments Enabled?')
+    commentsenabled = BooleanField('Comments Enabled?')
+    sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
+    sessionoccurence = SelectField(
+		'Session Occurence',
+		choices=[('Morning/Afternoon','Morning/Afternoon'), ('Hours', 'Hours')],
+		validators=[DataRequired()], validate_choice=False)
     commentsuggestions = StringField('Comment Suggestions:', render_kw={"placeholder":"Optional; separate with |"})
     submit = SubmitField('Add Unit')
     
@@ -109,4 +93,4 @@ class AttendanceChangesForm(FlaskForm):
     login = BooleanField('Login')
     consent = BooleanField('Photo Consent')
     grade = StringField('Grade')
-    comments = TextAreaField('Comment')
+    comments = TextAreaField('Leave/edit comments')

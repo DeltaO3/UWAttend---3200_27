@@ -42,12 +42,12 @@ function checkServerStatus() {
 
 function ShowAlert(message, type) {
     const alertDiv = document.getElementById('serverAlert');
-    
+
     // Create a close button
-    const closeButton = '<span class="close-btn" aria-label="Close" onclick="this.parentElement.style.display=\'none\';">&times;</span>';    
+    const closeButton = '<span class="close-btn" aria-label="Close" onclick="this.parentElement.style.display=\'none\';">&times;</span>';
     // Set the message and include the close button
     alertDiv.innerHTML = message + closeButton;
-    
+
     // Set the class based on the type (success, danger, etc.)
     alertDiv.className = `alert alert-${type} alert-custom`;
     alertDiv.style.display = 'block'; // Show the alert
@@ -68,3 +68,15 @@ setInterval(checkServerStatus, 5000);
 checkServerStatus();
 
 
+//Works only on reload, but I doubt a user will be changing colour schemes and not expecting to have to reload
+if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    $(".modal").attr("data-bs-theme", "dark");
+    $(".navbar").attr("data-bs-theme", "dark");
+    $(".form-check-input").attr("data-bs-theme", "dark");
+    $(".form-select-parent").attr("data-bs-theme", "dark");
+}
+
+//Closes an alert 3 seconds after it pops up
+setTimeout(function () {
+    $('.alert').alert('close');
+}, 3000); 
