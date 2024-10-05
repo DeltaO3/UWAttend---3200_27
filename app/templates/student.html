@@ -76,10 +76,8 @@ endwith %}
                     {% endif %}
 
                     <!-- Comment Section -->
-                    {% if comments_enabled %}
                     {{ form.comments.label(class="form-label")}}:
                     {{ form.comments(class="form-control", rows="5", **{"data-comment": student.comments}) }}
-                    {% endif %}
 
                     <div class="d-flex justify-content-md-end justify-content-center">
                         <button type="button" class="btn btn-danger w-50 mt-4" data-bs-toggle="modal"
