@@ -37,22 +37,23 @@ endwith %}
         </div>
         <div class="row">
             <div class="col-md-4 col-6">
-                {{ input(form.startdate, tooltip="Unit will be unavailable before this date") }}
-                {{ input(form.enddate, tooltip="Unit will be unavailable after this date") }}
+                {{ input(form.startdate, tooltip="Unit will be unavailable in session config before this date") }}
+                {{ input(form.enddate, tooltip="Unit will be unavailable in session config after this date") }}
                 {{ input(form.consentcheck, type="form-check-input") }}
                 {{ input(form.assessmentcheck, type="form-check-input") }}
                 {{ input(form.commentsenabled, type="form-check-input") }}
             </div>
             <div class="col-md-4 col-6">
                 {{ input(form.sessionnames) }}
-                <div class="form-select-parent">
-                    {{ input(form.sessionoccurence, type="form-select") }}
+
+                <div class="d-none" id="comment-suggestions-parent">
+                    {{ input(form.commentsuggestions) }}
                 </div>
 
             </div>
             <div class="col-md-4 col-12">
-                <div class="d-none" id="comment-suggestions-parent">
-                    {{ input(form.commentsuggestions) }}
+                <div class="form-select-parent">
+                    {{ input(form.sessionoccurence, type="form-select") }}
                 </div>
                 {{ input(form.facilitatorfile, type="form-control-file w-100") }}
                 {{ input(form.studentfile, type="form-control-file w-100") }}
