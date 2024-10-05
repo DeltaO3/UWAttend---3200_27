@@ -23,15 +23,41 @@ function updateTime() {
     timeElementDisplay.setAttribute('data-perth-time', newPerthTimeStr);
 }
 
+// Function to check the server status
+function checkServerStatus() {
+    fetch('/ping')
+        .then(response => {
+            if (response.ok) {
+                // If server is running, do nothing
+                $("#serverAlert").addClass("d-none")
+                resize_table()
+            } else {
+                // If server is down, show an alert
+                $("#serverAlert").removeClass("d-none")
+                resize_table()
+            }
+        })
+        .catch(error => {
+            // If fetch fails (server down or disconnected), show an alert
+            $("#serverAlert").removeClass("d-none")
+            resize_table()
+        });
+}
+
+
 // Run code only on /session
 if (window.location.href.indexOf("session") != -1) {
     // Update the time every second
     setInterval(updateTime, 1000);
-
     // Initial call to display the time immediately when the page loads
     updateTime();
-
 }
+
+// Check server status every 5 seconds
+setInterval(checkServerStatus, 5000);
+// Initial check when the page loads
+checkServerStatus();
+
 
 //Works only on reload, but I doubt a user will be changing colour schemes and not expecting to have to reload
 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -43,5 +69,5 @@ if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').match
 
 //Closes an alert 3 seconds after it pops up
 setTimeout(function () {
-    $('.alert').alert('close');
+    $('.alert:not(#serverAlert)').alert('close');
 }, 3000); 
