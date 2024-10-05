@@ -43,9 +43,19 @@
 						<input type="hidden" id="hidden_consent_indicator" value="no">
 						<button id="student_sign_in_button" type="submit" class="btn btn-primary">Submit</button>
 					</div>
-					<div id="suggestions_container" class="position-absolute col-9 col-lg-6 list-group mt-2"></div>
+					<div id="suggestions_container" class="position-absolute col-9 col-lg-6 list-group mt-2 z-3"></div>
 				</form>
 			</div>
+		</div>
+	</div>
+
+	<div class="mx-4 mt-3 mx-md-5 row">
+		<div class="input-group">
+			<span class="input-group-text image-parent">
+				<i class="bi bi-search"></i>
+			</span>
+			<input type="text" id="search-bar" name="search-bar" class="form-control rounded-end"
+				placeholder="Search class list...">
 		</div>
 	</div>
 
@@ -63,6 +73,7 @@
 			{% endif %}
 		</div>
 	</div>
+
 	<div class="d-flex justify-content-center">
 		<div class="mx-4 mt-0 mx-md-5 container" id="classTable">
 			{% if total_students > 0 %}
@@ -83,8 +94,11 @@
 	</div>
 	{% include 'signOut.html'%}
 	<!-- Bottom button -->
-	<div class="fixed-bottom d-flex justify-content-center home-footer mb-2">
-		<button id="signOutButton" class="btn btn-danger w-50">Sign All Out</button>
+	<div class="fixed-bottom d-flex justify-content-around home-footer mb-2">
+		<button id="exitSessionButtonHome" class="exitSessionButton btn btn-secondary col-md-3 col-4"
+			onclick="exitSession()">Exit Session</button>
+		<button id="signOutButton" class="btn btn-danger col-md-4 col-5">Sign All Out</button>
+
 	</div>
 </div>
 
@@ -92,4 +106,5 @@
 <script src="{{ url_for('static', filename='js/consent.js') }}"></script>
 <script src="{{ url_for('static', filename='js/student_suggestions.js') }}"></script>
 <script src="{{ url_for('static', filename='js/sign_out.js') }}"></script>
+<script src="{{url_for('static', filename='js/exit_session.js')}}"></script>
 {% endblock %}
