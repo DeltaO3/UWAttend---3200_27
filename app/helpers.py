@@ -53,10 +53,9 @@ def set_session_form_select_options(form):
         for name in session_names :
             session_name_choices.append((name, name))
 
-        # add empty session name default
-        session_name_choices.append(('', ''))
+        # add empty --Select-- session name default
+        session_name_choices.append(('', '--Select--'))
         form.session_name.default = ''
-        print(form.session_name.default)
 
         # get session times for first unit
         session_times = units[0].sessionTimes.split('|')
@@ -66,11 +65,9 @@ def set_session_form_select_options(form):
         time_suggestion = get_time_suggestion(session_times)
         
         if time_suggestion is None :
-            # add empty default
-            session_time_choices.append(('', ''))
+            # add empty --Select-- default
+            session_time_choices.append(('', '--Select--'))
             form.session_time.default = ''
-            print(form.session_time.default)
-
         else :
             form.session_time.default = time_suggestion
 
@@ -88,8 +85,6 @@ def set_session_form_select_options(form):
     form.session_date.default = get_perth_time()
 
     form.submit.label.text = "Configure"
-
-    form.process()
 
     form.process()
 
@@ -125,8 +120,6 @@ def set_updatesession_form_select_options(current_session, current_unit, form):
 
     form.process()
 
-    form.process()
-
 def get_time_suggestion(session_times) :
 
     current_time = get_perth_time().time()
@@ -135,7 +128,7 @@ def get_time_suggestion(session_times) :
     for session_time in session_times :
         if session_time in sessionTimeDefinitions :
             if current_time >= sessionTimeDefinitions[session_time][0] and current_time <= sessionTimeDefinitions[session_time][1] :
-                print("suggesting {session_time} as likely time")
+                print(f"suggesting {session_time} as likely time")
                 return session_time
 
     print("no appropriate suggestions for time found")

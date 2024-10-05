@@ -544,7 +544,6 @@ def get_session_details(unitID) :
     # get session names for unit
     session_names = unit[0].sessionNames.split('|')
     session_name_choices = []
-    session_name_choices.append('')
 
     for name in session_names :
         session_name_choices.append(name)
@@ -556,13 +555,14 @@ def get_session_details(unitID) :
     session_time_default = get_time_suggestion(session_times) 
 
     if session_time_default is None :
-        session_time_default = ''
-        session_time_choices.append('')
+        session_time_default = '--Select--'
 
     for time in session_times :
         session_time_choices.append(time)
 
     print(f"Sending session details for {unit[0].unitCode}")
+
+    print(f"session time default: {session_time_default}")
 
     # send session details
     return flask.jsonify({'session_name_choices': session_name_choices, 'session_time_choices': session_time_choices, 'session_time_default': session_time_default})
