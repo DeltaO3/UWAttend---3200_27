@@ -37,8 +37,8 @@ endwith %}
         </div>
         <div class="row">
             <div class="col-md-4 col-6">
-                {{ input(form.startdate, tooltip="TEST!") }}
-                {{ input(form.enddate) }}
+                {{ input(form.startdate, tooltip="Unit will be unavailable before this date") }}
+                {{ input(form.enddate, tooltip="Unit will be unavailable after this date") }}
                 {{ input(form.consentcheck, type="form-check-input") }}
                 {{ input(form.assessmentcheck, type="form-check-input") }}
                 {{ input(form.commentsenabled, type="form-check-input") }}
@@ -51,7 +51,9 @@ endwith %}
 
             </div>
             <div class="col-md-4 col-12">
-                {{ input(form.commentsuggestions) }}
+                <div class="d-none" id="comment-suggestions-parent">
+                    {{ input(form.commentsuggestions) }}
+                </div>
                 {{ input(form.facilitatorfile, type="form-control-file w-100") }}
                 {{ input(form.studentfile, type="form-control-file w-100") }}
 
@@ -63,4 +65,5 @@ endwith %}
         </div>
     </form>
 </div>
-{% endblock %}
+
+<script src="{{ url_for('static', filename='js/add_unit.js') }}"></script> {% endblock %}
