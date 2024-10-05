@@ -38,6 +38,14 @@
                 <input type="hidden" id="current_time" name="current_time">
             </div>
 
+            <div class="mt-2 row d-flex justify-content-around">
+            {% if errorMsg %}
+            <span class="text-center form-text text-danger">{{ errorMsg }}</span>
+            {% else %}
+            <span class="form-text invisible">No error</span>
+            {% endif %}
+            </div>
+
             <!-- Buttons -->
             <div class="mt-2 row d-flex justify-content-around">
                 {% if update %}
