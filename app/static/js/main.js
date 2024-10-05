@@ -65,6 +65,7 @@ if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').match
     $(".navbar").attr("data-bs-theme", "dark");
     $(".form-check-input").attr("data-bs-theme", "dark");
     $(".form-select-parent").attr("data-bs-theme", "dark");
+    $(".form-control").attr("data-bs-theme", "dark");
 }
 
 //Closes an alert 3 seconds after it pops up

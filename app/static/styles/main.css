@@ -43,7 +43,7 @@ body {
 
 /* Table elements */
 #classTable {
-  overflow-y: scroll;
+  overflow-y: auto;
   height: 0px;
 }
 
