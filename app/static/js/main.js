@@ -30,17 +30,17 @@ function checkServerStatus() {
             if (response.ok) {
                 // If server is running, do nothing
                 $("#serverAlert").addClass("d-none")
-                resize_table()
+                if (typeof resize_table === "function") resize_table();
             } else {
                 // If server is down, show an alert
                 $("#serverAlert").removeClass("d-none")
-                resize_table()
+                if (typeof resize_table === "function") resize_table();
             }
         })
         .catch(error => {
             // If fetch fails (server down or disconnected), show an alert
             $("#serverAlert").removeClass("d-none")
-            resize_table()
+            if (typeof resize_table === "function") resize_table();
         });
 }
 
@@ -65,6 +65,7 @@ if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').match
     $(".navbar").attr("data-bs-theme", "dark");
     $(".form-check-input").attr("data-bs-theme", "dark");
     $(".form-select-parent").attr("data-bs-theme", "dark");
+    $(".form-control").attr("data-bs-theme", "dark");
 }
 
 //Closes an alert 3 seconds after it pops up
