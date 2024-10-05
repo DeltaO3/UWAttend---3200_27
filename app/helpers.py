@@ -9,6 +9,15 @@ def get_perth_time():
     perth_time = pytz.utc.localize(utc_time).astimezone(perth_tz)
     return perth_time
 
+def check_unit_is_current(unit) :
+    current_date = get_perth_time().date()
+    if current_date > unit.endDate or current_date < unit.startDate :
+        print(f"not showing {unit.unitCode} as it is not current")
+        return False
+    else :
+        print(f"showing {unit.unitCode} as it is current")
+        return True
+
 def set_session_form_select_options(form):
 
     # gets units for the facilitator (i.e. the current user)
@@ -16,7 +25,8 @@ def set_session_form_select_options(form):
     unit_choices = []
     for unit in units :
         # format with unitID as value, unitCode as option string name
-        unit_choices.append((unit.unitID, unit.unitCode))
+        if check_unit_is_current(unit) :
+            unit_choices.append((unit.unitID, unit.unitCode))
 
     session_name_choices = []
     session_time_choices = []
@@ -43,7 +53,11 @@ def set_session_form_select_options(form):
     form.session_name.choices = session_name_choices
     form.session_time.choices = session_time_choices
 
-    form.submit.label.text = "Create"
+    form.session_date.default = get_perth_time()
+
+    form.submit.label.text = "Configure"
+
+    form.process()
 
 def set_updatesession_form_select_options(current_session, current_unit, form):
 
@@ -71,8 +85,11 @@ def set_updatesession_form_select_options(current_session, current_unit, form):
     form.unit.default = current_unit.unitID
     form.session_name.default = current_session.sessionName
     form.session_time.default = current_session.sessionTime
+    form.session_date.default = current_session.sessionDate
 
-    form.submit.label.text = "Update"
+    form.submit.label.text = "Confirm"
+
+    form.process()
 
 def generate_student_info(student, attendance_record):
 

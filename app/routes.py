@@ -92,21 +92,22 @@ def session():
         unit_id = form.unit.data
         session_name = form.session_name.data
         session_time = form.session_time.data
+        session_date = form.session_date.data
 
         # Printing for debugging
         print(f"Session Name: {session_name}")
         print(f"Session Time: {session_time}")
         print(f"Unit Id: {unit_id}")
-        print(f"Current Date/Time: {humanreadable_perth_time}")
+        print(f"Session Date: {session_date}")
 
         # Check if the session already exists
-        current_session = GetUniqueSession(unit_id, session_name, session_time, perth_time.date())
+        current_session = GetUniqueSession(unit_id, session_name, session_time, session_date)
 
         if current_session is not None :
             print("Session already exists.")
         else :
             print("Session doesn't exist... creating new session.")
-            current_session = AddSession(unit_id, session_name, session_time, perth_time)
+            current_session = AddSession(unit_id, session_name, session_time, session_date)
             if current_session is None :
                 print("An error has occurred. The session was not created. Please try again.")
                 return flask.redirect(flask.url_for('home'))
@@ -114,6 +115,7 @@ def session():
         print("Current session details:")
         print(f"Session name: {current_session.sessionName}")
         print(f"Session time: {current_session.sessionTime}")
+        print(f"Session date: {current_session.sessionDate}")
 
         flask.session['session_id'] = current_session.sessionID
         print(f"Saving session id: {current_session.sessionID} to global variable")
@@ -131,8 +133,8 @@ def session():
 def updatesession():
 
     # if session doesn't exist, redirect to /session
-    session_id = flask.session.get('session_id')
-    existing_session = GetSession(session_id)
+    current_session_id = flask.session.get('session_id')
+    existing_session = GetSession(current_session_id)
     if not existing_session:
         return redirect(url_for('session'))
 
@@ -148,13 +150,45 @@ def updatesession():
         unit_id = form.unit.data
         session_name = form.session_name.data
         session_time = form.session_time.data
+        session_date = form.session_date.data
 
         # Printing for debugging
         print(f"Session Name: {session_name}")
         print(f"Session Time: {session_time}")
+        print(f"Session Date: {session_date}")
         print(f"Unit Id: {unit_id}")
 
-        # TODO: implement update session logic
+        # Check if the session already exists
+        new_session = GetUniqueSession(unit_id, session_name, session_time, session_date)
+
+        if new_session is not None :
+            print("Session already exists. Joining existing session.")
+        else :
+            print("Session doesn't exist... creating new session with new details.")
+            new_session = AddSession(unit_id, session_name, session_time, session_date)
+            if new_session is None :
+                print("An error has occurred. The session was not created. Please try again.")
+                return flask.redirect(flask.url_for('home'))
+
+        print("New session details:")
+        print(f"Session name: {new_session.sessionName}")
+        print(f"Session time: {new_session.sessionTime}")
+        print(f"Session date: {new_session.sessionDate}")
+
+        # Update attendance records with current session id and where facilitator is current user
+        attendance_records = GetAttendanceByIDAndFacilitator(current_session_id, current_user.userID)
+
+        for record in attendance_records :
+            record.sessionID = new_session.sessionID
+
+        db.session.commit()
+
+        # Update session cookie
+        flask.session['session_id'] = new_session.sessionID
+        print(f"Saving session id: {new_session.sessionID} to global variable")
+
+        # Redirect back to home page
+        return flask.redirect(flask.url_for('home'))
 
     # set updatesession form select fields to match current session's details
     current_session = existing_session[0]
@@ -615,3 +649,12 @@ def sign_all_out():
 
     print("Successfully signed out all users")
     return flask.redirect(flask.url_for('home'))
+
+@app.route('/exitSession', methods=['GET'])
+@login_required
+def exitSession():
+    if 'session_id' in flask.session :
+        print(f"removing session cookie for session ID {flask.session.pop('session_id')}")
+        flask.session.pop('session_id', default=None)
+        print("successfully removed session cookie")
+    return flask.redirect(url_for('session'))

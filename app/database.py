@@ -74,7 +74,7 @@ def AddSession(unitID, sessionName, sessionTime, sessionDate):
         db.session.rollback()
         print(f'An error occurred: {e}')
 
-    return GetUniqueSession(unitID, sessionName, sessionTime, sessionDate.date())
+    return GetUniqueSession(unitID, sessionName, sessionTime, sessionDate)
 
    
 
@@ -166,6 +166,11 @@ def AddUnitToFacilitator(email, unitID):
 
 #Do get functions need primary key IDs?
 
+def GetAttendanceByIDAndFacilitator(sessionID, facilitatorID):
+    query = db.session.query(Attendance).filter(Attendance.sessionID == sessionID, Attendance.facilitatorID == facilitatorID)
+    attendance_records = query.all()
+    return attendance_records
+
 def GetAttendance(attendanceID = None, input_sessionID = None, studentID = None):
 
     query = db.session.query(Attendance)
@@ -196,7 +201,7 @@ def GetUniqueSession(unitID, sessionName, sessionTime, sessionDate):
     session = db.session.query(Session).filter(Session.unitID == unitID,
                                              Session.sessionName == sessionName,
                                              Session.sessionTime == sessionTime,
-                                             func.DATE(Session.sessionDate) == sessionDate
+                                             Session.sessionDate == sessionDate
                                              ).first()
     return session
 
