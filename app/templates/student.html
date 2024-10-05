@@ -53,15 +53,18 @@ endwith %}
                     </div>
 
                     <!-- Photo Switch -->
+                     {% if consent_required %}
                     <div class="d-flex gap-2 mb-3">
                         <input class="form-check-input" type="checkbox" name="consent" id="consent" {% if
                             student.consent=="yes" %} checked {% endif %}>
                         {{form.consent.label(class="form-label")}}
                     </div>
+                    {% endif %}
                 </div>
 
                 <div class="col-md-6 mb-4">
                     <!-- Grade Input -->
+                     {% if marks_enabled %}
                     <div class="mb-3">
                         {{ form.grade.label(class="form-label")}}:
                         {% if student.grade %}
@@ -70,11 +73,14 @@ endwith %}
                         {{ form.grade(class="form-control") }}
                         {% endif %}
                     </div>
+                    {% endif %}
+
                     <!-- Comment Section -->
-
-
+                    {% if comments_enabled %}
                     {{ form.comments.label(class="form-label")}}:
                     {{ form.comments(class="form-control", rows="5", **{"data-comment": student.comments}) }}
+                    {% endif %}
+
                     <div class="d-flex justify-content-md-end justify-content-center">
                         <button type="button" class="btn btn-danger w-50 mt-4" data-bs-toggle="modal"
                             data-bs-target="#removeStudentModal">Remove
