@@ -632,8 +632,8 @@ def send_email_ses(sender, recipient, subject, body_text, body_html):
     ses_client = boto3.client(
         'ses',
         region_name="ap-southeast-1",  
-        aws_access_key_id=os.environ.get('SES_SMTP_USERNAME'),  # From IAM
-        aws_secret_access_key=os.environ.get('SES_SMTP_PASSWORD')# From IAM
+        aws_access_key_id=os.environ.get('AWS_ACCESS_KEY'),  # From IAM
+        aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY')# From IAM
     )
 
     CHARSET = "UTF-8"
