@@ -611,7 +611,7 @@ def sign_all_out():
 @app.route('/send-email', methods=['GET'])
 @login_required
 def send_email():
-    from app import mail  # Ensure mail is imported here
+    from app import mail  
 
     msg = Message(
         "Hello from Flask",
@@ -629,12 +629,11 @@ def send_email_ses(sender, recipient, subject, body_text, body_html):
     import boto3
     from botocore.exceptions import ClientError
     
-    # Set up the SES client with the correct region
     ses_client = boto3.client(
         'ses',
-        region_name="us-east-1",  # Change to your AWS region
-        aws_access_key_id='YOUR_AWS_ACCESS_KEY_ID',  # From IAM
-        aws_secret_access_key='YOUR_AWS_SECRET_ACCESS_KEY'  # From IAM
+        region_name="southeast-1",  
+        aws_access_key_id=app.config.get('SES_SMTP_USERNAME'),  # From IAM
+        aws_secret_access_key=app.config.get('SES_SMTP_PASSWORD') # From IAM
     )
 
     CHARSET = "UTF-8"
