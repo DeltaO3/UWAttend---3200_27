@@ -688,3 +688,5 @@ def send_email2():
         print("Email sent successfully!")
     else:
         print("Failed to send email.")
+
+    return flask.redirect(flask.url_for('home'))
