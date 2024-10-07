@@ -4,7 +4,16 @@ Repository for CITS3200 group 27
 
 # Setup
 
-Requires python3 and pip
+Requires python3 and pip and sqlcipher
+
+To install sqlcipher, you must use WSL or Linux:
+
+```
+sudo apt install libsqlcipher-dev
+sudo apt install sqlcipher
+```
+
+
 Make sure you are in the uppermost UWAttend directory.
 Create a virtual environment:
 
@@ -35,17 +44,20 @@ pip install -r requirements.txt
 ```
 
 Set the secret key:
+You must set two environment variables: SECRET_KEY and DATABASE_PASSWORD
 
 - WINDOWS (COMMAND PROMPT) :
 
 ```
 setx SECRET_KEY 'insert_secret_key_here'
+setx DATABASE_PASSWORD 'insert_secret_key_here'
 ```
 
 - UNIX:
 
 ```
 export SECRET_KEY='secret_string'
+export DATABASE_PASSWORD='secret_string'
 ```
 
 Note: variable name must be SECRET_KEY, but the value can be any string (a random and long key is best for security).
