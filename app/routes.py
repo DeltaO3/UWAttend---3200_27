@@ -674,16 +674,64 @@ def send_email_ses(sender, recipient, subject, body_text, body_html):
 @login_required
 def send_email():
     # Define the sender, recipient, subject, and body content
-    sender = "info@uwaengineeringprojects.com"  # The verified SES sender email
+    sender = "noreply@uwaengineeringprojects.com"  # The verified SES sender email
     recipient = "23159504@student.uwa.edu.au"  # The recipient's email address
     subject = "Welcome to UWAttend"  # Subject of the email
-    body_text = "Hello,\nThis is a plain text email body for UWAttend."
+        # Plain text body for email clients that don't support HTML
+    body_text = "Hello,\nWelcome to UWAttend! This email contains important information."
+
+    # HTML body for the email
     body_html = """
     <html>
-    <head></head>
+    <head>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4;
+            }
+            .container {
+                width: 100%;
+                padding: 20px;
+            }
+            .header {
+                background-color: #4CAF50;
+                color: white;
+                padding: 10px 0;
+                text-align: center;
+            }
+            .content {
+                background-color: white;
+                padding: 20px;
+                border-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            }
+            .footer {
+                margin-top: 20px;
+                font-size: 12px;
+                text-align: center;
+                color: #888;
+            }
+        </style>
+    </head>
     <body>
-    <h1>Hello!</h1>
-    <p>This is the HTML version of the email for UWAttend.</p>
+        <div class="container">
+            <div class="header">
+                <h1>Welcome to UWAttend!</h1>
+            </div>
+            <div class="content">
+                <h2>Hello!</h2>
+                <p>Thank you for joining UWAttend. We're excited to have you on board!</p>
+                <p>This email contains important information about your account.</p>
+                <p>For assistance, please contact our support team.</p>
+                <p>Visit our homepage: <a href="http://uwaengineeringprojects.com">UWAttend Homepage</a></p>
+                <p>Best regards,<br>Your UWAttend Team</p>
+            </div>
+            <div class="footer">
+                <p>&copy; 2024 UWAttend. All rights reserved.</p>
+            </div>
+        </div>
     </body>
     </html>
     """
