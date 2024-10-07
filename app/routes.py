@@ -669,7 +669,7 @@ def send_email_ses(sender, recipient, subject, body_text, body_html):
 @login_required
 def send_email():
     # Define the sender, recipient, subject, and body content
-    sender = "noreply@uwaengineeringprojects.com"  # The verified SES sender email
+    sender = "info@uwaengineeringprojects.com"  # The verified SES sender email
     recipient = "23159504@student.uwa.edu.au"  # The recipient's email address
     subject = "Welcome to UWAttend"  # Subject of the email
     body_text = "Hello,\nThis is a plain text email body for UWAttend."
