@@ -19,6 +19,15 @@
     --text: var(--bs-gray-300);
   }
 }
+/* Hide scrollbar for Chrome, Safari and Opera */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+html {
+  -ms-overflow-style: none; /* IE and Edge */
+}
 
 body {
   background-color: var(--bg);
@@ -42,8 +51,9 @@ body {
 }
 
 /* Table elements */
+
 #classTable {
-  overflow-y: scroll;
+  overflow-y: auto;
   height: 0px;
 }
 
@@ -72,7 +82,20 @@ body {
   background-color: var(--bg);
 }
 
+/* Tooltip */
+
+.custom-tooltip {
+  --bs-tooltip-bg: color-mix(in srgb, var(--bg) 70%, var(--text) 30%);
+  --bs-tooltip-color: var(--text);
+}
+
 /* Bootstrap class css changes (all elements have this from version 5.2) */
+
+.image-parent {
+  border-color: color-mix(in srgb, var(--text), var(--bg) 30%);
+  background-color: color-mix(in srgb, var(--bg), white 5%);
+  color: var(--text);
+}
 
 /* FORMS */
 .form-control {

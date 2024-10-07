@@ -11,28 +11,14 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Log In')
 
 class SessionForm(FlaskForm):
+
     # for each select option, value is unit_id, option is unit_code (what user sees)
-    unit = SelectField(
-        'Unit Code',
-        choices=[],
-        validators=[DataRequired()],
-        validate_choice=False
-    )
+    unit = SelectField('Unit Code', choices=[], validators=[DataRequired()], validate_choice=False)
+    session_name = SelectField('Session Name', choices=[], validators=[DataRequired()], validate_choice=False)
+    session_time = SelectField('Session Time', choices=[], validators=[DataRequired()], validate_choice=False)
+    session_date = DateField('Session Date', validators=[DataRequired()])  
 
-    session_name = SelectField(
-        'Session Name',
-        choices=[],
-        validators=[DataRequired()],
-        validate_choice=False
-    )
-
-    session_time = SelectField(
-        'Session Time',
-        choices=[],
-        validators=[DataRequired()],
-        validate_choice=False
-    )
-
+    # set submit button text later depending on update or config new session
     submit = SubmitField('')
 
 #straight up copied from https://wtforms.readthedocs.io/en/3.0.x/specific_problems/?highlight=listwidget#specialty-field-tricks
@@ -101,7 +87,7 @@ class AddUnitForm(FlaskForm):
     consentcheck = BooleanField('Photo Consent Required?')
     assessmentcheck = BooleanField('Sessions Assessed?')
     commentsenabled = BooleanField('Comments Enabled?')
-    sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
+    sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"Separate with | (e.g. Lab|Workshop|Tutorial)"})
     sessionoccurence = SelectField(
 		'Session Occurence',
 		choices=[('Morning/Afternoon','Morning/Afternoon'), ('Hours', 'Hours')],
