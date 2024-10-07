@@ -606,9 +606,12 @@ def sign_all_out():
     print("Successfully signed out all users")
     return flask.redirect(flask.url_for('home'))
 
+
+# Define the email sending route
 @app.route('/send-email', methods=['GET'])
+@login_required
 def send_email():
-    from app import mail
+    from app import mail  # Ensure mail is imported here
 
     msg = Message(
         "Hello from Flask",
