@@ -75,8 +75,9 @@ endwith %}
                     {{ form.comments(class="form-control", rows="5", **{"data-comment": student.comments}) }}
                     {% if comments is not none %}
                     <div class="suggestions d-flex flex-wrap gap-2 mt-3">
+                        Suggestions:
                         {% for comment in comments %}
-                        <span class="suggestion badge p-2" data-text="{{ comment }}">{{ comment }}</span>
+                        <span id="{{ comment }}" class="suggestion badge p-2">{{ comment }}</span>
                         {% endfor %}
                     </div>
                     {% endif %}
