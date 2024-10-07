@@ -376,7 +376,6 @@ def student():
 
     student_info = generate_student_info(student, attendance_record)
     print("comments", student_info["comments"])
-
     print("consent", student.consent)
     
     return flask.render_template('student.html', form=form, student=student_info, attendance=attendance_record, comments=comment_list)

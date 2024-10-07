@@ -71,19 +71,18 @@ endwith %}
                         {% endif %}
                     </div>
                     <!-- Comment Section -->
-                    <div class="mb-3">
-                        {{ form.comments.label(class="form-label") }}:
-                        <div class="suggestions d-flex flex-wrap gap-2 mb-3">
-                            {% for comment in comments %}
-                                <span class="suggestion badge" data-text="{{ comment }}">{{ comment }}</span>
-                            {% endfor %}
-                        </div>
-                        {{ form.comments(class="form-control", rows="5", **{"data-comment": student.comments}) }}
+                    {{ form.comments.label(class="form-label") }}:
+                    {{ form.comments(class="form-control", rows="5", **{"data-comment": student.comments}) }}
+                    {% if comments is not none %}
+                    <div class="suggestions d-flex flex-wrap gap-2 mt-3">
+                        {% for comment in comments %}
+                        <span class="suggestion badge p-2" data-text="{{ comment }}">{{ comment }}</span>
+                        {% endfor %}
                     </div>
+                    {% endif %}
                     <div class="d-flex justify-content-md-end justify-content-center">
                         <button type="button" class="btn btn-danger w-50 mt-4" data-bs-toggle="modal"
-                            data-bs-target="#removeStudentModal">Remove
-                            Student</button>
+                            data-bs-target="#removeStudentModal">Remove Student</button>
                     </div>
                 </div>
             </div>
