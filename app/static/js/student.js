@@ -17,30 +17,37 @@ function removeStudent(id) {
     return false; // Ensure no unexpected behaviour
 }
 
+function detectChanges(commentSuggestions) {
+    let inputString = $('#comments').val();
+    console.log(inputString);
+    commentSuggestions.forEach(element => {
+        if (inputString.indexOf(element) >= 0) {
+            $('#' + element).fadeOut("fast", "linear")
+        }
+        else {
+            $('#' + element).fadeIn("fast", "linear")
+        }
+    });
+}
+
 $(document).ready(function () {
     const commentSuggestions = [];
     $('.suggestion').each(function () {
         commentSuggestions.push($(this).text())
     })
 
+    detectChanges(commentSuggestions);
+    $('#comments').on("change keyup paste", function () {
+        detectChanges(commentSuggestions);
+    })
+
     $('.suggestion').on('click', function () {
         var suggestedText = $(this).attr('id');
         var commentsField = $('#comments');
+        $(this).fadeOut("fast", "linear")
 
         commentsField.val(function (i, text) {
             return text + (text ? ', ' : '') + suggestedText;
         });
     });
-
-
-
-    $('#comments').on("change keyup paste", function () {
-        let inputString = $('#comments').val();
-        console.log(inputString);
-        commentSuggestions.forEach(element => {
-            if (inputString.indexOf(element) >= 0) {
-                $('#' + element).fadeToggle("fast", "linear")
-            }
-        });
-    })
 });
