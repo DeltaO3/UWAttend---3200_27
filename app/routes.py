@@ -608,21 +608,21 @@ def sign_all_out():
 
 
 # Define the email sending route
-@app.route('/send-email', methods=['GET'])
-@login_required
-def send_email():
-    from app import mail  
+# @app.route('/send-email', methods=['GET'])
+# @login_required
+# def send_email():
+#     from app import mail  
 
-    msg = Message(
-        "Hello from Flask",
-        recipients=["23159504@student.uwa.edu.au", "roweisabella702@gmail.com"],
-        body="This is a test email sent from a Flask app using Amazon SES."
-    )
-    try:
-        mail.send(msg)
-        return "Email sent!"
-    except Exception as e:
-        return f"Failed to send email. Error: {str(e)}"
+#     msg = Message(
+#         "Hello from Flask",
+#         recipients=["23159504@student.uwa.edu.au", "roweisabella702@gmail.com"],
+#         body="This is a test email sent from a Flask app using Amazon SES."
+#     )
+#     try:
+#         mail.send(msg)
+#         return "Email sent!"
+#     except Exception as e:
+#         return f"Failed to send email. Error: {str(e)}"
     
 
 def send_email_ses(sender, recipient, subject, body_text, body_html):
@@ -665,8 +665,9 @@ def send_email_ses(sender, recipient, subject, body_text, body_html):
         print(f"Error: {e.response['Error']['Message']}")
         return None
     
-@app.route('/send-email2', methods=['GET'])
-def send_email2():
+@app.route('/send-email', methods=['GET'])
+@login_required
+def send_email():
     # Define the sender, recipient, subject, and body content
     sender = "noreply@uwaengineeringprojects.com"  # The verified SES sender email
     recipient = "23159504@student.uwa.edu.au"  # The recipient's email address
