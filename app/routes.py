@@ -662,8 +662,13 @@ def send_email_ses(sender, recipient, subject, body_text, body_html):
         )
         return response
     except ClientError as e:
-        print(f"Error: {e.response['Error']['Message']}")
-        return None
+        error_code = e.response['Error']['Code']
+        error_message = e.response['Error']['Message']
+        print(f"Error sending email: {error_code} - {error_message}")
+        if error_code == "SignatureDoesNotMatch":
+            print("The request signature does not match. Check your AWS credentials and signing method.")
+        elif error_code == "InvalidParameterValue":
+            print("One of the parameters you provided is invalid. Check your input values.")
     
 @app.route('/send-email', methods=['GET'])
 @login_required
