@@ -37,16 +37,17 @@ endwith %}
         </div>
         <div class="row">
             <div class="col-md-4 col-6">
-                {{ input(form.startdate) }}
-                {{ input(form.enddate) }}
+                {{ input(form.startdate, tooltip="Unit will be unavailable in session config before this date") }}
+                {{ input(form.enddate, tooltip="Unit will be unavailable in session config after this date") }}
                 {{ input(form.consentcheck, type="form-check-input") }}
                 {{ input(form.assessmentcheck, type="form-check-input") }}
                 {{ input(form.commentsenabled, type="form-check-input") }}
             </div>
             <div class="col-md-4 col-6">
                 {{ input(form.sessionnames) }}
-                <div class="form-select-parent">
-                    {{ input(form.sessionoccurence, type="form-select") }}
+
+                <div class="d-none" id="comment-suggestions-parent">
+                    {{ input(form.commentsuggestions) }}
                 </div>
                 <div class="d-md-flex justify-content-around d-none gap-4">
                     <a href="{{ url_for('download_facilitator_template') }}" class="btn btn-secondary">Download
@@ -79,4 +80,5 @@ endwith %}
 </div>
 </form>
 </div>
-{% endblock %}
+
+<script src="{{ url_for('static', filename='js/add_unit.js') }}"></script> {% endblock %}
