@@ -46,7 +46,8 @@ endwith %}
             <div class="col-md-4 col-6">
                 <div id="session-names-parent">
                     {{ form.sessionnames.label(class="form-label") }}
-                    {{ form.sessionnames(class="form-control")}}
+                    {{ form.sessionnames(class="form-control", **{'data-bs-toggle':"tooltip",
+                    'data-bs-title':"Input session, and press enter to add", 'data-bs-custom-class':"custom-tooltip"})}}
                     {% for error in form.sessions.errors if form.sessions.errors %}
                     <span class="form-text text-danger">{{ error }}</span>
                     {% else %}
@@ -60,7 +61,7 @@ endwith %}
                     {{ input(form.sessionoccurence, type="form-select") }}
                 </div>
                 <div class="d-none" id="comment-suggestions-parent">
-                    {{ input(form.commentsuggestions) }}
+                    {{ input(form.commentsuggestions, tooltip="Input suggestions, and press enter to add") }}
                     {{ form.comments() }}
                     <div class="mb-3 d-flex flex-wrap gap-2" id="comments-container"></div>
                 </div>

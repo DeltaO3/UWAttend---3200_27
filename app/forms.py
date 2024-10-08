@@ -72,13 +72,13 @@ class AddUnitForm(FlaskForm):
     consentcheck = BooleanField('Photo Consent Required?')
     assessmentcheck = BooleanField('Sessions Assessed?')
     commentsenabled = BooleanField('Comments Enabled?')
-    sessionnames = StringField('Session Names:', render_kw={"placeholder":"Enter sessions by pressing enter"})
+    sessionnames = StringField('Session Names:', render_kw={"placeholder":"Add sessions"})
     sessions = HiddenField("Sessions", validators=[DataRequired()])
     sessionoccurence = SelectField(
 		'Session Occurence',
 		choices=[('Morning/Afternoon','Morning/Afternoon'), ('Hours', 'Hours')],
 		validators=[DataRequired()], validate_choice=False)
-    commentsuggestions = StringField('Comment Suggestions:', render_kw={"placeholder":"Optional; separate with |"})
+    commentsuggestions = StringField('Comment Suggestions:', render_kw={"placeholder":"Optional, add suggestions"})
     comments = HiddenField("Comments")
     submit = SubmitField('Add Unit')
     
