@@ -2,8 +2,13 @@
 $("#exitSessionButton").click(function (e) {
 	e.preventDefault();  // Prevent the default form submission
 
-    $("#exitSessionModal").modal('show');
-	
+    const signedInNum = $("#signedInElement").attr("data-signedinnum");
+    if (signedInNum === '0') {
+        exitSession();
+    } else {
+        $("#exitSessionModal").modal('show');
+    }
+
 	return false;
 });
 
