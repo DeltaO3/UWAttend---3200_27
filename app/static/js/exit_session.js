@@ -7,9 +7,6 @@ $("#exitSessionButton").click(function (e) {
 	return false;
 });
 
-
-
-
 function exitSession() {
 
     $('#exitSessionModal').modal('hide');

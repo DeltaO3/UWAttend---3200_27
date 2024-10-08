@@ -12,8 +12,7 @@
     </p>
     {% endif %}
 </div>
-<form method="POST" {% if update %} action="{{ url_for('updatesession') }}" {% else %} action="{{ url_for('session') }}"
-    {% endif %}>
+<form method="POST" {% if update %} data-update="true" {% else %} data-update="false"{% endif %}>
     <div class="d-flex justify-content-center">
         <div>
             {{ form.hidden_tag() }}
@@ -56,10 +55,9 @@
             </div>
         </div>
     </div>
-
 </form>
 </div>
-{% if update %}
+{% include 'joinExistingSession.html'%}
+<script src="{{url_for('static', filename='js/joinExistingSession.js')}}"></script>
 <script src="{{url_for('static', filename='js/session_config.js')}}"></script>
-{% endif %}
 {% endblock %}
