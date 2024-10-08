@@ -242,10 +242,10 @@ def addunit():
         student_file = form.studentfile.data
         facilitator_file = form.facilitatorfile.data
         sessionnames = form.sessionnames.data
-        sessionoccurence = form.sessionoccurence.data
+        sessionoccurence = form.sessionoccurence.data #AND THIS ONE
         assessmentcheck = form.assessmentcheck.data
         commentsenabled = form.commentsenabled.data
-        commentsuggestions = form.commentsuggestions.data
+        commentsuggestions = form.commentsuggestions.data #WANT THIS ONE
 
         #Validation occurs in flask forms with custom validators
         

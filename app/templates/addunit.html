@@ -44,12 +44,17 @@ endwith %}
                 {{ input(form.commentsenabled, type="form-check-input") }}
             </div>
             <div class="col-md-4 col-6">
-                {{ input(form.sessionnames) }}
+                <div id="session-names-parent">
+                    {{ input(form.sessionnames) }}
+                    <div class="mb-3 d-flex flex-wrap gap-2" id="sessions-container"></div>
+                    {{ form.sessions()}}
+                </div>
                 <div class="form-select-parent d-md-none d-block">
                     {{ input(form.sessionoccurence, type="form-select") }}
                 </div>
                 <div class="d-none" id="comment-suggestions-parent">
                     {{ input(form.commentsuggestions) }}
+                    {{ form.comments() }}
                 </div>
 
                 <div class="d-md-flex justify-content-around d-none gap-4">
