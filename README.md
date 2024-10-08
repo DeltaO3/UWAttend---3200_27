@@ -8,9 +8,9 @@ For more information on how to use UWAttend, visit the following: [MANUAL.md](ma
 ## Prerequisites
 To run UWAttend on your own machine, you must have the following dependencies installed on your system:
 
-**Python 3.x:** Required to run the application
-**Pip:** Python's package installer
-**sqlcipher** Required to encrypt and decrypt the database
+- **Python 3.x:** Required to run the application
+- **Pip:** Python's package installer
+- **sqlcipher** Required to encrypt and decrypt the database
 
 ## Installation
 ### Clone the Repository
@@ -35,7 +35,7 @@ source /venv/vin/activate
 pip3 install -r requirements.txt
 ```
 
-#### .env Secret Keys
+3. Setting up .env Secret Keys
 UWAttend utilises secret keys located in `.env` for security purposes. Create a file called `.env` in the project root directory and set the following:
 
 ``` shell
@@ -44,8 +44,8 @@ DATABASE_PASSWORD="insert_password_here"
 ```
 *Note: replace `"insert_secret_key_here"` and `"insert_password_here"` with your desired values*
 
-`SECRET_KEY` - The key to initalise SQLalchemy
-`DATABASE_PASSWORD` - The password that will be used to encrypt `app.db`
+- `SECRET_KEY` - The key to initalise SQLalchemy
+- `DATABASE_PASSWORD` - The password that will be used to encrypt `app.db`
 
 ### Database Setup
 1. Initialise the Database Schema:
@@ -68,4 +68,4 @@ To start the web-app, run the following:
 ``` shell
 flask run
 ```
-This will host the application at (http://127.0.0.1:5000)
+This will host the application at http://127.0.0.1:5000
