@@ -660,6 +660,18 @@ def sign_all_out():
     print("Successfully signed out all users")
     return flask.redirect(flask.url_for('home'))
 
+@app.route('/download_facilitator_template')
+def download_facilitator_template():
+    print("Sending facilitator template")
+    # Serve the facilitator template from the static folder or any desired directory
+    return flask.send_from_directory('static/files', 'facilitator_template.csv', as_attachment=True)
+
+@app.route('/download_student_template')
+def download_student_template():
+    print("Sending student template")
+    # Serve the student template from the static folder or any desired directory
+    return flask.send_from_directory('static/files', 'student_template.csv', as_attachment=True)
+
 @app.route('/ping')
 def check_status():
     return "OK"
