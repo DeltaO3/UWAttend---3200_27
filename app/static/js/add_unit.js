@@ -9,11 +9,9 @@ $("#commentsenabled").change(function () {
 function removeSessions(thisObj) {
 	sessionText = thisObj.attr("id");
 	sessionsArray = $("#sessions").val().split("|");
-	console.log(sessionsArray)
 	index = sessionsArray.indexOf(sessionText)
 	sessionsArray.splice(index, 1)
 	newString = sessionsArray.join("|")
-	console.log(newString)
 	thisObj.fadeOut("fast", "linear", function () { thisObj.remove(); });
 	$("#sessions").val(newString)
 }
@@ -22,11 +20,9 @@ function removeSessions(thisObj) {
 function removeComments(thisObj) {
 	commentText = thisObj.attr("id");
 	commentsArray = $("#comments").val().split("|");
-	console.log(commentsArray)
 	index = commentsArray.indexOf(commentText)
 	commentsArray.splice(index, 1)
 	newString = commentsArray.join("|")
-	console.log(newString)
 	thisObj.fadeOut("fast", "linear", function () { thisObj.remove(); });
 	$("#comments").val(newString)
 }
@@ -67,7 +63,6 @@ $(document).ready(function () {
 					curr = curr.substring(1);
 				}
 				$("#sessions").val(curr);
-				console.log($("#sessions").val());
 				newBadge = $("<span class='badge session-badge p-2' id='" + input + "'></span>").text(input);
 				newBadge.on("click", function () {
 					removeSessions($(this));
@@ -95,7 +90,6 @@ $(document).ready(function () {
 					curr = curr.substring(1);
 				}
 				$("#comments").val(curr);
-				console.log($("#comments").val());
 				newBadge = $("<span class='badge comment-badge p-2' id='" + input + "'></span>").text(input);
 				newBadge.on("click", function () {
 					removeComments($(this));

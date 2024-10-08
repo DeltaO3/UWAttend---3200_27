@@ -247,7 +247,7 @@ def addunit():
         commentsenabled = form.commentsenabled.data
         commentsuggestions = form.comments.data 
 
-        print(sessionnames, commentsuggestions) #Checking hidden form works
+        print(f"session string: " + sessionnames + "; commentString: " + commentsuggestions) #Checking hidden form works
 
         #Validation occurs in flask forms with custom validators
         
