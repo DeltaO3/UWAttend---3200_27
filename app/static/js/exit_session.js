@@ -1,14 +1,29 @@
+//When exit session button is clicked
+$("#exitSessionButton").click(function (e) {
+	e.preventDefault();  // Prevent the default form submission
+
+    const signedInNum = $("#signedInElement").attr("data-signedinnum");
+    if (signedInNum === '0') {
+        exitSession();
+    } else {
+        $("#exitSessionModal").modal('show');
+    }
+
+	return false;
+});
+
 function exitSession() {
+
+    $('#exitSessionModal').modal('hide');
 
     $.ajax({
         type: "GET",
         url: "/exitSession",
         success: function() {
-            // Handle successful sign out, e.g., redirect to home or show a message
             window.location.href = '/session';  // Redirect to session config after exiting session
         },
         error: function(error) {
-            console.error("Error signing out students:", error);
+            console.error("Error exiting session", error);
         }
     });
 
