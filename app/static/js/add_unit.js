@@ -9,6 +9,7 @@ $("#commentsenabled").change(function () {
 function removeSessions(thisObj) {
 	sessionText = thisObj.attr("id");
 	sessionsArray = $("#sessions").val().split("|");
+	console.log(sessionsArray)
 	index = sessionsArray.indexOf(sessionText)
 	sessionsArray.splice(index, 1)
 	newString = sessionsArray.join("|")
@@ -24,6 +25,7 @@ $(window).on("load", function () {
 		$("#comment-suggestions-parent").addClass("d-none")
 	}
 
+	//Load any data in hidden forms
 	sessionsArray = $("#sessions").val().split("|")
 	sessionsArray.forEach(element => {
 		newBadge = $("<span class='badge session-badge p-2' id='" + element + "'></span>").text(element);
@@ -32,6 +34,7 @@ $(window).on("load", function () {
 })
 
 $(document).ready(function () {
+	//Input for session names
 	$("#sessionnames").on("keypress", function (e) {
 		if (e.which == 13) {
 			e.preventDefault();

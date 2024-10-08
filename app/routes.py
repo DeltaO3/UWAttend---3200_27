@@ -241,11 +241,13 @@ def addunit():
         end_date = form.enddate.data
         student_file = form.studentfile.data
         facilitator_file = form.facilitatorfile.data
-        sessionnames = form.sessionnames.data
-        sessionoccurence = form.sessionoccurence.data #AND THIS ONE
+        sessionnames = form.sessions.data
+        sessionoccurence = form.sessionoccurence.data 
         assessmentcheck = form.assessmentcheck.data
         commentsenabled = form.commentsenabled.data
-        commentsuggestions = form.commentsuggestions.data #WANT THIS ONE
+        commentsuggestions = form.comments.data 
+
+        print(sessionnames, commentsuggestions) #Checking hidden form works
 
         #Validation occurs in flask forms with custom validators
         

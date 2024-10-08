@@ -72,8 +72,8 @@ class AddUnitForm(FlaskForm):
     consentcheck = BooleanField('Photo Consent Required?')
     assessmentcheck = BooleanField('Sessions Assessed?')
     commentsenabled = BooleanField('Comments Enabled?')
-    sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"Separate with | (e.g. Lab|Workshop|Tutorial)"})
-    sessions = HiddenField("Sessions")
+    sessionnames = StringField('Session Names:', render_kw={"placeholder":"Enter sessions by pressing enter"})
+    sessions = HiddenField("Sessions", validators=[DataRequired()])
     sessionoccurence = SelectField(
 		'Session Occurence',
 		choices=[('Morning/Afternoon','Morning/Afternoon'), ('Hours', 'Hours')],

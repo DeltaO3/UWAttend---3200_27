@@ -45,9 +45,16 @@ endwith %}
             </div>
             <div class="col-md-4 col-6">
                 <div id="session-names-parent">
-                    {{ input(form.sessionnames) }}
-                    <div class="mb-3 d-flex flex-wrap gap-2" id="sessions-container"></div>
+                    {{ form.sessionnames.label(class="form-label") }}
+                    {{ form.sessionnames(class="form-control")}}
+                    {% for error in form.sessions.errors if form.sessions.errors %}
+                    <span class="form-text text-danger">{{ error }}</span>
+                    {% else %}
+                    <span class="form-text invisible">No error</span>
+                    {% endfor %}
                     {{ form.sessions()}}
+                    <div class="mb-3 d-flex flex-wrap gap-2" id="sessions-container"></div>
+
                 </div>
                 <div class="form-select-parent d-md-none d-block">
                     {{ input(form.sessionoccurence, type="form-select") }}
