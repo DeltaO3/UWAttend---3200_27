@@ -622,6 +622,7 @@ def student_suggestions():
 @app.route('/logout')
 @login_required
 def logout():
+    removeSessionCookie()
     logout_user()
     return flask.redirect(flask.url_for('login'))
 
@@ -669,8 +670,5 @@ def check_status():
 @app.route('/exitSession', methods=['GET'])
 @login_required
 def exitSession():
-    if 'session_id' in flask.session :
-        print(f"removing session cookie for session ID {flask.session.pop('session_id')}")
-        flask.session.pop('session_id', default=None)
-        print("successfully removed session cookie")
+    removeSessionCookie()
     return flask.redirect(url_for('session'))
