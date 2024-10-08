@@ -195,7 +195,7 @@ def updatesession():
     current_unit = GetUnit(unitID=current_session.unitID)[0]
     set_updatesession_form_select_options(current_session, current_unit, form)
 
-    return flask.render_template('session.html', form=form, perth_time=formatted_perth_time, update=True)
+    return flask.render_template('session.html', form=form, perth_time=formatted_perth_time, update=True, currentSession=current_session, unit=current_unit.unitCode)
 
 @app.route('/checksessionexists', methods=['POST'])
 @login_required
