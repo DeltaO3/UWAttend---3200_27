@@ -726,3 +726,23 @@ def check_status():
 def exitSession():
     removeSessionCookie()
     return flask.redirect(url_for('session'))
+
+@app.route('/send-email', methods=['GET'])
+@login_required
+def send_email():
+    # Define the sender, recipient, subject, and body content
+    sender = "noreply@uwaengineeringprojects.com"  # The verified SES sender email
+    recipient = "23159504@student.uwa.edu.au"  # The recipient's email address
+
+    subject, body_text, body_html = get_welcome_email_details()
+
+    # Call the function
+    response = send_email_ses(sender, recipient, subject, body_text, body_html)
+
+    # Check the response
+    if response:
+        print("Email sent successfully!")
+    else:
+        print("Failed to send email.")
+
+    return flask.redirect(flask.url_for('home'))
