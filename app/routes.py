@@ -207,24 +207,7 @@ def unitconfig():
     if current_user.userType == 'facilitator':
         return flask.redirect('home')
     
-    # Query all units with their coordinators
-    if current_user.userType == 'coordinator':
-        units_list = (
-            db.session.query(Unit)
-            .join(Unit.coordinators)
-            .filter(User.userID == current_user.userID)
-            .all()
-        )
-    # Query all units for admins
-    if current_user.userType == 'admin':
-        units_list = (
-            db.session.query(Unit)
-            .join(Unit.coordinators)
-            .all()
-        )
-
-    # Little form for storing unitID so that updateunit can use it to update the correct unit
-    form = UnitForm()
+    units_list = current_user.unitsCoordinate
 
     # Create a list to hold unit information
     units_data = []
@@ -241,7 +224,7 @@ def unitconfig():
         }
         units_data.append(unit_info)
     
-    return flask.render_template('unit.html', units=units_data, form=form)
+    return flask.render_template('unit.html', units=units_data)
 
 #UPDATE UNIT FORM
 @app.route('/updateunit', methods=['GET', 'POST'])
@@ -254,7 +237,7 @@ def updateunit():
     unit_id = flask.request.args.get('id')  # Get the unit_id from the session
     # Retrieve the unit details using GetUnit, since we used the unitID there should only be 1 unit retrieved
     unit_data = GetUnit(unitID=unit_id)
-    
+
     if not unit_data:
         flask.flash("Unit not found", "error")
         return flask.redirect(flask.url_for('unitconfig'))
