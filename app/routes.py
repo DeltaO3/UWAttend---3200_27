@@ -224,6 +224,7 @@ def admin():
         AddUser(userType=form.UserType.data, email=form.email.data, firstName=form.firstName.data, lastName=form.lastName.data, passwordHash=generate_temp_password())
 
         send_email_ses("noreply@uwaengineeringprojects.com", form.email.data, 'welcome')
+        flask.flash("User added - confirmation email sent!")
 
         return flask.redirect(flask.url_for('admin'))
     
@@ -422,7 +423,12 @@ def create_account():
      # Bad request
 
     email = urllib.parse.unquote(email_encoded)
-    print(email)
+
+    user = GetUser(email=email)
+
+    if user:
+        fName = user.firstName
+        lName = user.lastName
     
     if form.validate_on_submit():
         if form.password1.data != form.password2.data:
@@ -437,7 +443,7 @@ def create_account():
         login_user(GetUser(email = email))
         return flask.redirect(flask.url_for('home'))
     
-    return flask.render_template('createAccount.html', form=form)
+    return flask.render_template('createAccount.html', fName=fName, lName=lName, form=form)
 
 #FORGOT PASSWORD - /forgot_password
 @app.route('/forgot_password', methods=['GET'])

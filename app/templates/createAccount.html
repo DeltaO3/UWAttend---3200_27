@@ -11,6 +11,10 @@
 		<form method="POST" novalidate class="w-100">
 			{{ form.hidden_tag() }}
 			{% for field in form %}
+			{% if field.name == 'firstName' %}
+				{{ input(field, placeholder=fName) }}
+			{% elif field.name == 'lastName' %}
+				{{ input(field, placeholder=lName) }}
 			{% if field.type == "StringField" or field.type == "PasswordField" %}
 			{{ input(field) }}
 			{% endif %}
