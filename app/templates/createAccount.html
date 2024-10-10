@@ -15,6 +15,7 @@
 				{{ input(field, placeholder=fName) }}
 			{% elif field.name == 'lastName' %}
 				{{ input(field, placeholder=lName) }}
+			{% endif %}
 			{% if field.type == "StringField" or field.type == "PasswordField" %}
 			{{ input(field) }}
 			{% endif %}
