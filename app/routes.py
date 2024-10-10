@@ -404,6 +404,8 @@ def remove_from_session():
 # CREATE ACCOUNT - /create_account
 @app.route('/create_account', methods=['GET', 'POST'])
 def create_account():
+    print("here in create account")
+
     if current_user.is_authenticated:
         return flask.redirect('home')
     
