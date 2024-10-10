@@ -7,30 +7,40 @@
         <a href="{{ url_for('addunit') }}" class="btn btn-primary">Add Unit</a>
         <a href="{{ url_for('export_data') }}" class="btn btn-primary">Export Database</a>
     </div>
-    <div class="mx-4 mt-3 mx-md-5" id="unitsTable">
-        {% if units|length > 0 %}
-        <div class="row d-none d-md-flex text-center lead table-heading">
-            <span class="col">Unit Code</span>
-            <span class="col">Unit Name</span>
-            <span class="col">Study Period</span>
-            <span class="col">Start Date</span>
-            <span class="col">End Date</span>
+
+    <div class="d-flex justify-content-center">
+        <div class="mx-4 mt-3 mx-md-5 container">
+            {% if units|length > 0 %}
+            <div class="row d-none d-md-flex text-center lead table-heading">
+                <span class="col">Unit Code</span>
+                <span class="col">Unit Name</span>
+                <span class="col">Study Period</span>
+                <span class="col">Start Date</span>
+                <span class="col">End Date</span>
+            </div>
+            {% endif %}
         </div>
-        {% for unit in units %}
-        <form action="{{ url_for('set_unit_id') }}" method="post">
-            <input type="hidden" name="unit_id" value="{{ unit.unit_id }}">
-            <div class="row table-element text-center my-2 py-2" onclick="this.closest('form').submit();">
+    </div>
+
+    <div class="d-flex justify-content-center">
+        <div class="mx-4 mt-0 mx-md-5 container" id="unitTable">
+            {% if units|length > 0 %}
+            {% for unit in units %}
+            <!-- onlick re-route to student page for this specific student -->
+            <div class="row table-element text-center my-2 py-2"
+                onclick="location.href='{{ url_for('updateunit') +'?id='+unit.unit_id }}'">
+                <!-- ^ This is fine :) -->
                 <span class="col-md col-6">{{ unit.code }}</span>
                 <span class="col-md col-6">{{ unit.name }}</span>
                 <span class="col-md d-none d-md-inline">{{ unit.study_period }}</span>
                 <span class="col-md d-none d-md-inline">{{ unit.start_date }}</span>
                 <span class="col-md d-none d-md-inline">{{ unit.end_date }}</span>
             </div>
-        </form>
-        {% endfor %}
-        {% else %}
-        <p class="text-center">No units available.</p>
-        {% endif %}
+            {% else %}
+            <h2 class="text-center"> No current units</h2>
+            {% endfor %}
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}

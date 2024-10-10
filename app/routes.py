@@ -237,19 +237,11 @@ def unitconfig():
             "study_period": unit.studyPeriod,
             "start_date": unit.startDate.strftime('%Y-%m-%d'),
             "end_date": unit.endDate.strftime('%Y-%m-%d'),
-            "unit_id": unit.unitID
+            "unit_id": str(unit.unitID)
         }
         units_data.append(unit_info)
     
     return flask.render_template('unit.html', units=units_data, form=form)
-
-#Little helper route to set the unit id as a session variable so unitconfig can use it
-@app.route('/set_unit_id', methods=['POST'])
-@login_required
-def set_unit_id():
-    unit_id = flask.request.form.get('unit_id')
-    flask.session['unit_id'] = unit_id  # Set the unit_id in the session
-    return flask.redirect(flask.url_for('updateunit'))  # Redirect to the update unit page
 
 #UPDATE UNIT FORM
 @app.route('/updateunit', methods=['GET', 'POST'])
@@ -259,11 +251,10 @@ def updateunit():
     if current_user.userType == 'facilitator':
         return flask.redirect('home')
     
-    unit_id = flask.session.get('unit_id')  # Get the unit_id from the session
-
+    unit_id = flask.request.args.get('id')  # Get the unit_id from the session
     # Retrieve the unit details using GetUnit, since we used the unitID there should only be 1 unit retrieved
     unit_data = GetUnit(unitID=unit_id)
-
+    
     if not unit_data:
         flask.flash("Unit not found", "error")
         return flask.redirect(flask.url_for('unitconfig'))
