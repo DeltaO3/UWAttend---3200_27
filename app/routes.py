@@ -234,15 +234,15 @@ def updateunit():
     if current_user.userType == 'facilitator':
         return flask.redirect('home')
     
-    unit_id = flask.request.args.get('id')  # Get the unit_id from the session
-    # Retrieve the unit details using GetUnit, since we used the unitID there should only be 1 unit retrieved
+    unit_id = flask.request.args.get('id') 
     unit_data = GetUnit(unitID=unit_id)
-
     if not unit_data:
         flask.flash("Unit not found", "error")
         return flask.redirect(flask.url_for('unitconfig'))
-    
-    unit = unit_data[0]  # Since GetUnit returns a list, get the first item
+    unit = unit_data[0]  
+    if unit not in current_user.unitsCoordinate: #!!! TEST THIS WORKS AS INTENDED
+        flask.flash("Unit not found", "error") #Saying that the ID exists is a vulnerability, so we just say it doesnt
+        return flask.redirect(flask.url_for('unitconfig'))
 
     # Initialize the form with the existing unit data as defaults
     form = UpdateUnitForm(
