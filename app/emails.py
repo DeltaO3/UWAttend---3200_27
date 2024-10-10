@@ -86,8 +86,14 @@ def get_welcome_email_details(recipient_encoded):
 
     subject = "Welcome to UWAttend"  
     
-    body_text = f"Hello,\nWelcome to UWAttend! Please create your account by visiting the link below:\n\n{link}"
+    # Plain text version of the email body for email clients that don't support HTML
+    body_text = (
+        f"Hello,\n"
+        f"Welcome to UWAttend! Please create your account by visiting the link below:\n\n"
+        f"{link}\n"
+    )
 
+    # HTML version of the email body for email clients that support HTML
     body_html = """
     <html>
     <head>
@@ -103,7 +109,7 @@ def get_welcome_email_details(recipient_encoded):
                 padding: 20px;
             }}
             .header {{
-                background-color: #A9A9FF;
+                background-color: #0000FF;
                 color: white;
                 padding: 10px 0;
                 text-align: center;
@@ -112,7 +118,20 @@ def get_welcome_email_details(recipient_encoded):
                 background-color: white;
                 padding: 20px;
                 border-radius: 5px;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            }}
+            .button {{
+                display: inline-block;
+                padding: 10px 20px;
+                font-size: 16px;
+                font-weight: bold;
+                color: white;
+                background-color: #0000FF;
+                text-decoration: none;
+                border-radius: 5px;
+            }}
+            .button:hover {{
+                background-color: #3333FF;
             }}
             .footer {{
                 margin-top: 20px;
@@ -129,8 +148,8 @@ def get_welcome_email_details(recipient_encoded):
             </div>
             <div class="content">
                 <h2>Hello!</h2>
-                <p>Thank you for joining UWAttend!</p>
-                <p>In order to create your account, please click the link: <a href="{link}">Create Account</a></p>
+                <p>Thank you for joining UWAttend! To create your account, please click the button below:</p>
+                <p><a href="{link}" class="button">Create Account</a></p>
                 <p>Best regards,<br>Your UWAttend Team</p>
             </div>
             <div class="footer">

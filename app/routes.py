@@ -221,7 +221,10 @@ def admin():
 
     if form.validate_on_submit() and flask.request.method == 'POST':       
         
-        AddUser(userType=form.UserType.data, email=form.email.data, firstName=form.firstName.data, lastName=form.lastName.data, passwordHash=form.passwordHash.data)
+        AddUser(userType=form.UserType.data, email=form.email.data, firstName=form.firstName.data, lastName=form.lastName.data, passwordHash=generate_temp_password)
+
+        send_email_ses("noreply@uwaengineeringprojects.com", form.email.data, 'welcome')
+
         return flask.redirect(flask.url_for('admin'))
     
     return flask.render_template('admin.html', form=form)
@@ -422,6 +425,9 @@ def create_account():
     print(email)
     
     if form.validate_on_submit():
+        if form.password1.data != form.password2.data:
+            flask.flash("Passwords do not match")
+            return flask.redirect(flask.url_for('home'))
         status = UpdateUser(email, form.firstName.data, form.lastName.data, form.password2.data) 
         if not status:
             flask.flash("Error updating user details")
