@@ -86,46 +86,49 @@ def session():
     # For JS formatting
     formatted_perth_time = perth_time.isoformat()
 
-    if form.validate_on_submit():
+    if flask.request.method == 'POST' :
+        if form.validate_on_submit():
 
-        # Handle form submission
-        unit_id = form.unit.data
-        session_name = form.session_name.data
-        session_time = form.session_time.data
-        session_date = form.session_date.data
+            # Handle form submission
+            unit_id = form.unit.data
+            session_name = form.session_name.data
+            session_time = form.session_time.data
+            session_date = form.session_date.data
 
-        # Printing for debugging
-        print(f"Session Name: {session_name}")
-        print(f"Session Time: {session_time}")
-        print(f"Unit Id: {unit_id}")
-        print(f"Session Date: {session_date}")
+            # Printing for debugging
+            print(f"Session Name: {session_name}")
+            print(f"Session Time: {session_time}")
+            print(f"Unit Id: {unit_id}")
+            print(f"Session Date: {session_date}")
 
-        # Check if the session already exists
-        current_session = GetUniqueSession(unit_id, session_name, session_time, session_date)
+            # Check if the session already exists
+            current_session = GetUniqueSession(unit_id, session_name, session_time, session_date)
 
-        if current_session is not None :
-            print("Session already exists.")
+            if current_session is not None :
+                print("Session already exists.")
+            else :
+                print("Session doesn't exist... creating new session.")
+                current_session = AddSession(unit_id, session_name, session_time, session_date)
+                if current_session is None :
+                    print("An error has occurred. The session was not created. Please try again.")
+                    return flask.redirect(flask.url_for('home'))
+
+            print("Current session details:")
+            print(f"Session name: {current_session.sessionName}")
+            print(f"Session time: {current_session.sessionTime}")
+            print(f"Session date: {current_session.sessionDate}")
+
+            flask.session['session_id'] = current_session.sessionID
+            print(f"Saving session id: {current_session.sessionID} to global variable")
+
+            # Redirect back to home page with the session ID as a query parameter
+            return flask.redirect(flask.url_for('home'))
         else :
-            print("Session doesn't exist... creating new session.")
-            current_session = AddSession(unit_id, session_name, session_time, session_date)
-            if current_session is None :
-                print("An error has occurred. The session was not created. Please try again.")
-                return flask.redirect(flask.url_for('home'))
-
-        print("Current session details:")
-        print(f"Session name: {current_session.sessionName}")
-        print(f"Session time: {current_session.sessionTime}")
-        print(f"Session date: {current_session.sessionDate}")
-
-        flask.session['session_id'] = current_session.sessionID
-        print(f"Saving session id: {current_session.sessionID} to global variable")
-
-        # Redirect back to home page with the session ID as a query parameter
-        return flask.redirect(flask.url_for('home'))
+            set_session_form_select_options(form)
+            return flask.render_template('session.html', form=form, perth_time=formatted_perth_time, update=False, errorMsg="Please select a valid option for all fields.")
 
     # set session form select field options
     set_session_form_select_options(form)
-
     return flask.render_template('session.html', form=form, perth_time=formatted_perth_time, update=False)
 
 @app.route('/updatesession', methods=['GET', 'POST'])
@@ -596,13 +599,20 @@ def get_session_details(unitID) :
     session_times = unit[0].sessionTimes.split('|')
     session_time_choices = []
 
+    session_time_default = get_time_suggestion(session_times) 
+
+    if session_time_default is None :
+        session_time_default = '--Select--'
+
     for time in session_times :
         session_time_choices.append(time)
 
     print(f"Sending session details for {unit[0].unitCode}")
 
+    print(f"session time default: {session_time_default}")
+
     # send session details
-    return flask.jsonify({'session_name_choices': session_name_choices, 'session_time_choices': session_time_choices})
+    return flask.jsonify({'session_name_choices': session_name_choices, 'session_time_choices': session_time_choices, 'session_time_default': session_time_default})
 
 @app.route('/student_suggestions', methods=['GET'])
 @login_required

@@ -19,9 +19,20 @@ function getSessionDetails() {
             for (let session_name of data.session_name_choices) {
                 session_name_optionHTML += `<option value="${session_name}">${session_name}</option>`
             }
+
+            // add default --select-- to session names
+            session_name_optionHTML += `<option selected value="">--Select--</option>`
             
             for (let session_time of data.session_time_choices) {
-                session_time_optionHTML += `<option value="${session_time}">${session_time}</option>`
+                if (session_time == data.session_time_default) {
+                    session_time_optionHTML += `<option selected value="${session_time}">${session_time}</option>`
+                }
+                else {
+                    session_time_optionHTML += `<option value="${session_time}">${session_time}</option>`
+                }
+            }
+            if (data.session_time_default == '--Select--') {
+                session_time_optionHTML += `<option selected value="">--Select--</option>`
             }
 
             // inserts the HTML

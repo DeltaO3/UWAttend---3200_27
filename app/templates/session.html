@@ -18,21 +18,12 @@
         <div>
             {{ form.hidden_tag() }}
             {% for field in form%}
-            {% if field.type == "SelectField" %}
+            {% if field.type == "SelectField" or field.type == "DateField" %}
 
             <div class="mb-4 d-flex justify-content-between align-items-center gap-3">
                 {{ field.label(class="form-label text-end") }}
                 <div class="form-select-parent">
                     {{ field(class="form-select") }}
-                </div>
-            </div>
-            {% endif %}
-
-            {% if field.type == "DateField" %}
-            <div class="mb-4 d-flex justify-content-between align-items-center gap-3">
-                {{ field.label(class="form-label text-end") }}
-                <div class="form-select-parent">
-                    {{ field(class="form-control") }}
                 </div>
             </div>
             {% endif %}
@@ -47,6 +38,14 @@
                 <input type="hidden" id="current_time" name="current_time">
             </div>
 
+            <div class="mt-2 row d-flex justify-content-around">
+            {% if errorMsg %}
+            <span class="text-center form-text text-danger">{{ errorMsg }}</span>
+            {% else %}
+            <span class="form-text invisible">No error</span>
+            {% endif %}
+            </div>
+
             <!-- Buttons -->
             <div class="mt-2 row d-flex justify-content-around">
                 {% if update %}
@@ -59,7 +58,5 @@
 
 </form>
 </div>
-{% if update %}
 <script src="{{url_for('static', filename='js/session_config.js')}}"></script>
-{% endif %}
 {% endblock %}
