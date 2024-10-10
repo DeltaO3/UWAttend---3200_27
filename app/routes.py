@@ -38,7 +38,7 @@ def home():
     logged_in_student_ids = [str(record.studentID) for record in attendance_records]
 
     # get only the students who have logged in
-    students = GetStudentList(student_ids=logged_in_student_ids) # TODO should there be a database function for this?
+    students = GetStudentList(student_ids=logged_in_student_ids) 
 
     student_list = []
     signed_in_count = 0
@@ -230,9 +230,11 @@ def unitconfig():
 @app.route('/updateunit', methods=['GET', 'POST'])
 @login_required
 def updateunit():
-
     if current_user.userType == 'facilitator':
         return flask.redirect('home')
+    
+    if 'id' not in flask.request.args:
+        return flask.redirect('unitconfig')
     
     unit_id = flask.request.args.get('id') 
     unit_data = GetUnit(unitID=unit_id)
@@ -240,7 +242,7 @@ def updateunit():
         flask.flash("Unit not found", "error")
         return flask.redirect(flask.url_for('unitconfig'))
     unit = unit_data[0]  
-    if unit not in current_user.unitsCoordinate: #!!! TEST THIS WORKS AS INTENDED
+    if unit not in current_user.unitsCoordinate: #!!! TEST THIS WORKS AS INTENDED (cant access not your own units)
         flask.flash("Unit not found", "error") #Saying that the ID exists is a vulnerability, so we just say it doesnt
         return flask.redirect(flask.url_for('unitconfig'))
 
@@ -280,20 +282,6 @@ def updateunit():
         for time in sessionTimes:
             occurences += time + "|"
         occurences = occurences[:-1]
-
-        # Update each csv upload but currently needs csv handling for each specific file type current implementation is for both at once
-        # if form.studentfile.data:
-        #     student_file = form.studentfile.data
-        #     student_file.save(student_file.filename)
-        #     student_filename = student_file.filename
-        #     print(f"New student file: {student_filename}")
-        
-        # if form.facilitatorfile.data:
-        #     facilitator_file = form.facilitatorfile.data
-        #     facilitator_file.save(facilitator_file.filename)
-        #     facilitator_filename = facilitator_file.filename
-        #     print(f"New facilitator file: {facilitator_filename}")
-
         
         print(f"Updating unit ID: {unit_id}, Code: {unitCode}, Name: {unitName}")
 
@@ -316,7 +304,48 @@ def updateunit():
         flask.flash("Unit updated successfully", "success")
         return flask.redirect(flask.url_for('unitconfig'))
 
-    return flask.render_template('addunit.html', form=form, edit=True)
+    return flask.render_template('addunit.html', form=form, edit=True, unit_id = unit_id)
+
+@app.route('/editStudents', methods=['GET', 'POST'])
+@login_required
+def editStudents():
+    unit_id = flask.request.args.get('id')
+    unit = GetUnit(unitID=unit_id)[0]
+    students = GetStudent(unitID = unit_id)
+    student_list = []
+    for student in students:
+        student_info = {
+            "name": f"{student.preferredName} {student.lastName}",
+            "number": student.studentNumber,
+            "id": str(student.studentID),
+        }
+        student_list.append(student_info)
+    print(students)
+    return flask.render_template('editPeople.html', unit_id=str(unit_id), type="students", students=student_list, unit=unit)
+
+@app.route('/deleteStudent', methods=['POST'])
+@login_required
+def deleteStudent():
+    unit_id = flask.request.args.get('unit_id')
+    unit = GetUnit(unitID=unit_id)[0]
+    if unit not in current_user.unitsCoordinate: #!check this works
+        flask.flash("Unit not found","error")
+        return flask.redirect(url_for('unitconfig'))
+
+    student_id = flask.request.args.get('student_id')
+    if deleteStudentFromDB(unit_id, student_id):
+        flask.flash("Student deleted successfully","success")
+        return flask.redirect(url_for('editStudents', id=unit_id))
+    
+    flask.flash("Error deleting student", "error")
+    return flask.redirect(url_for('editStudents', id=unit_id))
+
+@app.route('/editFacilitators', methods=['GET', 'POST'])
+@login_required
+def editFacilitators():
+    unit_id = flask.request.args.get('id')
+    #facilitators = GetStudent(unitID = unit_id)
+    return flask.render_template('editPeople.html', unit_id=unit_id, type="facilitators")
 
 # add users
 @app.route('/admin', methods=['GET', 'POST'])

@@ -15,8 +15,7 @@
     {{ message }}
     <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
-{% endif %} {% endfor %} {% endif %} {%
-endwith %}
+{% endif %} {% endfor %} {% endif %} {% endwith %}
 
 <div class="container-fluid">
     <div class="mt-2 justify-content-center d-flex">
@@ -94,6 +93,11 @@ endwith %}
                                 Download student template</a>
                         </div>
                     </div>
+                </div>
+                {% else %}
+                <div class="d-flex flex-row flex-md-column gap-3">
+                    <a href="{{ url_for('editStudents') + '?id='+unit_id }}" class="btn btn-secondary mb-5">
+                        Download facilitator template</a>
                 </div>
                 {% endif %}
             </div>

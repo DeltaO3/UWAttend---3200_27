@@ -540,3 +540,12 @@ def EditUnit(unitID, unitCode, unitName, studyPeriod, startDate, endDate, sessio
         db.session.rollback()
         return f"Error updating unit {unitID}: {e}"
 
+def deleteStudentFromDB(unitID, studentID):
+    student = db.session.query(Student).filter_by(unitID=unitID, studentID=studentID).first()
+
+    if student:
+        db.session.delete(student)
+        db.session.commit()
+        return True
+
+    return False
