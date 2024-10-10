@@ -426,7 +426,8 @@ def create_account():
 
     user = GetUser(email=email)
 
-    fName = None, lName = None
+    fName = None
+    lName = None
     if user:
         fName = user.firstName
         lName = user.lastName
