@@ -406,12 +406,19 @@ def create_account():
         return flask.redirect('home')
     
     form = CreateAccountForm()
+
+    email_encoded = flask.request.args.get('email', None)  # default is None if not provided
+
+    if not email_encoded:
+        # If email is not present, return an error or render a page explaining the issue
+        flask.flash("Error - No email provided")
+        return flask.redirect(flask.url_for('home'))
+     # Bad request
+
+    email = urllib.parse.unquote(email_encoded)
+    
     if form.validate_on_submit():
-        #TODO: Add email logic
-        #Uses a placeholder email - perhaps this should be included in the route as a ?email=email parameter?
-        #feels unsafe, feel free to change some things. 
-        email = form.firstName.data + "@placeholder.com"
-        AddUser(email, form.firstName.data, form.lastName.data, form.password2.data, "facilitator" ) # TODO change to update user details (random users could otherwise create an account)
+        UpdateUser(email, form.firstName.data, form.lastName.data, form.password2.data) 
         print(f"Added user" + form.firstName.data)
         login_user(GetUser(email = email))
         return flask.redirect(flask.url_for('home'))

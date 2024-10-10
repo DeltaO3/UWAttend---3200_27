@@ -122,6 +122,28 @@ def AddUser(email, firstName, lastName, passwordHash, userType):
         db.session.rollback()
         print(f'An error occurred: {e}')
 
+def UpdateUser(email, firstName, lastName, passwordHash): # no userType as this should already be set 
+
+    user = GetUser(email)
+    
+    if not user:
+        print("User not found")
+        return
+
+    try:
+        user.firstName = firstName
+        user.lastName = lastName
+        
+        if passwordHash:
+            user.set_password(passwordHash)  
+
+        db.session.commit()
+        print("User details updated")
+    
+    except IntegrityError as e:
+        db.session.rollback()
+        print(f'An error occurred: {e}')
+
 
 def AddUnit(unitCode, unitName, studyPeriod, startDate, endDate, sessionNames, sessionTimes, comments, marks, consent, commentSuggestions):
 
