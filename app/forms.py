@@ -87,12 +87,14 @@ class AddUnitForm(FlaskForm):
     consentcheck = BooleanField('Photo Consent Required?')
     assessmentcheck = BooleanField('Sessions Assessed?')
     commentsenabled = BooleanField('Comments Enabled?')
-    sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"Separate with | (e.g. Lab|Workshop|Tutorial)"})
+    sessionnames = StringField('Session Names:', render_kw={"placeholder":"Add sessions"})
+    sessions = HiddenField("Sessions", validators=[DataRequired()])
     sessionoccurence = SelectField(
 		'Session Occurence',
 		choices=[('Morning/Afternoon','Morning/Afternoon'), ('Hours', 'Hours')],
 		validators=[DataRequired()], validate_choice=False)
-    commentsuggestions = StringField('Comment Suggestions:', render_kw={"placeholder":"Optional; separate with |"})
+    commentsuggestions = StringField('Comment Suggestions:', render_kw={"placeholder":"Optional, add suggestions"})
+    comments = HiddenField("Comments")
     submit = SubmitField('Add Unit')
 
 #The same form as add unit but without validators on the csv uploads and also the text 'Update Unit' in the button
