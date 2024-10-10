@@ -124,7 +124,7 @@ def AddUser(email, firstName, lastName, passwordHash, userType):
 
 def UpdateUser(email, firstName, lastName, passwordHash): # no userType as this should already be set 
 
-    user = GetUser(email)
+    user = GetUser(email=email)
     
     if not user:
         print("User not found")
