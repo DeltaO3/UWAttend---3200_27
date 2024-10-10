@@ -1,6 +1,7 @@
 from datetime import datetime
 import pytz
 from flask_login import current_user
+from flask import session
 
 sessionTimeDefinitions = {
     "Morning" : (datetime.strptime('7:45', '%H:%M').time(), datetime.strptime('13:00', '%H:%M').time()),
@@ -151,3 +152,9 @@ def generate_student_info(student, attendance_record):
     }
 
     return student_info
+
+def removeSessionCookie() :
+    if 'session_id' in session :
+        print(f"removing session cookie for session ID {session.pop('session_id')}")
+        session.pop('session_id', default=None)
+        print("successfully removed session cookie")
