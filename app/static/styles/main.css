@@ -201,3 +201,18 @@ body {
   --bs-btn-active-bg: color-mix(in srgb, var(--danger), black 25%);
   --bs-btn-active-border-color: color-mix(in srgb, var(--danger), black 25%);
 }
+
+/* Badges */
+
+.badge {
+  background-color: color-mix(in srgb, var(--secondary) 50%, transparent);
+  color: var(--text);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Badge hover state */
+.badge:hover {
+  background-color: color-mix(in srgb, var(--secondary) 50%, white 30%);
+}
