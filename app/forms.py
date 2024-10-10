@@ -43,13 +43,16 @@ def unit_check(form, field):
     if unit_exists(form.unitcode.data, form.startdate.data):
        raise ValidationError("Unit and start date combo already exist in db")
      
+def password_check(form, field):
+    if form.password1.data != form.password2.data:
+        raise ValidationError("Passwords do not match")
+
 def date_check(form, field):
 	print(f"checking date validity, {form.startdate.data}, {form.enddate.data}")
 	if form.startdate.data > form.enddate.data:
 		raise ValidationError("Start date must be before end date")
 
 class AddUserForm(FlaskForm):
-    
     UserType = SelectField(
     'User Type',
     choices=[('admin', 'Administrator'), ('coordinator', 'Coordinator'), ('facilitator', 'Facilitator')],
@@ -60,7 +63,19 @@ class AddUserForm(FlaskForm):
     lastName    = StringField('Last name:', validators=[DataRequired()])
     passwordHash = StringField('Password:', validators=[DataRequired()])
     submit      = SubmitField('Add User')
-    
+
+class CreateAccountForm(FlaskForm):
+    firstName   = StringField('First name:', validators=[DataRequired()])
+    lastName    = StringField('Last name:', validators=[DataRequired()])
+    password1 = PasswordField('Password:', validators=[DataRequired()])
+    password2 = PasswordField('Confirm password:', validators=[DataRequired(), password_check])
+    submit = SubmitField('Create Account')
+
+class ResetPasswordForm(FlaskForm):
+    password1 = PasswordField('New password:', validators=[DataRequired()])
+    password2 = PasswordField('Confirm new password:', validators=[DataRequired(), password_check])
+    submit = SubmitField('Reset Password')
+
 class AddUnitForm(FlaskForm):
     unitcode = StringField('Unit Code:', validators=[DataRequired(), unit_check])
     unitname = StringField('Unit Name:', validators=[DataRequired()])
@@ -72,7 +87,7 @@ class AddUnitForm(FlaskForm):
     consentcheck = BooleanField('Photo Consent Required?')
     assessmentcheck = BooleanField('Sessions Assessed?')
     commentsenabled = BooleanField('Comments Enabled?')
-    sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"separate with |"})
+    sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"Separate with | (e.g. Lab|Workshop|Tutorial)"})
     sessionoccurence = SelectField(
 		'Session Occurence',
 		choices=[('Morning/Afternoon','Morning/Afternoon'), ('Hours', 'Hours')],
