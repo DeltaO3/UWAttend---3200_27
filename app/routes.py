@@ -465,11 +465,25 @@ def reset_password():
     if current_user.is_authenticated:
         return flask.redirect('home')
     
+    email_encoded = flask.request.args.get('email', None)  # default is None if not provided
+
+    if not email_encoded:
+        # If email is not present, return an error or render a page explaining the issue
+        flask.flash("Error - No email provided")
+        return flask.redirect(flask.url_for('home'))
+     # Bad request
+
+    email = urllib.parse.unquote(email_encoded)
+    
     form = ResetPasswordForm()
+
     if form.validate_on_submit():
-        #TODO: add email into logic (similar to what create account does)
-        print("resetting password...")
-        SetPassword("admin@admin.com", form.password2.data)
+        
+        if form.password1.data != form.password2.data:
+            flask.flash("Passwords do not match")
+            return flask.redirect(flask.url_for('reset_password', email=email_encoded))
+        
+        SetPassword(email, form.password2.data)
         flask.flash('Password changed successfully', category="success")
         return flask.redirect(flask.url_for('login'))
 
