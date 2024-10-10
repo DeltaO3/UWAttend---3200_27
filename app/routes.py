@@ -6,6 +6,7 @@ from .helpers import *
 from .models import *
 from .database import *
 from .utilities import *
+from .emails import *
 from app import database
 from flask import send_file, redirect, url_for, after_this_request
 from flask_login import current_user, login_user, logout_user, login_required
@@ -294,7 +295,6 @@ def addunit():
                 sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
         
         #Add from csv
-        #TODO: handle emailing facilitators - should go in the correct process csv function
         import_student_in_db(s_data, unit_id)
         import_facilitator_in_db(f_data, unit_id, current_user)
         
@@ -411,7 +411,7 @@ def create_account():
         #Uses a placeholder email - perhaps this should be included in the route as a ?email=email parameter?
         #feels unsafe, feel free to change some things. 
         email = form.firstName.data + "@placeholder.com"
-        AddUser(email, form.firstName.data, form.lastName.data, form.password2.data, "facilitator" )
+        AddUser(email, form.firstName.data, form.lastName.data, form.password2.data, "facilitator" ) # TODO change to update user details (random users could otherwise create an account)
         print(f"Added user" + form.firstName.data)
         login_user(GetUser(email = email))
         return flask.redirect(flask.url_for('home'))
@@ -734,10 +734,8 @@ def send_email():
     sender = "noreply@uwaengineeringprojects.com"  # The verified SES sender email
     recipient = "23159504@student.uwa.edu.au"  # The recipient's email address
 
-    subject, body_text, body_html = get_welcome_email_details()
-
     # Call the function
-    response = send_email_ses(sender, recipient, subject, body_text, body_html)
+    response = send_email(sender, recipient, 'welcome')
 
     # Check the response
     if response:
