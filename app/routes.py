@@ -395,7 +395,51 @@ def remove_from_session():
         flask.flash("Error removing student from session")
         
     return flask.redirect(flask.url_for('home'))
-	
+
+# CREATE ACCOUNT - /create_account
+@app.route('/create_account', methods=['GET', 'POST'])
+def create_account():
+    if current_user.is_authenticated:
+        return flask.redirect('home')
+    
+    form = CreateAccountForm()
+    if form.validate_on_submit():
+        #TODO: Add email logic
+        #Uses a placeholder email - perhaps this should be included in the route as a ?email=email parameter?
+        #feels unsafe, feel free to change some things. 
+        email = form.firstName.data + "@placeholder.com"
+        AddUser(email, form.firstName.data, form.lastName.data, form.password2.data, "facilitator" )
+        print(f"Added user" + form.firstName.data)
+        login_user(GetUser(email = email))
+        return flask.redirect(flask.url_for('home'))
+    
+    return flask.render_template('createAccount.html', form=form)
+
+#FORGOT PASSWORD - /forgot_password
+@app.route('/forgot_password', methods=['GET'])
+def forgot_password():
+    if current_user.is_authenticated:
+        return flask.redirect('home')
+    #TODO: add backend logic for email
+    return flask.render_template('forgotPassword.html')
+
+#RESET PASSWORD - /reset_password
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+    if current_user.is_authenticated:
+        return flask.redirect('home')
+    
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        #TODO: add email into logic (similar to what create account does)
+        print("resetting password...")
+        SetPassword("admin@admin.com", form.password2.data)
+        flask.flash('Password changed successfully', category="success")
+        return flask.redirect(flask.url_for('login'))
+
+    return flask.render_template('resetPassword.html', form=form)
+
+
 # LOGIN - /login/ 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -409,7 +453,7 @@ def login():
         user = database.GetUser(email = form.username.data)                
 
         if user is None or not user.is_password_correct(form.password.data):
-            flask.flash('Invalid username or password')
+            flask.flash('Invalid username or password', category="error")
             return flask.redirect('login')
         
         login_user(user, remember=form.remember_me.data)
