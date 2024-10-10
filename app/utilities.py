@@ -70,7 +70,7 @@ def import_facilitator_in_db(data, unit_id, current_user):
             print(f"Adding new user: {facilitator}")
             AddUser(facilitator, "placeholder", "placeholder", temp_password, "facilitator")
             if str(facilitator) == '23159504@student.uwa.edu.au':
-                send_email("noreply@uwaengineeringprojects.com", facilitator, 'welcome')
+                send_email_ses("noreply@uwaengineeringprojects.com", facilitator, 'welcome')
             else:
                 print(f"Not sending welcome email to {facilitator} (temporary functionality)")
         # add this unit to facilator

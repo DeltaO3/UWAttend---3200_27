@@ -404,7 +404,6 @@ def remove_from_session():
 # CREATE ACCOUNT - /create_account
 @app.route('/create_account', methods=['GET', 'POST'])
 def create_account():
-    print("here in create account")
 
     if current_user.is_authenticated:
         return flask.redirect('home')
@@ -420,10 +419,15 @@ def create_account():
      # Bad request
 
     email = urllib.parse.unquote(email_encoded)
+    print(email)
     
     if form.validate_on_submit():
-        UpdateUser(email, form.firstName.data, form.lastName.data, form.password2.data) 
-        print(f"Added user" + form.firstName.data)
+        status = UpdateUser(email, form.firstName.data, form.lastName.data, form.password2.data) 
+        if not status:
+            flask.flash("Error updating user details")
+            return flask.redirect(flask.url_for('home'))
+            
+        print(f"Updated user details for:" + form.firstName.data)
         login_user(GetUser(email = email))
         return flask.redirect(flask.url_for('home'))
     

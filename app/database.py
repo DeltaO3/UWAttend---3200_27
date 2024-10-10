@@ -133,9 +133,7 @@ def UpdateUser(email, firstName, lastName, passwordHash): # no userType as this 
     try:
         user.firstName = firstName
         user.lastName = lastName
-        
-        if passwordHash:
-            user.set_password(passwordHash)  
+        user.set_password(passwordHash)  
 
         db.session.commit()
         print("User details updated")
