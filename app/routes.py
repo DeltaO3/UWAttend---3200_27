@@ -744,7 +744,7 @@ def send_email():
     recipient = "23159504@student.uwa.edu.au"  # The recipient's email address
 
     # Call the function
-    response = send_email(sender, recipient, 'welcome')
+    response = send_email_ses(sender, recipient, 'welcome')
 
     # Check the response
     if response:

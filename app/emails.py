@@ -21,7 +21,7 @@ def valid_email(email):
 
     return True
 
-def send_email(sender, recipient, type):
+def send_email_ses(sender, recipient, type):
 
     sender = sender
     recipient = recipient
@@ -36,8 +36,6 @@ def send_email(sender, recipient, type):
         subject, body_text, body_html = get_welcome_email_details(recipient_encoded)
     else: 
         return False
-    
-    
     
     ses_client = boto3.client(
         'ses',
