@@ -311,6 +311,14 @@ def updateunit():
 def editStudents():
     unit_id = flask.request.args.get('id')
     unit = GetUnit(unitID=unit_id)[0]
+    form = AddStudentForm()
+
+    if form.validate_on_submit() and flask.request.method == 'POST':
+        consent = "not required" if unit.consent == False else "no"
+        AddStudent(form.studentNumber.data, form.firstName.data, form.lastName.data, form.title.data, form.preferredName.data, unit_id, consent)
+        flask.flash("Student added successfully", "success")
+        return flask.redirect(url_for('editStudents', id=unit_id))
+
     students = GetStudent(unitID = unit_id)
     student_list = []
     for student in students:
@@ -320,8 +328,9 @@ def editStudents():
             "id": str(student.studentID),
         }
         student_list.append(student_info)
-    print(students)
-    return flask.render_template('editPeople.html', unit_id=str(unit_id), type="students", students=student_list, unit=unit)
+    
+    
+    return flask.render_template('editPeople.html', unit_id=str(unit_id), type="students", students=student_list, unit=unit, form=form)
 
 @app.route('/deleteStudent', methods=['POST'])
 @login_required
@@ -340,6 +349,7 @@ def deleteStudent():
     flask.flash("Error deleting student", "error")
     return flask.redirect(url_for('editStudents', id=unit_id))
 
+#TODO: Make faciliator page
 @app.route('/editFacilitators', methods=['GET', 'POST'])
 @login_required
 def editFacilitators():

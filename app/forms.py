@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileRequired
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, SelectMultipleField, HiddenField, FileField, DateField, widgets, TextAreaField
-from wtforms.validators import DataRequired, ValidationError
+from wtforms.validators import DataRequired, ValidationError, Length
 from app.database import unit_exists
 
 class LoginForm(FlaskForm):
@@ -56,6 +56,10 @@ def date_check(form, field):
 	print(f"checking date validity, {form.startdate.data}, {form.enddate.data}")
 	if form.startdate.data > form.enddate.data:
 		raise ValidationError("Start date must be before end date")
+    
+def is_student_num(form, field):
+    if len(form.studentNumber.data) != 8 and not any(c.isdigit() for c in form.studentNumber.data):
+        raise ValidationError("Student number invalid")
 
 class AddUserForm(FlaskForm):
     UserType = SelectField(
@@ -112,6 +116,15 @@ class UpdateUnitForm(UnitForm):
     currentUnit = HiddenField("Current Unit") 
     currentUnitStart = HiddenField("Current Start")
     submit = SubmitField('Update Unit')
+
+class AddStudentForm(FlaskForm):
+    studentNumber = StringField("Student Number:", validators=[DataRequired(), is_student_num])
+    firstName = StringField("First Name:", validators=[DataRequired()])
+    preferredName = StringField("Preferred Name:", validators=[DataRequired()])
+    lastName = StringField("Last Name:", validators=[DataRequired()])
+    title = StringField("Title:", validators=[DataRequired()])
+    submit = SubmitField("Add Student")
+    
 
 class StudentSignInForm(FlaskForm):
     student_sign_in = StringField('Sign in Student', validators=[DataRequired()])
