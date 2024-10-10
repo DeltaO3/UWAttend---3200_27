@@ -61,7 +61,6 @@ class AddUserForm(FlaskForm):
     email       = StringField('Email:', validators=[DataRequired()])
     firstName   = StringField('First name:', validators=[DataRequired()])
     lastName    = StringField('Last name:', validators=[DataRequired()])
-    passwordHash = StringField('Password:', validators=[DataRequired()])
     submit      = SubmitField('Add User')
 
 class CreateAccountForm(FlaskForm):

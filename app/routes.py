@@ -6,6 +6,7 @@ from .helpers import *
 from .models import *
 from .database import *
 from .utilities import *
+from .emails import *
 from app import database
 from flask import send_file, redirect, url_for, after_this_request
 from flask_login import current_user, login_user, logout_user, login_required
@@ -220,7 +221,11 @@ def admin():
 
     if form.validate_on_submit() and flask.request.method == 'POST':       
         
-        AddUser(userType=form.UserType.data, email=form.email.data, firstName=form.firstName.data, lastName=form.lastName.data, passwordHash=form.passwordHash.data)
+        AddUser(userType=form.UserType.data, email=form.email.data, firstName=form.firstName.data, lastName=form.lastName.data, passwordHash=generate_temp_password())
+
+        send_email_ses("noreply@uwaengineeringprojects.com", form.email.data, 'welcome')
+        flask.flash("User added - confirmation email sent!")
+
         return flask.redirect(flask.url_for('admin'))
     
     return flask.render_template('admin.html', form=form)
@@ -296,7 +301,6 @@ def addunit():
                 sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
         
         #Add from csv
-        #TODO: handle emailing facilitators - should go in the correct process csv function
         import_student_in_db(s_data, unit_id)
         import_facilitator_in_db(f_data, unit_id, current_user)
         
@@ -404,28 +408,55 @@ def remove_from_session():
 # CREATE ACCOUNT - /create_account
 @app.route('/create_account', methods=['GET', 'POST'])
 def create_account():
+
     if current_user.is_authenticated:
         return flask.redirect('home')
     
     form = CreateAccountForm()
+
+    email_encoded = flask.request.args.get('email', None)  # default is None if not provided
+
+    if not email_encoded:
+        # If email is not present, return an error or render a page explaining the issue
+        flask.flash("Error - No email provided")
+        return flask.redirect(flask.url_for('home'))
+     # Bad request
+
+    email = urllib.parse.unquote(email_encoded)
+    
     if form.validate_on_submit():
-        #TODO: Add email logic
-        #Uses a placeholder email - perhaps this should be included in the route as a ?email=email parameter?
-        #feels unsafe, feel free to change some things. 
-        email = form.firstName.data + "@placeholder.com"
-        AddUser(email, form.firstName.data, form.lastName.data, form.password2.data, "facilitator" )
-        print(f"Added user" + form.firstName.data)
+        if form.password1.data != form.password2.data:
+            flask.flash("Passwords do not match")
+            return flask.redirect(flask.url_for('home'))
+        status = UpdateUser(email, form.firstName.data, form.lastName.data, form.password2.data) 
+        if not status:
+            flask.flash("Error updating user details")
+            return flask.redirect(flask.url_for('home'))
+            
+        print(f"Updated user details for:" + form.firstName.data)
         login_user(GetUser(email = email))
         return flask.redirect(flask.url_for('home'))
     
     return flask.render_template('createAccount.html', form=form)
 
 #FORGOT PASSWORD - /forgot_password
-@app.route('/forgot_password', methods=['GET'])
+@app.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():
+
     if current_user.is_authenticated:
         return flask.redirect('home')
-    #TODO: add backend logic for email
+
+    if flask.request.method == 'POST':
+        email = flask.request.form.get('resetEmail')
+        
+        send_email_ses("noreply@uwaengineeringprojects.com", email, 'forgot_password')
+        
+        if email:
+            flask.flash('If the email exists, a password reset link has been sent.', 'success')
+            return redirect(url_for('login'))  # Redirect to login or another page
+
+        flask.flash('Please enter a valid email address.', 'error')
+
     return flask.render_template('forgotPassword.html')
 
 #RESET PASSWORD - /reset_password
@@ -434,11 +465,25 @@ def reset_password():
     if current_user.is_authenticated:
         return flask.redirect('home')
     
+    email_encoded = flask.request.args.get('email', None)  # default is None if not provided
+
+    if not email_encoded:
+        # If email is not present, return an error or render a page explaining the issue
+        flask.flash("Error - No email provided")
+        return flask.redirect(flask.url_for('home'))
+     # Bad request
+
+    email = urllib.parse.unquote(email_encoded)
+    
     form = ResetPasswordForm()
+
     if form.validate_on_submit():
-        #TODO: add email into logic (similar to what create account does)
-        print("resetting password...")
-        SetPassword("admin@admin.com", form.password2.data)
+        
+        if form.password1.data != form.password2.data:
+            flask.flash("Passwords do not match")
+            return flask.redirect(flask.url_for('reset_password', email=email_encoded))
+        
+        SetPassword(email, form.password2.data)
         flask.flash('Password changed successfully', category="success")
         return flask.redirect(flask.url_for('login'))
 
