@@ -423,14 +423,6 @@ def create_account():
      # Bad request
 
     email = urllib.parse.unquote(email_encoded)
-
-    user = GetUser(email=email)
-
-    fName = None
-    lName = None
-    if user:
-        fName = user.firstName
-        lName = user.lastName
     
     if form.validate_on_submit():
         if form.password1.data != form.password2.data:
@@ -445,14 +437,26 @@ def create_account():
         login_user(GetUser(email = email))
         return flask.redirect(flask.url_for('home'))
     
-    return flask.render_template('createAccount.html', fName=fName, lName=lName, form=form)
+    return flask.render_template('createAccount.html', form=form)
 
 #FORGOT PASSWORD - /forgot_password
-@app.route('/forgot_password', methods=['GET'])
+@app.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():
+
     if current_user.is_authenticated:
         return flask.redirect('home')
-    #TODO: add backend logic for email
+
+    if flask.request.method == 'POST':
+        email = flask.request.form.get('resetEmail')
+        
+        send_email_ses("noreply@uwaengineeringprojects.com", email, 'forgot_password')
+        
+        if email:
+            flask.flash('If the email exists, a password reset link has been sent.', 'success')
+            return redirect(url_for('login'))  # Redirect to login or another page
+
+        flask.flash('Please enter a valid email address.', 'error')
+
     return flask.render_template('forgotPassword.html')
 
 #RESET PASSWORD - /reset_password
