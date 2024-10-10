@@ -65,18 +65,20 @@ endwith %}
                     {{ form.comments() }}
                     <div class="mb-3 d-flex flex-wrap gap-2" id="comments-container"></div>
                 </div>
-
+                {% if not edit %}
                 <div class="d-md-flex justify-content-around d-none gap-4">
                     <a href="{{ url_for('download_facilitator_template') }}" class="btn btn-secondary ">
                         Download facilitator template</a>
                     <a href="{{ url_for('download_student_template') }}" class="btn btn-secondary">
                         Download student template</a>
                 </div>
+                {% endif %}
             </div>
             <div class="col-md-4 col-12">
                 <div class="form-select-parent d-none d-md-block">
                     {{ input(form.sessionoccurence, type="form-select") }}
                 </div>
+                {% if not edit %}
                 <div class="d-flex flex-row flex-md-column gap-3">
                     <div>
                         {{ input(form.facilitatorfile, type="form-control-file") }}
@@ -93,6 +95,7 @@ endwith %}
                         </div>
                     </div>
                 </div>
+                {% endif %}
             </div>
         </div>
 

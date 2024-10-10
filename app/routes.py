@@ -251,11 +251,11 @@ def updateunit():
         semester=unit.studyPeriod,
         startdate=unit.startDate,
         enddate=unit.endDate,
-        sessionnames=unit.sessionNames,
+        sessions=unit.sessionNames,
         commentsenabled=unit.comments,
         assessmentcheck=unit.marks,
         consentcheck=unit.consent,
-        commentsuggestions=unit.commentSuggestions,
+        comments=unit.commentSuggestions,
         sessionoccurence=unit.sessionTimes
     )
 
@@ -314,7 +314,7 @@ def updateunit():
         flask.flash("Unit updated successfully", "success")
         return flask.redirect(flask.url_for('unitconfig'))
 
-    return flask.render_template('updateunit.html', form=form, unit=unit)
+    return flask.render_template('addunit.html', form=form, unit=unit, edit=True)
 
 # add users
 @app.route('/admin', methods=['GET', 'POST'])
