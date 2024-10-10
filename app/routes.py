@@ -64,7 +64,10 @@ def home():
 
     student_list.sort(key=lambda x: (x['login'] == "yes", x['time']), reverse=True)
 
-    return flask.render_template('home.html', form=form, students=student_list, current_session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=current_session.sessionID) 
+    # check if consent is required
+    consent_required = GetUnit(unitID=current_session.unitID)[0].consent
+
+    return flask.render_template('home.html', form=form, students=student_list, current_session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=current_session.sessionID, consent_required=consent_required) 
 	
 # CONFIGURATION - /session/ /admin/
 @app.route('/session', methods=['GET', 'POST'])
@@ -373,8 +376,19 @@ def student():
     print("comments", student_info["comments"])
 
     print("consent", student.consent)
+
+    # check if consent, comments and marks are required
+    consent_required = GetUnit(unitID=current_session.unitID)[0].consent
+    marks_enabled = GetUnit(unitID=current_session.unitID)[0].marks
+    comments_enabled = GetUnit(unitID=current_session.unitID)[0].comments
+
+    if not comments_enabled :
+        form.comments.label.text = "Multiple sign in/out time log"
+        form.process()
     
-    return flask.render_template('student.html', form=form, student=student_info, attendance=attendance_record)
+    print(f"comments label: {form.comments.label.text}")
+
+    return flask.render_template('student.html', form=form, student=student_info, attendance=attendance_record, consent_required=consent_required, comments_enabled=comments_enabled, marks_enabled=marks_enabled)
 
 @app.route('/remove_from_session', methods=['GET'])
 @login_required
