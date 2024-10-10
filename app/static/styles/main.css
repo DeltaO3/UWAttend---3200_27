@@ -52,7 +52,8 @@ body {
 
 /* Table elements */
 
-#classTable {
+#classTable,
+#unitTable {
   overflow-y: auto;
   height: 0px;
 }
@@ -60,6 +61,12 @@ body {
 .table-heading {
   background-color: color-mix(in srgb, var(--bg) 75%, var(--text) 25%);
   border-radius: 0.5rem;
+}
+
+.outline-table {
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--text);
 }
 
 .table-element {
