@@ -247,9 +247,11 @@ def updateunit():
     # Initialize the form with the existing unit data as defaults
     form = UpdateUnitForm(
         unitcode=unit.unitCode,
+        currentUnit = unit.unitCode,
         unitname=unit.unitName,
         semester=unit.studyPeriod,
         startdate=unit.startDate,
+        currentUnitStart = unit.startDate,
         enddate=unit.endDate,
         sessions=unit.sessionNames,
         commentsenabled=unit.comments,
@@ -266,11 +268,11 @@ def updateunit():
         studyPeriod = form.semester.data
         startDate = form.startdate.data
         endDate = form.enddate.data
-        sessionNames = form.sessionnames.data
+        sessionNames = form.sessions.data
         comments = form.commentsenabled.data
         marks = form.assessmentcheck.data
         consent = form.consentcheck.data
-        commentSuggestions = form.commentsuggestions.data
+        commentSuggestions = form.comments.data
         sessionTimes = form.sessionoccurence.data
 
         #convert session occurences to a | string
@@ -280,17 +282,17 @@ def updateunit():
         occurences = occurences[:-1]
 
         # Update each csv upload but currently needs csv handling for each specific file type current implementation is for both at once
-        if form.studentfile.data:
-            student_file = form.studentfile.data
-            student_file.save(student_file.filename)
-            student_filename = student_file.filename
-            print(f"New student file: {student_filename}")
+        # if form.studentfile.data:
+        #     student_file = form.studentfile.data
+        #     student_file.save(student_file.filename)
+        #     student_filename = student_file.filename
+        #     print(f"New student file: {student_filename}")
         
-        if form.facilitatorfile.data:
-            facilitator_file = form.facilitatorfile.data
-            facilitator_file.save(facilitator_file.filename)
-            facilitator_filename = facilitator_file.filename
-            print(f"New facilitator file: {facilitator_filename}")
+        # if form.facilitatorfile.data:
+        #     facilitator_file = form.facilitatorfile.data
+        #     facilitator_file.save(facilitator_file.filename)
+        #     facilitator_filename = facilitator_file.filename
+        #     print(f"New facilitator file: {facilitator_filename}")
 
         
         print(f"Updating unit ID: {unit_id}, Code: {unitCode}, Name: {unitName}")
@@ -314,7 +316,7 @@ def updateunit():
         flask.flash("Unit updated successfully", "success")
         return flask.redirect(flask.url_for('unitconfig'))
 
-    return flask.render_template('addunit.html', form=form, unit=unit, edit=True)
+    return flask.render_template('addunit.html', form=form, edit=True)
 
 # add users
 @app.route('/admin', methods=['GET', 'POST'])

@@ -43,6 +43,11 @@ def unit_check(form, field):
     if unit_exists(form.unitcode.data, form.startdate.data):
        raise ValidationError("Unit and start date combo already exist in db")
      
+def edit_unit_check(form, field):
+    print(f"checking unit validity, {form.unitcode.data}, {form.startdate.data}")
+    if unit_exists(form.unitcode.data, form.startdate.data) and form.unitcode.data != form.currentUnit.data and form.startdate.data != form.currentUnitStart.data:
+       raise ValidationError("Unit and start date combo already exist in db")
+    
 def password_check(form, field):
     if form.password1.data != form.password2.data:
         raise ValidationError("Passwords do not match")
@@ -101,33 +106,13 @@ class AddUnitForm(UnitForm):
     submit = SubmitField('Add Unit')
 
 class UpdateUnitForm(UnitForm):
+    #Overwrite unit code to use a different validator
+    unitcode = StringField('Unit Code:', validators=[DataRequired(), edit_unit_check]) 
+    #While you can edit  if you are a malicious attacker, all it will do is make you submit even less. 
+    currentUnit = HiddenField("Current Unit") 
+    currentUnitStart = HiddenField("Current Start")
     submit = SubmitField('Update Unit')
 
-# #The same form as add unit but without validators on the csv uploads and also the text 'Update Unit' in the button
-# class UpdateUnitForm(FlaskForm):
-#     unitcode = StringField('Unit Code:', validators=[DataRequired()])
-#     unitname = StringField('Unit Name:', validators=[DataRequired()])
-#     semester = StringField('Semester:', validators=[DataRequired()])
-#     startdate = DateField('Start Date', validators=[DataRequired(), date_check])
-#     enddate = DateField('End Date', validators=[DataRequired()])
-    
-#     sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder": "separate with |"})
-    
-#     # The File fields need correct csv handling for 1 csv type at a time currently only works if both are being changed
-#     facilitatorfile = FileField('Facilitator IDs', validators=[FileAllowed(['csv'], "Only accepts .csv files")], render_kw={"accept": ".csv"})
-#     studentfile = FileField('Student List CSV Upload:', validators=[FileAllowed(['csv'], "Only accepts .csv files")], render_kw={"accept": ".csv"})
-    
-#     consentcheck = BooleanField('Photo Consent Required?')
-#     sessionoccurence = MultiCheckboxField(
-#         'Session Occurrence',
-#         choices=[('Morning', 'Morning'), ('Afternoon', 'Afternoon')],
-#         validators=[validate_sessionoccurence]
-#     )
-    
-#     assessmentcheck = BooleanField('Sessions Assessed?')
-#     commentsenabled = BooleanField('Student Comments Enabled?')
-#     commentsuggestions = StringField('Comment Suggestions:', render_kw={"placeholder": "Optional; separate with |"})
-    
 class StudentSignInForm(FlaskForm):
     student_sign_in = StringField('Sign in Student', validators=[DataRequired()])
     consent_status = HiddenField('Consent Status', default="none")
