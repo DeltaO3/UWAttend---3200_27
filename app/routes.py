@@ -315,6 +315,7 @@ def editStudents():
 
     if form.validate_on_submit() and flask.request.method == 'POST':
         consent = "not required" if unit.consent == False else "no"
+        #TODO: Ensure you cant add duplicate students
         AddStudent(form.studentNumber.data, form.firstName.data, form.lastName.data, form.title.data, form.preferredName.data, unit_id, consent)
         flask.flash("Student added successfully", "success")
         return flask.redirect(url_for('editStudents', id=unit_id))
