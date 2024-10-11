@@ -1,7 +1,7 @@
 /* Variables */
 :root {
   --primary: var(--bs-primary);
-  --secondary: var(--bs-secondary);
+  --secondary: #9aa4ad;
   --danger: var(--bs-danger);
   --success: var(--bs-success);
   --bg: var(--bs-body-bg);
@@ -12,7 +12,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --primary: var(--bs-primary);
-    --secondary: var(--bs-secondary);
+    --secondary: var(--bs-gray-600);
     --danger: var(--bs-danger);
     --success: var(--bs-teal);
     --bg: var(--bs-gray-900);
@@ -161,7 +161,7 @@ body {
   --bs-modal-border-color: var(--text);
 }
 
-//Buttons
+/* Buttons */
 .btn-primary {
   --bs-btn-color: var(--bs-white);
   --bs-btn-bg: var(--primary);
