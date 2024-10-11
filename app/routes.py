@@ -312,10 +312,14 @@ def editStudents():
     unit_id = flask.request.args.get('id')
     unit = GetUnit(unitID=unit_id)[0]
     form = AddStudentForm()
+    csv_form = UploadStudentForm()
 
-    if form.validate_on_submit() and flask.request.method == 'POST':
+    if form.submit.data and form.validate_on_submit() and flask.request.method == 'POST':
         consent = "not required" if unit.consent == False else "no"
-        #TODO: Ensure you cant add duplicate students
+        #Ensure you cant add duplicate students
+        if GetStudent(unitID=unit_id, studentNumber=form.studentNumber.data)[0] is None:
+            flask.flash("Student already assigned to this unit", "error")
+            return flask.redirect(url_for('editStudents', id=unit_id))
         AddStudent(form.studentNumber.data, form.firstName.data, form.lastName.data, form.title.data, form.preferredName.data, unit_id, consent)
         flask.flash("Student added successfully", "success")
         return flask.redirect(url_for('editStudents', id=unit_id))
@@ -331,7 +335,35 @@ def editStudents():
         student_list.append(student_info)
     
     
-    return flask.render_template('editPeople.html', unit_id=str(unit_id), type="students", students=student_list, unit=unit, form=form)
+    return flask.render_template('editPeople.html', unit_id=str(unit_id), type="students", students=student_list, unit=unit, form=form, csv_form = csv_form)
+
+@app.route('/uploadStudents', methods=['POST'])
+@login_required
+def uploadStudents():
+    csv_form = UploadStudentForm()
+    unit_id = flask.request.args.get('id')
+
+    if csv_form.validate_on_submit():
+        student_file = csv_form.studentfile.data
+        if student_file.filename != '':
+            student_file.save(student_file.filename)
+            student_filename = student_file.filename
+            print(f"Student filename: {student_filename}")
+        else:
+            print("Submitted no file, probable error.")
+            flask.flash("Error, no student file submitted", 'error')
+            return flask.redirect(url_for('editStudents', id=unit_id))
+        s_data, error = process_csvs(student_filename, None)
+        if error:
+            flask.flash(error, 'error')
+            return flask.redirect(url_for('editStudents', id=unit_id))
+        import_student_in_db(s_data, unit_id)
+        flask.flash("Added students to DB", "success")
+        return flask.redirect(url_for('editStudents', id=unit_id))
+    else:
+        flask.flash("Error uploading CSV file", 'error')
+        return flask.redirect(url_for('editStudents', id=unit_id))
+
 
 @app.route('/deleteStudent', methods=['POST'])
 @login_required
