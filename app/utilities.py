@@ -175,13 +175,16 @@ def export_attendance_records_columns():
         Attendance,
         Student,
         Session,
-        Unit
+        Unit,
+        User
     ).join(
         Student, Attendance.studentID == Student.studentID
     ).join(
         Session, Attendance.sessionID == Session.sessionID
     ).join(
         Unit, Student.unitID == Unit.unitID
+    ).join(
+        User, Attendance.facilitatorID == User.userID
     ).all()
 
     if records:
@@ -189,7 +192,7 @@ def export_attendance_records_columns():
         attendance_data = {}
 
         # Iterate over the records and organize by unique student-unit combinations
-        for attendance, student, session, unit in records:
+        for attendance, student, session, unit, facilitator in records:
             # Use a tuple (studentNumber, unitCode) as the key to ensure uniqueness per unit
             unique_key = (student.studentNumber, unit.unitCode)
             if unique_key not in attendance_data:
@@ -203,7 +206,7 @@ def export_attendance_records_columns():
                     'consent': 'Yes' if attendance.consent_given else 'No',
                 }
 
-            # Format session data for attendance: [sessionName]signInTime;signOutTime
+            # Format session data for attendance: [sessionName][FacilitatorName]signInTime;signOutTime
             session_key = f"{session.sessionDate.strftime('%Y_%B_%d')}_{session.sessionTime}"
             sign_in_time = (
                 attendance.signInTime.strftime('%H:%M:%S')
@@ -215,7 +218,8 @@ def export_attendance_records_columns():
                 if attendance.signOutTime
                 else ''
             )
-            attendance_info = f"[{session.sessionName}]{sign_in_time};{sign_out_time}"
+            facilitator_name = f"{facilitator.firstName} {facilitator.lastName}"
+            attendance_info = f"[{session.sessionName}][{facilitator_name}]{sign_in_time};{sign_out_time}"
 
             # Store attendance_info under session_key
             attendance_data[unique_key][session_key] = attendance_info
