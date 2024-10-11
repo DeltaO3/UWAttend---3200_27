@@ -364,7 +364,6 @@ def uploadStudents():
         flask.flash("Error uploading CSV file", 'error')
         return flask.redirect(url_for('editStudents', id=unit_id))
 
-
 @app.route('/deleteStudent', methods=['POST'])
 @login_required
 def deleteStudent():
@@ -387,8 +386,15 @@ def deleteStudent():
 @login_required
 def editFacilitators():
     unit_id = flask.request.args.get('id')
+    unit = GetUnit(unitID=unit_id)[0]
+    facilitators = GetUnit(unitID=unit_id)[0].facilitators
     #facilitators = GetStudent(unitID = unit_id)
-    return flask.render_template('editPeople.html', unit_id=unit_id, type="facilitators")
+    return flask.render_template('editPeople.html', unit_id=str(unit_id), unit=unit, type="facilitators", facilitators=facilitators)
+
+@app.route('/deleteFacilitator', methods=['POST'])
+@login_required
+def deleteFacilitator():
+    pass
 
 # add users
 @app.route('/admin', methods=['GET', 'POST'])

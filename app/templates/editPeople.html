@@ -23,6 +23,7 @@
 		<div class="col-md-4 col-12">
 			<a href="{{ url_for('updateunit') + '?id='+unit_id}}" class="fst-italics btn btn-secondary p-1 ">
 				Back to unit</a>
+			{% if type == "students" %}
 			<h4 class="text-center">Upload students</h4>
 			<form method="POST" enctype="multipart/form-data" action="{{ url_for('uploadStudents') + '?id='+unit_id}}"
 				novalidate>
@@ -44,12 +45,25 @@
 
 				</div>
 			</form>
+			{% else %}
+			<h4 class="text-center">Add Facilitator</h4>
+			<!-- !Put proper email password reset logic here! placeholder input  -->
+			<form>
+				<input id="resetEmail" class="form-control" name="resetEmail" type="text">
+				<div class="d-flex justify-content-center">
+					<input id="submit" class="btn btn-primary mt-3 col-6" name="submit" type="submit"
+						value="Send Email">
+				</div>
+			</form>
+			{% endif %}
 		</div>
 
 		<!-- Table -->
 		<div class="col-md-8 col-12">
-			<h3 class="text-center">Student List for unit: {{ unit.unitCode }}</h3>
+			<h3 class="text-center">{% if type == "students" %} Student {% else %} Facilitator {% endif %} list for
+				unit: {{ unit.unitCode }}</h3>
 			<div class="container">
+				{% if type=="students" %}
 				{% for student in students %}
 				<!-- onlick re-route to student page for this specific student -->
 				<div class="row outline-table text-center py-1 d-flex align-items-center">
@@ -63,6 +77,21 @@
 					</span>
 				</div>
 				{% endfor %}
+				{% else %}
+				{% for facilitator in facilitators %}
+				<!-- onlick re-route to student page for this specific student -->
+				<div class="row outline-table text-center py-1 d-flex align-items-center">
+					<span class="col">{{ facilitator.email }}</span>
+					<span class="col">{{ facilitator.firstName }} {{ facilitator.lastName }}</span>
+					<span class="col">
+						<form action="{{ url_for('deleteFacilitator') + '?unit_id='+unit_id }}" method="POST">
+							<button class="py-1 btn btn-danger" type="submit">Delete</button>
+						</form>
+					</span>
+				</div>
+				{% endfor %}
+
+				{% endif %}
 			</div>
 		</div>
 	</div>
