@@ -103,6 +103,10 @@ def export_table_to_csv(fetch_function):
         # Get the column names from the model's attributes
         columns = records[0].__table__.columns.keys()
 
+        # If exporting the User table, exclude the passwordHash column
+        if fetch_function == GetAllUsers:
+            columns = [col for col in columns if col != 'passwordHash']
+
         # Use StringIO to write CSV data in-memory
         csvfile = StringIO()
         writer = csv.writer(csvfile)
