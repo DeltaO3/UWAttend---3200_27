@@ -127,7 +127,7 @@ class AddStudentForm(FlaskForm):
     
 class UploadStudentForm(FlaskForm):
     studentfile = FileField('Student List CSV Upload:', validators=[FileRequired(), FileAllowed(['csv'], "Only accepts .csv files")],render_kw={"accept": ".csv"})
-    submit = SubmitField("Upload Students")
+    submit = SubmitField("Upload")
 
 class StudentSignInForm(FlaskForm):
     student_sign_in = StringField('Sign in Student', validators=[DataRequired()])
