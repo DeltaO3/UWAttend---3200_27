@@ -1,7 +1,7 @@
 import flask
 from app import app
 from app import db
-from .models import db, Student, User, Attendance, Session, Unit
+from .models import db, Student, User, Attendance, Session, Unit, Units_Coordinators_Table
 from datetime import datetime, date, timedelta
 from app.helpers import get_perth_time
 
@@ -529,3 +529,12 @@ def GetFacilitatorNamesForSession(sessionID) :
             facilitatorNames.append(fullName)
 
     return facilitatorNames
+
+def GetAccessibleUnitIDs(user_id):
+    # Query to get unitIDs the user has access to as a coordinator
+    accessible_units = db.session.query(Unit.unitID).join(
+        Units_Coordinators_Table, Unit.unitID == Units_Coordinators_Table.c.unitID
+    ).filter(Units_Coordinators_Table.c.userID == user_id).all()
+
+    # Convert the result to a list of unit IDs
+    return [unit.unitID for unit in accessible_units]

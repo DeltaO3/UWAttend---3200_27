@@ -348,8 +348,11 @@ def export_data():
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     zip_path = os.path.join(project_root, zip_filename)
 
+    current_user_id = current_user.userID
+    current_user_type = current_user.userType
+
     # Call the function to export all data to the 'database.zip'
-    export_all_to_zip(zip_filename)
+    export_all_to_zip(zip_filename, current_user_id, current_user_type)
 
     # Check if the file was created successfully
     if os.path.exists(zip_path):
