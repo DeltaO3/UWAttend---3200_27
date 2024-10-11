@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="vh-100 d-flex justify-content-center align-items-center login-bg">
-    <!-- !!!Change colours to custom css!!! -->
     <div class=" rounded-4 shadow-lg d-flex flex-column login-box
          justify-content-center align-items-center py-3 px-4">
 
         <h3 class="fw-bold">Welcome to UWAttend!</h3>
         <p class="mb-2">Please log in to access the app.</p>
 
-        {% with messages = get_flashed_messages() %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-        <div class="alert alert-danger py-1 mb-3 text-center w-100">
-            {% for message in messages %}
+        {% for category, message in messages %}
+        <div
+            class="alert {% if category == 'error' %} alert-danger {% else %} alert-success {% endif %} py-1 mb-3 text-center w-100">
             {{ message }}
-            {% endfor %}
         </div>
+        {% endfor %}
         {% endif %}
         {% endwith %}
 
@@ -44,7 +44,7 @@
                 {{ form.submit(class="btn btn-success mb-3 rounded-5 w-100") }}
 
                 <!-- Replace href with forgot password logic -->
-                <a class="" href="{{ url_for('login') }}">Forgot password?</a>
+                <a href="{{ url_for('forgot_password') }}">Forgot password?</a>
             </div>
 
         </form>
