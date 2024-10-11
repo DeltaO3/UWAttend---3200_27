@@ -327,26 +327,6 @@ def GetUnit(unitID = None, unitCode = None, studyPeriod = None):
 
     return unit_records
 
-
-def CheckPassword(email, password):
-
-    query = db.session.query(User)
-    
-    if email is not None:
-        query = query.filter(User.email == email)
-    else:
-        print("You did not submit an email parameter.")
-        return False
-
-    # Retrieve the user record
-    user_record = query.first()
-
-    # If a record is found, check the password
-    if user_record and user_record.passwordHash == password:
-        return True
-    else:
-        return False
-
 #Is this function needed? dont see it used anywhere
 def SetPassword(email, newPassword):
     
@@ -356,7 +336,7 @@ def SetPassword(email, newPassword):
         raise ValueError("User not found")    
 
     # Set the new password hash
-    user.passwordHash = newPassword
+    user.set_password(newPassword)
     
     # Commit the changes to the database
     db.session.commit()
@@ -372,7 +352,7 @@ def RemoveStudentFromSession(studentID, sessionID):
 
     else:
         return False
-    
+
 def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, login=None, consent=None, grade=None, comments=None):
     # Fetch the attendance record based on studentID
     attendance_record = db.session.query(Attendance).filter_by(studentID=studentID, sessionID=sessionID).first()
@@ -532,3 +512,20 @@ def perform_delete_unit(unit_id):
         print(f"Error deleting unit {unit_id}: {e}")
         db.session.rollback()
 
+def GetFacilitatorNamesForSession(sessionID) :
+
+    records = db.session.query(
+        Session, Attendance, User
+        ).join(Attendance, Attendance.sessionID == Session.sessionID
+        ).filter_by(sessionID=sessionID
+        ).join(User, User.userID == Attendance.facilitatorID
+        ).all()
+    
+    facilitatorNames = []
+
+    for record in records :
+        fullName = record[2].firstName + ' ' + record[2].lastName
+        if fullName not in facilitatorNames :
+            facilitatorNames.append(fullName)
+
+    return facilitatorNames

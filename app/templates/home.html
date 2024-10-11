@@ -26,7 +26,7 @@
 
 	<div class="d-flex justify-content-center ">
 		<div class="mx-4 mx-md-5 container">
-			<h3>
+			<h3 id="signedInElement" data-signedinnum={{ signed_in }}>
 				{{ signed_in }} signed in of {{ total_students }}
 			</h3>
 			<!-- Input element -->
@@ -93,12 +93,12 @@
 		</div>
 	</div>
 	{% include 'signOut.html'%}
+	{% include 'exitSession.html'%}
 	<!-- Bottom button -->
 	<div class="fixed-bottom d-flex justify-content-around home-footer mb-2">
-		<button id="exitSessionButtonHome" class="exitSessionButton btn btn-secondary col-md-3 col-4"
-			onclick="exitSession()">Exit Session</button>
+		<!-- If all students are signed out, exit session immediately with no modal popup -->
+		<button id="exitSessionButton" class="exitSessionButton btn btn-secondary col-md-3 col-4">Exit Session</button>
 		<button id="signOutButton" class="btn btn-danger col-md-4 col-5">Sign All Out</button>
-
 	</div>
 </div>
 

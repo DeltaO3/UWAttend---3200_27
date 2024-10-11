@@ -5,34 +5,26 @@
 <div class="mt-4 mx-md-5 mx-2 d-flex flex-column align-items-center">
     <h2>Session Configuration</h2>
     {% if update %}
-    <p class="text-center">You are already in an active session. <br> Update the session configuration below.</p>
+    <p class="text-center">You are already in an active session.</p>
+    <h4 class="text-center">{{ unit }} {{ currentSession.sessionName }} {{ currentSession.sessionTime }} {{ currentSession.sessionDate }}</h4>
+    <p>Edit the session configuration below.</p>
     {% else %}
     <p class="text-center">
-        You have no active sessions. <br> Configure a new session below to view your class list.
+        You have no active session. <br> Configure a new session below to view your class list.
     </p>
     {% endif %}
 </div>
-<form method="POST" {% if update %} action="{{ url_for('updatesession') }}" {% else %} action="{{ url_for('session') }}"
-    {% endif %}>
+<form method="POST" {% if update %} data-update="true" {% else %} data-update="false"{% endif %}>
     <div class="d-flex justify-content-center">
         <div>
             {{ form.hidden_tag() }}
             {% for field in form%}
-            {% if field.type == "SelectField" %}
+            {% if field.type == "SelectField" or field.type == "DateField" %}
 
             <div class="mb-4 d-flex justify-content-between align-items-center gap-3">
                 {{ field.label(class="form-label text-end") }}
                 <div class="form-select-parent">
                     {{ field(class="form-select") }}
-                </div>
-            </div>
-            {% endif %}
-
-            {% if field.type == "DateField" %}
-            <div class="mb-4 d-flex justify-content-between align-items-center gap-3">
-                {{ field.label(class="form-label text-end") }}
-                <div class="form-select-parent">
-                    {{ field(class="form-control") }}
                 </div>
             </div>
             {% endif %}
@@ -47,6 +39,14 @@
                 <input type="hidden" id="current_time" name="current_time">
             </div>
 
+            <div class="mt-2 row d-flex justify-content-around">
+            {% if errorMsg %}
+            <span class="text-center form-text text-danger">{{ errorMsg }}</span>
+            {% else %}
+            <span class="form-text invisible">No error</span>
+            {% endif %}
+            </div>
+
             <!-- Buttons -->
             <div class="mt-2 row d-flex justify-content-around">
                 {% if update %}
@@ -56,10 +56,10 @@
             </div>
         </div>
     </div>
-
 </form>
 </div>
-{% if update %}
+
+{% include 'joinExistingSession.html'%}
+<script src="{{url_for('static', filename='js/joinExistingSession.js')}}"></script>
 <script src="{{url_for('static', filename='js/session_config.js')}}"></script>
-{% endif %}
 {% endblock %}

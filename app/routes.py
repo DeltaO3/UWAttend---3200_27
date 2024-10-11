@@ -86,46 +86,49 @@ def session():
     # For JS formatting
     formatted_perth_time = perth_time.isoformat()
 
-    if form.validate_on_submit():
+    if flask.request.method == 'POST' :
+        if form.validate_on_submit():
 
-        # Handle form submission
-        unit_id = form.unit.data
-        session_name = form.session_name.data
-        session_time = form.session_time.data
-        session_date = form.session_date.data
+            # Handle form submission
+            unit_id = form.unit.data
+            session_name = form.session_name.data
+            session_time = form.session_time.data
+            session_date = form.session_date.data
 
-        # Printing for debugging
-        print(f"Session Name: {session_name}")
-        print(f"Session Time: {session_time}")
-        print(f"Unit Id: {unit_id}")
-        print(f"Session Date: {session_date}")
+            # Printing for debugging
+            print(f"Session Name: {session_name}")
+            print(f"Session Time: {session_time}")
+            print(f"Unit Id: {unit_id}")
+            print(f"Session Date: {session_date}")
 
-        # Check if the session already exists
-        current_session = GetUniqueSession(unit_id, session_name, session_time, session_date)
+            # Check if the session already exists
+            current_session = GetUniqueSession(unit_id, session_name, session_time, session_date)
 
-        if current_session is not None :
-            print("Session already exists.")
+            if current_session is not None :
+                print("Session already exists.")
+            else :
+                print("Session doesn't exist... creating new session.")
+                current_session = AddSession(unit_id, session_name, session_time, session_date)
+                if current_session is None :
+                    print("An error has occurred. The session was not created. Please try again.")
+                    return flask.redirect(flask.url_for('home'))
+
+            print("Current session details:")
+            print(f"Session name: {current_session.sessionName}")
+            print(f"Session time: {current_session.sessionTime}")
+            print(f"Session date: {current_session.sessionDate}")
+
+            flask.session['session_id'] = current_session.sessionID
+            print(f"Saving session id: {current_session.sessionID} to global variable")
+
+            # Redirect back to home page with the session ID as a query parameter
+            return flask.redirect(flask.url_for('home'))
         else :
-            print("Session doesn't exist... creating new session.")
-            current_session = AddSession(unit_id, session_name, session_time, session_date)
-            if current_session is None :
-                print("An error has occurred. The session was not created. Please try again.")
-                return flask.redirect(flask.url_for('home'))
-
-        print("Current session details:")
-        print(f"Session name: {current_session.sessionName}")
-        print(f"Session time: {current_session.sessionTime}")
-        print(f"Session date: {current_session.sessionDate}")
-
-        flask.session['session_id'] = current_session.sessionID
-        print(f"Saving session id: {current_session.sessionID} to global variable")
-
-        # Redirect back to home page with the session ID as a query parameter
-        return flask.redirect(flask.url_for('home'))
+            set_session_form_select_options(form)
+            return flask.render_template('session.html', form=form, perth_time=formatted_perth_time, update=False, errorMsg="Please select a valid option for all fields.")
 
     # set session form select field options
     set_session_form_select_options(form)
-
     return flask.render_template('session.html', form=form, perth_time=formatted_perth_time, update=False)
 
 @app.route('/updatesession', methods=['GET', 'POST'])
@@ -195,7 +198,38 @@ def updatesession():
     current_unit = GetUnit(unitID=current_session.unitID)[0]
     set_updatesession_form_select_options(current_session, current_unit, form)
 
-    return flask.render_template('session.html', form=form, perth_time=formatted_perth_time, update=True)
+    return flask.render_template('session.html', form=form, perth_time=formatted_perth_time, update=True, currentSession=current_session, unit=current_unit.unitCode)
+
+@app.route('/checksessionexists', methods=['POST'])
+@login_required
+def checksessionexists():
+    form = SessionForm()
+
+    if form.validate_on_submit():
+        # Handle form submission
+        unit_id = form.unit.data
+        session_name = form.session_name.data
+        session_time = form.session_time.data
+        session_date = form.session_date.data
+
+        print(f"Session Name: {session_name}")
+        print(f"Session Time: {session_time}")
+        print(f"Session Date: {session_date}")
+        print(f"Unit Id: {unit_id}")
+
+        # Check if the session already exists
+        new_session = GetUniqueSession(unit_id, session_name, session_time, session_date)
+
+        if new_session is not None :
+            print("Session already exists. Joining existing session.")
+            facilitatorNames = GetFacilitatorNamesForSession(new_session.sessionID)
+            for f in facilitatorNames :
+                print(f)
+            return flask.jsonify({'sessionExists': "true", 'facilitatorNames': facilitatorNames})
+        
+        else :
+            print("Session doesn't exist.")
+            return flask.jsonify({'sessionExists': "false", })
 
 #ADMIN - /unitconfig /
 @app.route('/unitconfig', methods=['GET', 'POST'])
@@ -241,11 +275,13 @@ def addunit():
         end_date = form.enddate.data
         student_file = form.studentfile.data
         facilitator_file = form.facilitatorfile.data
-        sessionnames = form.sessionnames.data
-        sessionoccurence = form.sessionoccurence.data
+        sessionnames = form.sessions.data
+        sessionoccurence = form.sessionoccurence.data 
         assessmentcheck = form.assessmentcheck.data
         commentsenabled = form.commentsenabled.data
-        commentsuggestions = form.commentsuggestions.data
+        commentsuggestions = form.comments.data 
+
+        print(f"session string: " + sessionnames + "; commentString: " + commentsuggestions) #Checking hidden form works
 
         #Validation occurs in flask forms with custom validators
         
@@ -362,14 +398,23 @@ def student():
     
     current_session = current_session[0]
 
+    unit = GetUnit(unitID=current_session.unitID)
+
+    if not unit:
+        flask.flash("Error loading unit") 
+        return flask.redirect(flask.url_for('home'))
+    
+    unit = unit[0]
+    comment_suggestions = unit.commentSuggestions
+    comment_list = comment_suggestions.split('|')
+
     attendance_record = GetAttendance(input_sessionID=current_session.sessionID, studentID=student_id)[0] 
 
     student_info = generate_student_info(student, attendance_record)
     print("comments", student_info["comments"])
-
     print("consent", student.consent)
     
-    return flask.render_template('student.html', form=form, student=student_info, attendance=attendance_record)
+    return flask.render_template('student.html', form=form, student=student_info, attendance=attendance_record, comments=comment_list)
 
 @app.route('/remove_from_session', methods=['GET'])
 @login_required
@@ -395,7 +440,51 @@ def remove_from_session():
         flask.flash("Error removing student from session")
         
     return flask.redirect(flask.url_for('home'))
-	
+
+# CREATE ACCOUNT - /create_account
+@app.route('/create_account', methods=['GET', 'POST'])
+def create_account():
+    if current_user.is_authenticated:
+        return flask.redirect('home')
+    
+    form = CreateAccountForm()
+    if form.validate_on_submit():
+        #TODO: Add email logic
+        #Uses a placeholder email - perhaps this should be included in the route as a ?email=email parameter?
+        #feels unsafe, feel free to change some things. 
+        email = form.firstName.data + "@placeholder.com"
+        AddUser(email, form.firstName.data, form.lastName.data, form.password2.data, "facilitator" )
+        print(f"Added user" + form.firstName.data)
+        login_user(GetUser(email = email))
+        return flask.redirect(flask.url_for('home'))
+    
+    return flask.render_template('createAccount.html', form=form)
+
+#FORGOT PASSWORD - /forgot_password
+@app.route('/forgot_password', methods=['GET'])
+def forgot_password():
+    if current_user.is_authenticated:
+        return flask.redirect('home')
+    #TODO: add backend logic for email
+    return flask.render_template('forgotPassword.html')
+
+#RESET PASSWORD - /reset_password
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+    if current_user.is_authenticated:
+        return flask.redirect('home')
+    
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        #TODO: add email into logic (similar to what create account does)
+        print("resetting password...")
+        SetPassword("admin@admin.com", form.password2.data)
+        flask.flash('Password changed successfully', category="success")
+        return flask.redirect(flask.url_for('login'))
+
+    return flask.render_template('resetPassword.html', form=form)
+
+
 # LOGIN - /login/ 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -409,7 +498,7 @@ def login():
         user = database.GetUser(email = form.username.data)                
 
         if user is None or not user.is_password_correct(form.password.data):
-            flask.flash('Invalid username or password')
+            flask.flash('Invalid username or password', category="error")
             return flask.redirect('login')
         
         login_user(user, remember=form.remember_me.data)
@@ -552,13 +641,20 @@ def get_session_details(unitID) :
     session_times = unit[0].sessionTimes.split('|')
     session_time_choices = []
 
+    session_time_default = get_time_suggestion(session_times) 
+
+    if session_time_default is None :
+        session_time_default = '--Select--'
+
     for time in session_times :
         session_time_choices.append(time)
 
     print(f"Sending session details for {unit[0].unitCode}")
 
+    print(f"session time default: {session_time_default}")
+
     # send session details
-    return flask.jsonify({'session_name_choices': session_name_choices, 'session_time_choices': session_time_choices})
+    return flask.jsonify({'session_name_choices': session_name_choices, 'session_time_choices': session_time_choices, 'session_time_default': session_time_default})
 
 @app.route('/student_suggestions', methods=['GET'])
 @login_required
@@ -622,6 +718,7 @@ def student_suggestions():
 @app.route('/logout')
 @login_required
 def logout():
+    removeSessionCookie()
     logout_user()
     return flask.redirect(flask.url_for('login'))
 
@@ -669,8 +766,5 @@ def check_status():
 @app.route('/exitSession', methods=['GET'])
 @login_required
 def exitSession():
-    if 'session_id' in flask.session :
-        print(f"removing session cookie for session ID {flask.session.pop('session_id')}")
-        flask.session.pop('session_id', default=None)
-        print("successfully removed session cookie")
+    removeSessionCookie()
     return flask.redirect(url_for('session'))
