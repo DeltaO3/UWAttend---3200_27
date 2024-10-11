@@ -198,7 +198,38 @@ def updatesession():
     current_unit = GetUnit(unitID=current_session.unitID)[0]
     set_updatesession_form_select_options(current_session, current_unit, form)
 
-    return flask.render_template('session.html', form=form, perth_time=formatted_perth_time, update=True)
+    return flask.render_template('session.html', form=form, perth_time=formatted_perth_time, update=True, currentSession=current_session, unit=current_unit.unitCode)
+
+@app.route('/checksessionexists', methods=['POST'])
+@login_required
+def checksessionexists():
+    form = SessionForm()
+
+    if form.validate_on_submit():
+        # Handle form submission
+        unit_id = form.unit.data
+        session_name = form.session_name.data
+        session_time = form.session_time.data
+        session_date = form.session_date.data
+
+        print(f"Session Name: {session_name}")
+        print(f"Session Time: {session_time}")
+        print(f"Session Date: {session_date}")
+        print(f"Unit Id: {unit_id}")
+
+        # Check if the session already exists
+        new_session = GetUniqueSession(unit_id, session_name, session_time, session_date)
+
+        if new_session is not None :
+            print("Session already exists. Joining existing session.")
+            facilitatorNames = GetFacilitatorNamesForSession(new_session.sessionID)
+            for f in facilitatorNames :
+                print(f)
+            return flask.jsonify({'sessionExists': "true", 'facilitatorNames': facilitatorNames})
+        
+        else :
+            print("Session doesn't exist.")
+            return flask.jsonify({'sessionExists': "false", })
 
 #ADMIN - /unitconfig /
 @app.route('/unitconfig', methods=['GET', 'POST'])
