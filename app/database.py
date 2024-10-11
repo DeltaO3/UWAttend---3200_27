@@ -549,3 +549,14 @@ def deleteStudentFromDB(unitID, studentID):
         return True
 
     return False
+
+def deleteFacilitatorConnection(unitID, facilitatorEmail):
+    user = db.session.query(User).filter_by(email=facilitatorEmail).first()
+    unit = db.session.query(Unit).filter_by(unitID=unitID).first()
+    if unit in user.unitsFacilitate:
+        user.unitsFacilitate.remove(unit)
+        db.session.commit()
+        return True
+    
+    return False
+    

@@ -388,13 +388,35 @@ def editFacilitators():
     unit_id = flask.request.args.get('id')
     unit = GetUnit(unitID=unit_id)[0]
     facilitators = GetUnit(unitID=unit_id)[0].facilitators
+    facilitator_list = []
+
+    for facilitator in facilitators:
+        info = {
+            "name": f"{facilitator.firstName} {facilitator.lastName}",
+            "email": facilitator.email,
+        }
+        facilitator_list.append(info)
     #facilitators = GetStudent(unitID = unit_id)
-    return flask.render_template('editPeople.html', unit_id=str(unit_id), unit=unit, type="facilitators", facilitators=facilitators)
+    return flask.render_template('editPeople.html', unit_id=str(unit_id), unit=unit, type="facilitators", facilitators=facilitator_list)
 
 @app.route('/deleteFacilitator', methods=['POST'])
 @login_required
 def deleteFacilitator():
-    pass
+    unit_id = flask.request.args.get('unit_id')
+    unit = GetUnit(unitID=unit_id)[0]
+    if unit not in current_user.unitsCoordinate: #!check this works
+        flask.flash("Unit not found","error")
+        return flask.redirect(url_for('unitconfig'))
+    
+    facilitator_email = flask.request.args.get('facilitator_id')
+    if deleteFacilitatorConnection(unit_id, facilitator_email):
+        flask.flash("Facilitator deleted successfully","success")
+        return flask.redirect(url_for('editFacilitators', id=unit_id))
+    
+    flask.flash("Error deleting facilitator", "error")
+    return flask.redirect(url_for('editFacilitators', id=unit_id))
+
+
 
 # add users
 @app.route('/admin', methods=['GET', 'POST'])

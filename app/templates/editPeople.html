@@ -82,9 +82,11 @@
 				<!-- onlick re-route to student page for this specific student -->
 				<div class="row outline-table text-center py-1 d-flex align-items-center">
 					<span class="col">{{ facilitator.email }}</span>
-					<span class="col">{{ facilitator.firstName }} {{ facilitator.lastName }}</span>
+					<span class="col">{{ facilitator.name }}</span>
 					<span class="col">
-						<form action="{{ url_for('deleteFacilitator') + '?unit_id='+unit_id }}" method="POST">
+						<form
+							action="{{ url_for('deleteFacilitator') + '?unit_id='+unit_id+'&facilitator_id='+facilitator.email }}"
+							method="POST">
 							<button class="py-1 btn btn-danger" type="submit">Delete</button>
 						</form>
 					</span>
