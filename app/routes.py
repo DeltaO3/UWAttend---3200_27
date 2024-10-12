@@ -69,7 +69,11 @@ def home():
 
     student_list.sort(key=lambda x: (x['login'] == "yes", x['time']), reverse=True)
 
-    return flask.render_template('home.html', form=form, students=student_list, current_session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=current_session.sessionID, num_facilitators=len(facilitator_list)) 
+
+    # check if consent is required
+    consent_required = GetUnit(unitID=current_session.unitID)[0].consent
+    
+    return flask.render_template('home.html', form=form, students=student_list, current_session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=current_session.sessionID, consent_required=consent_required, num_facilitators=len(facilitator_list)) 
 	
 # CONFIGURATION - /session/ /admin/
 @app.route('/session', methods=['GET', 'POST'])
@@ -654,8 +658,17 @@ def student():
     student_info = generate_student_info(student, attendance_record)
     print("comments", student_info["comments"])
     print("consent", student.consent)
-    
-    return flask.render_template('student.html', form=form, student=student_info, attendance=attendance_record, comments=comment_list)
+
+    # check if consent, comments and marks are required
+    consent_required = GetUnit(unitID=current_session.unitID)[0].consent
+    marks_enabled = GetUnit(unitID=current_session.unitID)[0].marks
+    comments_enabled = GetUnit(unitID=current_session.unitID)[0].comments
+    comments_label = form.comments.label.text
+
+    if not comments_enabled :
+       comments_label = "Multiple sign in/out time log"
+
+    return flask.render_template('student.html', form=form, student=student_info, attendance=attendance_record, consent_required=consent_required, comments_enabled=comments_enabled, marks_enabled=marks_enabled, comments_label=comments_label)
 
 @app.route('/remove_from_session', methods=['GET'])
 @login_required
@@ -789,6 +802,7 @@ def edit_student_details():
                 flask.flash(message, category='error')
                 student = GetStudent(studentID=form.student_id.data)
                 attendance_record = GetAttendance(input_sessionID=current_session.sessionID, studentID=form.student_id.data)
+                print(form.student_id.data)
                 if not student or not attendance_record:
                     return flask.redirect(flask.url_for('home'))
                 return flask.render_template('student.html', form=form, student=generate_student_info(student[0], attendance_record[0]), attendance=attendance_record[0])
