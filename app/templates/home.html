@@ -26,6 +26,9 @@
 
 	<div class="d-flex justify-content-center ">
 		<div class="mx-4 mx-md-5 container">
+			{% if num_facilitators > 1 %}
+				<p class="d-flex justify-content-center">There are multiple facilitators in this session. Please refresh the page regularly.</p>
+			{% endif %}
 			<h3 id="signedInElement" data-signedinnum={{ signed_in }}>
 				{{ signed_in }} signed in of {{ total_students }}
 			</h3>

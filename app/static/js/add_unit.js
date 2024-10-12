@@ -33,7 +33,9 @@ $(window).on("load", function () {
 	} else {
 		$("#comment-suggestions-parent").addClass("d-none");
 	}
+})
 
+$(document).ready(function () {
 	//Load any data in hidden forms
 	sessionsArray = $("#sessions").val().split("|");
 	sessionsArray.forEach(element => {
@@ -46,9 +48,7 @@ $(window).on("load", function () {
 		newBadge = $("<span class='badge comment-badge p-2' id='" + element + "'></span>").text(element);
 		$("#comments-container").append(newBadge);
 	});
-})
 
-$(document).ready(function () {
 	//Input for session names
 	$("#sessionnames").on("keypress", function (e) {
 		if (e.which == 13) {

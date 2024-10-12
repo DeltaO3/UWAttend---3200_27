@@ -277,9 +277,9 @@ def GetStudentList(student_ids):
         print("You did not submit a parameter to use so returning all student records")
 
     
-    attendance_records = query.all()
+    students = query.all()
     
-    return attendance_records
+    return students
 
 def GetUser(userID = None, email = None, userType = None):
 
@@ -512,6 +512,54 @@ def perform_delete_unit(unit_id):
         print(f"Error deleting unit {unit_id}: {e}")
         db.session.rollback()
 
+def EditUnit(unitID, unitCode, unitName, studyPeriod, startDate, endDate, sessionNames, sessionTimes, comments, marks, consent, commentSuggestions):
+    # Fetch the unit record based on unitID
+    unit_record = db.session.query(Unit).filter_by(unitID=unitID).first()
+
+    if not unit_record:
+        return f"Unit with ID {unitID} not found."
+
+    # Directly update all fields
+    unit_record.unitCode = unitCode
+    unit_record.unitName = unitName
+    unit_record.studyPeriod = studyPeriod
+    unit_record.startDate = startDate
+    unit_record.endDate = endDate
+    unit_record.sessionNames = sessionNames
+    unit_record.sessionTimes = sessionTimes
+    unit_record.comments = comments
+    unit_record.marks = marks  # marks could be 0 or other falsy value
+    unit_record.consent = consent  # consent could be False, so we can assign it directly
+    unit_record.commentSuggestions = commentSuggestions
+
+    # Commit the changes to the database
+    try:
+        db.session.commit()
+        return f"Unit {unitID} updated successfully."
+    except Exception as e:
+        db.session.rollback()
+        return f"Error updating unit {unitID}: {e}"
+
+def deleteStudentFromDB(unitID, studentID):
+    student = db.session.query(Student).filter_by(unitID=unitID, studentID=studentID).first()
+
+    if student:
+        db.session.delete(student)
+        db.session.commit()
+        return True
+
+    return False
+
+def deleteFacilitatorConnection(unitID, facilitatorEmail):
+    user = db.session.query(User).filter_by(email=facilitatorEmail).first()
+    unit = db.session.query(Unit).filter_by(unitID=unitID).first()
+    if unit in user.unitsFacilitate:
+        user.unitsFacilitate.remove(unit)
+        db.session.commit()
+        return True
+    
+    return False
+    
 def GetFacilitatorNamesForSession(sessionID) :
 
     records = db.session.query(
