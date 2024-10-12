@@ -917,8 +917,12 @@ def add_facilitator():
     if not status:
         flask.flash("Error sending email")
 
+    if valid_email(email):
+        AddUser(email, "placeholder", "placeholder", generate_temp_password(), "facilitator")
+        new_facilitator = GetUser(email)
+        AddUnitToFacilitator(new_facilitator, unit_id)
+
     unit_id = flask.request.args.get('id')
-    AddUnitToFacilitator(facilitator, unit_id)
     unit = GetUnit(unitID=unit_id)[0]
     facilitators = GetUnit(unitID=unit_id)[0].facilitators
     facilitator_list = []
