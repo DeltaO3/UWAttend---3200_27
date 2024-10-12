@@ -71,7 +71,9 @@
 				<span class="col">Name</span>
 				<span class="col">ID</span>
 				<span class="col">Login</span>
+				{% if consent_required %}
 				<span class="col">Photo</span>
+				{% endif %}
 			</div>
 			{% endif %}
 		</div>
@@ -90,7 +92,9 @@
 				<span class="col-md col-6">{{student.name}}</span>
 				<span class="col-md col-6">{{student.number}}</span>
 				<span class="d-none d-md-inline col-md">{{student.login}}</span>
+				{% if consent_required %}
 				<span class="d-none d-md-inline col-md">{{student.photo}}</span>
+				{% endif %}
 			</div>
 			{% endfor %}
 			{% endif %}
