@@ -923,8 +923,7 @@ def add_facilitator():
     if valid_email(email):
         if unit in current_user.unitsCoordinate: 
             AddUser(email, "placeholder", "placeholder", generate_temp_password(), "facilitator")
-            new_facilitator = GetUser(email)
-            AddUnitToFacilitator(new_facilitator, unit_id)
+            AddUnitToFacilitator(email, unit_id)
             send_email_ses("noreply@uwaengineeringprojects.com", email, 'welcome')
 
     facilitators = GetUnit(unitID=unit_id)[0].facilitators
