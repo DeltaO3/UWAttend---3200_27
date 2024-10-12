@@ -2,6 +2,13 @@ import boto3
 from botocore.exceptions import ClientError
 import os
 import urllib.parse
+import string 
+import random
+from .database import StoreToken
+
+def generate_token():
+    """Generate a random token for security purposes"""
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=32))
 
 def valid_email(email):
     # Check if the email contains one “@” symbol
@@ -32,12 +39,17 @@ def send_email_ses(sender, recipient, type):
         return False
     
     recipient_encoded = urllib.parse.quote(recipient)
+    token = generate_token()
+    token = StoreToken(email=recipient, token=token)
+
+    if token is None:
+        return False
     
     if type == 'welcome':
-        subject, body_text, body_html = get_welcome_email_details(recipient_encoded)
+        subject, body_text, body_html = get_welcome_email_details(recipient_encoded, token)
 
     elif type == 'forgot_password':
-        subject, body_text, body_html = get_forgot_password_email_details(recipient_encoded)
+        subject, body_text, body_html = get_forgot_password_email_details(recipient_encoded, token)
     else: 
         return False
     
@@ -85,8 +97,8 @@ def send_email_ses(sender, recipient, type):
         return False
     
 
-def get_welcome_email_details(recipient_encoded):
-    link = f"https://uwaengineeringprojects.com/create_account?email={recipient_encoded}"
+def get_welcome_email_details(recipient_encoded, token):
+    link = f"https://uwaengineeringprojects.com/create_account?email={recipient_encoded}&token={token}"
 
     subject = "Welcome to UWAttend"  
     
@@ -166,8 +178,8 @@ def get_welcome_email_details(recipient_encoded):
 
     return subject, body_text, body_html
 
-def get_forgot_password_email_details(recipient_encoded):
-    link = f"https://uwaengineeringprojects.com/reset_password?email={recipient_encoded}"
+def get_forgot_password_email_details(recipient_encoded, token):
+    link = f"https://uwaengineeringprojects.com/reset_password?email={recipient_encoded}&token={token}"
 
     subject = "Password Reset Request"
 

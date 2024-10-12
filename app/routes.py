@@ -681,15 +681,23 @@ def create_account():
     
     form = CreateAccountForm()
 
-    email_encoded = flask.request.args.get('email', None)  # default is None if not provided
+    email_encoded = flask.request.args.get('email', None)  
+    token = flask.request.args.get('token', None)
 
     if not email_encoded:
-        # If email is not present, return an error or render a page explaining the issue
         flask.flash("Error - No email provided")
         return flask.redirect(flask.url_for('login'))
-     # Bad request
+    if not token:
+        flask.flash("Error - No token provided")
+        return flask.redirect(flask.url_for('login'))
 
     email = urllib.parse.unquote(email_encoded)
+
+    valid_token = ValidateToken(email, token)
+
+    if not valid_token:
+        flask.flash("Error - Invalid token")
+        return flask.redirect(flask.url_for('login'))
     
     if form.validate_on_submit():
         status = UpdateUser(email, form.firstName.data, form.lastName.data, form.password2.data) 
@@ -729,13 +737,23 @@ def reset_password():
     if current_user.is_authenticated:
         return flask.redirect('home')
     
-    email_encoded = flask.request.args.get('email', None)  # default is None if not provided
+    email_encoded = flask.request.args.get('email', None)  
+    token = flask.request.args.get('token', None)
 
     if not email_encoded:
-        # If email is not present, return an error or render a page explaining the issue
         flask.flash("Error - No email provided")
         return flask.redirect(flask.url_for('login'))
-     # Bad request
+    if not token:
+        flask.flash("Error - No token provided")
+        return flask.redirect(flask.url_for('login'))
+
+    email = urllib.parse.unquote(email_encoded)
+
+    valid_token = ValidateToken(email, token)
+
+    if not valid_token:
+        flask.flash("Error - Invalid token")
+        return flask.redirect(flask.url_for('login'))
 
     email = urllib.parse.unquote(email_encoded)
 

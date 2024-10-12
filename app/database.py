@@ -597,3 +597,26 @@ def GetFacilitatorNamesForSession(sessionID) :
             facilitatorNames.append(fullName)
 
     return facilitatorNames
+
+def StoreToken(email, token):
+    user = GetUser(email=email)
+
+    if not user:
+        return None
+    
+    user.token = token
+    
+    try:
+        db.session.commit()
+        return token
+    except Exception as e:
+        db.session.rollback()
+        return None
+    
+def ValidateToken(email, token):
+    user = GetUser(email=email)
+
+    if not user:
+        return False
+    
+    return user.token == token
