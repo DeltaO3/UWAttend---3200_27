@@ -419,23 +419,20 @@ def create_account():
     if not email_encoded:
         # If email is not present, return an error or render a page explaining the issue
         flask.flash("Error - No email provided")
-        return flask.redirect(flask.url_for('home'))
+        return flask.redirect(flask.url_for('login'))
      # Bad request
 
     email = urllib.parse.unquote(email_encoded)
     
     if form.validate_on_submit():
-        if form.password1.data != form.password2.data:
-            flask.flash("Passwords do not match")
-            return flask.redirect(flask.url_for('home'))
         status = UpdateUser(email, form.firstName.data, form.lastName.data, form.password2.data) 
         if not status:
             flask.flash("Error updating user details")
-            return flask.redirect(flask.url_for('home'))
+            return flask.redirect(flask.url_for('login'))
             
         print(f"Updated user details for:" + form.firstName.data)
         login_user(GetUser(email = email))
-        return flask.redirect(flask.url_for('home'))
+        return flask.redirect(flask.url_for('login'))
     
     return flask.render_template('createAccount.html', form=form)
 
@@ -478,10 +475,6 @@ def reset_password():
     form = ResetPasswordForm()
 
     if form.validate_on_submit():
-        
-        if form.password1.data != form.password2.data:
-            flask.flash("Passwords do not match")
-            return flask.redirect(flask.url_for('reset_password', email=email_encoded))
         
         SetPassword(email, form.password2.data)
         flask.flash('Password changed successfully', category="success")

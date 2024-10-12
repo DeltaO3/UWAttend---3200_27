@@ -113,7 +113,7 @@ def get_welcome_email_details(recipient_encoded):
                 padding: 20px;
             }}
             .header {{
-                background-color: #0000FF;
+                background-color: #68bbe3;
                 color: white;
                 padding: 10px 0;
                 text-align: center;
@@ -130,7 +130,7 @@ def get_welcome_email_details(recipient_encoded):
                 font-size: 16px;
                 font-weight: bold;
                 color: white;
-                background-color: #0000FF;
+                background-color: #68bbe3;
                 text-decoration: none;
                 border-radius: 5px;
             }}
@@ -179,7 +179,6 @@ def get_forgot_password_email_details(recipient_encoded):
         f"If you did not request a password reset, please ignore this email.\n"
     )
 
-    # HTML version of the email body for email clients that support HTML
     body_html = """
     <html>
     <head>
@@ -195,7 +194,7 @@ def get_forgot_password_email_details(recipient_encoded):
                 padding: 20px;
             }}
             .header {{
-                background-color: #FF0000;
+                background-color: #68bbe3;
                 color: white;
                 padding: 10px 0;
                 text-align: center;
@@ -212,12 +211,12 @@ def get_forgot_password_email_details(recipient_encoded):
                 font-size: 16px;
                 font-weight: bold;
                 color: white;
-                background-color: #FF0000;
+                background-color: #68bbe3;
                 text-decoration: none;
                 border-radius: 5px;
             }}
             .button:hover {{
-                background-color: #CC0000;
+                background-color: #3333FF;
             }}
             .footer {{
                 margin-top: 20px;
@@ -230,7 +229,7 @@ def get_forgot_password_email_details(recipient_encoded):
     <body>
         <div class="container">
             <div class="header">
-                <h1>Password Reset Request</h1>
+                <h1>UWAttend Password Reset</h1>
             </div>
             <div class="content">
                 <h2>Hello!</h2>
