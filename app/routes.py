@@ -651,6 +651,7 @@ def student():
 
     if not comments_enabled :
         form.comments.label.text = "Multiple sign in/out time log"
+        form.comments.render_kw = {'disabled':'disabled'}
         form.process()
     
     print(f"comments label: {form.comments.label.text}")
