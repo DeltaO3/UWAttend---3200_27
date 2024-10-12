@@ -39,3 +39,13 @@ scheduler.add_job(
     trigger='interval',  
     hours=24  
 )
+
+# Disable werkzeug logging
+logging.getLogger('werkzeug').disabled = True
+
+logging.basicConfig(level=logging.DEBUG,  # Set the log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',  # Log format
+                    handlers=[
+                        logging.FileHandler("logs/app.log"),  # Log to a file
+                        logging.StreamHandler()  # Log to console
+                    ])
