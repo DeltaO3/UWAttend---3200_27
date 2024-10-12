@@ -396,14 +396,16 @@ def uploadStudents():
     if csv_form.validate_on_submit():
         student_file = csv_form.studentfile.data
         if student_file.filename != '':
-            student_file.save(student_file.filename)
-            student_filename = student_file.filename
+            student_filename = f"{unit_id}_new_students.csv"
+            student_file.save(student_filename)
             print(f"Student filename: {student_filename}")
         else:
             print("Submitted no file, probable error.")
             flask.flash("Error, no student file submitted", 'error')
             return flask.redirect(url_for('editStudents', id=unit_id))
         s_data, error = process_csvs(student_filename, None)
+        if os.path.exists(student_filename):
+            os.remove(student_filename)
         if error:
             flask.flash(error, 'error')
             return flask.redirect(url_for('editStudents', id=unit_id))
