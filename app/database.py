@@ -128,7 +128,7 @@ def UpdateUser(email, firstName, lastName, passwordHash): # no userType as this 
     
     if not user:
         print("User not found")
-        return
+        return False
 
     try:
         user.firstName = firstName
@@ -141,6 +141,8 @@ def UpdateUser(email, firstName, lastName, passwordHash): # no userType as this 
     except IntegrityError as e:
         db.session.rollback()
         print(f'An error occurred: {e}')
+
+    return True
 
 
 def AddUnit(unitCode, unitName, studyPeriod, startDate, endDate, sessionNames, sessionTimes, comments, marks, consent, commentSuggestions):

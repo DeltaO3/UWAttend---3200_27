@@ -484,7 +484,7 @@ def admin():
         send_email_ses("noreply@uwaengineeringprojects.com", form.email.data, 'welcome')
         flask.flash("User added - confirmation email sent!")
 
-        return flask.redirect(flask.url_for('admin'))
+        return flask.redirect(url_for('admin'))
     
     return flask.render_template('admin.html', form=form)
 
@@ -907,6 +907,29 @@ def add_student():
 
     # Redirect back to home page when done
     return flask.redirect(flask.url_for('home'))
+
+@app.route('/add_new_facilitator', methods=['POST'])
+def add_facilitator():
+    email = flask.request.form['resetEmail']
+    
+    status = send_email_ses("noreply@uwaengineeringprojects.com", email, 'welcome')
+
+    if not status:
+        flask.flash("Error sending email")
+
+    unit_id = flask.request.args.get('id')
+    AddUnitToFacilitator(facilitator, unit_id)
+    unit = GetUnit(unitID=unit_id)[0]
+    facilitators = GetUnit(unitID=unit_id)[0].facilitators
+    facilitator_list = []
+
+    for facilitator in facilitators:
+        info = {
+            "name": f"{facilitator.firstName} {facilitator.lastName}",
+            "email": facilitator.email,
+        }
+        facilitator_list.append(info)
+    return flask.render_template('editPeople.html', unit_id=str(unit_id), unit=unit, type="facilitators", facilitators=facilitator_list)
 
 @app.route('/get_session_details/<unitID>')
 @login_required
