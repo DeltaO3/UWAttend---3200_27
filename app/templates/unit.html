@@ -53,7 +53,8 @@
             {% if units|length > 0 %}
             {% for unit in units %}
             <!-- Unit Row with Export Button for each unit -->
-            <div class="row table-element text-center my-2 py-2">
+            <div class="row table-element text-center my-2 py-2"
+                 onclick="location.href='{{ url_for('updateunit') + '?id='+unit.unit_id }}'">
                 <span class="col-md col-6">{{ unit.code }}</span>
                 <span class="col-md col-6">{{ unit.name }}</span>
                 <span class="col-md d-none d-md-inline">{{ unit.study_period }}</span>
