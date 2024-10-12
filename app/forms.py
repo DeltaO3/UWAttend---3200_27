@@ -98,8 +98,8 @@ class UnitForm(FlaskForm):
     sessions = HiddenField("Sessions", validators=[DataRequired()])
     sessionoccurence = SelectField(
 		'Session Occurence',
-		choices=[('Morning/Afternoon','Morning/Afternoon'), ('Hours', 'Hours')],
-		validators=[DataRequired()], validate_choice=False)
+		choices=[('Morning/Afternoon','Morning/Afternoon'), ('Hours','Hours')],
+		validators=[validate_sessionoccurence])
     commentsuggestions = StringField('Comment Suggestions:', render_kw={"placeholder":"Optional, add suggestions"})
     comments = HiddenField("Comments")
    

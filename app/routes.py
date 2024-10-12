@@ -276,23 +276,34 @@ def updateunit():
     if unit not in current_user.unitsCoordinate: #!!! TEST THIS WORKS AS INTENDED (cant access not your own units)
         flask.flash("Unit not found", "error") #Saying that the ID exists is a vulnerability, so we just say it doesnt
         return flask.redirect(flask.url_for('unitconfig'))
+    
+    #Hardcoding unit session times conversion:
+    session_occurence_name = ""
+    if unit.sessionTimes == "Morning|Afternoon":
+        session_occurence_name = "Morning/Afternoon"
+    else:
+        session_occurence_name = "Hours"
+    print(session_occurence_name)
 
     # Initialize the form with the existing unit data as defaults
-    form = UpdateUnitForm(
-        unitcode=unit.unitCode,
-        currentUnit = unit.unitCode,
-        unitname=unit.unitName,
-        semester=unit.studyPeriod,
-        startdate=unit.startDate,
-        currentUnitStart = unit.startDate,
-        enddate=unit.endDate,
-        sessions=unit.sessionNames,
-        commentsenabled=unit.comments,
-        assessmentcheck=unit.marks,
-        consentcheck=unit.consent,
-        comments=unit.commentSuggestions,
-        sessionoccurence=unit.sessionTimes
-    )
+    if flask.request.method != 'POST':
+        form = UpdateUnitForm(
+            unitcode=unit.unitCode,
+            currentUnit = unit.unitCode,
+            unitname=unit.unitName,
+            semester=unit.studyPeriod,
+            startdate=unit.startDate,
+            currentUnitStart = unit.startDate,
+            enddate=unit.endDate,
+            sessions=unit.sessionNames,
+            commentsenabled=unit.comments,
+            assessmentcheck=unit.marks,
+            consentcheck=unit.consent,
+            comments=unit.commentSuggestions,
+            sessionoccurence = session_occurence_name
+        )
+    else:
+        form = UpdateUnitForm()
 
     if form.validate_on_submit() and flask.request.method == 'POST':
         # Update unit variables from update unit form
@@ -306,13 +317,21 @@ def updateunit():
         marks = form.assessmentcheck.data
         consent = form.consentcheck.data
         commentSuggestions = form.comments.data
-        sessionTimes = form.sessionoccurence.data
+        sessionoccurence = form.sessionoccurence.data
+
+        print(sessionoccurence)
 
         #convert session occurences to a | string
         occurences = ""
-        for time in sessionTimes:
-            occurences += time + "|"
-        occurences = occurences[:-1]
+        if sessionoccurence == "Morning/Afternoon":
+            occurences = "Morning|Afternoon"
+        elif sessionoccurence == "Hours":
+            occurences = "8am|9am|10am|11am|12pm|1pm|2pm|3pm|4pm|5pm|6pm"
+        else:
+            print("No occurence, probable error")
+            flask.flash("Error with session occurence", 'error')
+            return flask.render_template('addunit.html', form=form)
+        print(f"session occurences: {occurences}")
         
         print(f"Updating unit ID: {unit_id}, Code: {unitCode}, Name: {unitName}")
 
@@ -412,7 +431,6 @@ def deleteStudent():
     flask.flash("Error deleting student", "error")
     return flask.redirect(url_for('editStudents', id=unit_id))
 
-#TODO: Make faciliator page
 @app.route('/editFacilitators', methods=['GET', 'POST'])
 @login_required
 def editFacilitators():

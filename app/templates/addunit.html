@@ -56,9 +56,6 @@
                     <div class="mb-3 d-flex flex-wrap gap-2" id="sessions-container"></div>
 
                 </div>
-                <div class="form-select-parent d-md-none d-block">
-                    {{ input(form.sessionoccurence, type="form-select") }}
-                </div>
                 <div class="d-none" id="comment-suggestions-parent">
                     {{ input(form.commentsuggestions, tooltip="Input suggestions, and press enter to add") }}
                     {{ form.comments() }}
@@ -74,7 +71,7 @@
                 {% endif %}
             </div>
             <div class="col-md-4 col-12">
-                <div class="form-select-parent d-none d-md-block">
+                <div class="form-select-parent">
                     {{ input(form.sessionoccurence, type="form-select") }}
                 </div>
                 {% if not edit %}
@@ -95,10 +92,10 @@
                     </div>
                 </div>
                 {% else %}
-                <div class="d-flex flex-row flex-md-column">
-                    <a href="{{ url_for('editStudents') + '?id='+unit_id }}" class="btn btn-secondary mb-4">
+                <div class="d-flex flex-row flex-md-column gap-4">
+                    <a href="{{ url_for('editStudents') + '?id='+unit_id }}" class="btn btn-secondary">
                         Edit Students</a>
-                    <a href="{{ url_for('editFacilitators') + '?id='+unit_id }}" class="btn btn-secondary mb-4">
+                    <a href="{{ url_for('editFacilitators') + '?id='+unit_id }}" class="btn btn-secondary">
                         Edit Facilitators</a>
                 </div>
                 {% endif %}
