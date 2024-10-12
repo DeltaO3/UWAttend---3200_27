@@ -578,7 +578,9 @@ def export_data():
     print("Attempting to Export Database...")
     zip_filename = 'database.zip'
 
-    unit_code = flask.request.form.get('unitCode')
+    unit_code = flask.request.args.get('unitCode') or flask.request.form.get('unitCode')
+    print("this is the unit code:")
+    print(unit_code)
 
     # Get database.zip filepath
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
