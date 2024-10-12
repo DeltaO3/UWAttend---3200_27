@@ -7,6 +7,11 @@ from flask_login import LoginManager
 from flask_apscheduler import APScheduler
 from sqlalchemy import MetaData
 
+# Disable Werkzeug logger before Flask app creation
+log = logging.getLogger('werkzeug')
+log.disabled = True
+
+
 convention = {
     "ix": 'ix_%(column_0_label)s',
     "uq": "uq_%(table_name)s_%(column_0_name)s",
@@ -41,12 +46,4 @@ scheduler.add_job(
     hours=24  
 )
 
-# Disable werkzeug logging
-logging.getLogger('werkzeug').disabled = True
 
-logging.basicConfig(level=logging.DEBUG,  # Set the log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',  # Log format
-                    handlers=[
-                        logging.FileHandler("logs/app.log"),  # Log to a file
-                        logging.StreamHandler()  # Log to console
-                    ])

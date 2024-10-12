@@ -530,6 +530,7 @@ def addunit():
         commentsenabled = form.commentsenabled.data
         commentsuggestions = form.comments.data 
 
+        log_message("/addunit submitting form [" + str(form.unitcode.data) + "] [" + str(form.unitname.data) + "] [" + str(form.semester.data) + "]")
 
         #Validation occurs in flask forms with custom validators
         
