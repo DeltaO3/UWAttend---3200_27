@@ -63,8 +63,9 @@ endwith %}
                 </div>
 
                 <div class="col-md-6 mb-4">
-                    <!-- Grade Input -->
+
                      {% if marks_enabled %}
+                    <!-- Grade Input -->
                     <div class="mb-3">
                         {{ form.grade.label(class="form-label")}}:
                         {% if student.grade %}
@@ -76,8 +77,9 @@ endwith %}
                     {% endif %}
                   
                     <!-- Comment Section -->
-                    {{ form.comments.label(class="form-label") }}:
-                    {{ form.comments(class="form-control", rows="5", **{"data-comment": student.comments}) }}
+                    {{ form.comments.label(class="form-label", text=comments_label) }}:
+                    {{ form.comments(class="form-control", rows="5", **{"data-comment": student.comments, "disabled": not comments_enabled}) }}
+                    {% if comments_enabled %}
                     {% if comments is not none %}
                     <div class="suggestions d-flex flex-wrap gap-2 mt-3">
                         Suggestions:
@@ -85,6 +87,7 @@ endwith %}
                         <span id="{{ comment }}" class="suggestion badge p-2">{{ comment }}</span>
                         {% endfor %}
                     </div>
+                    {% endif %}
                     {% endif %}
                     <div class="d-flex justify-content-md-end justify-content-center">
                         <button type="button" class="btn btn-danger w-50 mt-3" data-bs-toggle="modal"
