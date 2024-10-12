@@ -277,9 +277,9 @@ def GetStudentList(student_ids):
         print("You did not submit a parameter to use so returning all student records")
 
     
-    attendance_records = query.all()
+    students = query.all()
     
-    return attendance_records
+    return students
 
 def GetUser(userID = None, email = None, userType = None):
 

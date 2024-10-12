@@ -42,11 +42,16 @@ def home():
     students = GetStudentList(student_ids=logged_in_student_ids) 
 
     student_list = []
+    facilitator_list = []
     signed_in_count = 0
 
     for student in students:
         # find the student's attendance record 
         attendance_record = next((record for record in attendance_records if record.studentID == student.studentID), None)
+
+        facilitator_id = attendance_record.facilitatorID
+        if facilitator_id not in facilitator_list:
+            facilitator_list.append(facilitator_id)
 
         # set login status based on whether the student has a time marked where they logged out
         login_status = "no" if attendance_record.signOutTime else "yes"
@@ -65,7 +70,7 @@ def home():
 
     student_list.sort(key=lambda x: (x['login'] == "yes", x['time']), reverse=True)
 
-    return flask.render_template('home.html', form=form, students=student_list, current_session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=current_session.sessionID) 
+    return flask.render_template('home.html', form=form, students=student_list, current_session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=current_session.sessionID, num_facilitators=len(facilitator_list)) 
 	
 # CONFIGURATION - /session/ /admin/
 @app.route('/session', methods=['GET', 'POST'])
@@ -404,14 +409,16 @@ def uploadStudents():
     if csv_form.validate_on_submit():
         student_file = csv_form.studentfile.data
         if student_file.filename != '':
-            student_file.save(student_file.filename)
-            student_filename = student_file.filename
+            student_filename = f"{unit_id}_new_students.csv"
+            student_file.save(student_filename)
             print(f"Student filename: {student_filename}")
         else:
             print("Submitted no file, probable error.")
             flask.flash("Error, no student file submitted", 'error')
             return flask.redirect(url_for('editStudents', id=unit_id))
         s_data, error = process_csvs(student_filename, None)
+        if os.path.exists(student_filename):
+            os.remove(student_filename)
         if error:
             flask.flash(error, 'error')
             return flask.redirect(url_for('editStudents', id=unit_id))
@@ -533,8 +540,8 @@ def addunit():
 
          #read CSV file
         if student_file.filename != '':
-            student_file.save(student_file.filename)
-            student_filename = student_file.filename
+            student_filename = f"{newunit_code}_students.csv"
+            student_file.save(student_filename)
             print(f"Student filename: {student_filename}")
         else:
             print("Submitted no file, probable error.")
@@ -542,8 +549,8 @@ def addunit():
             return flask.render_template('addunit.html', form=form)
         
         if facilitator_file.filename != '':
-            facilitator_file.save(facilitator_file.filename)
-            facilitator_filename = facilitator_file.filename
+            facilitator_filename = f"{newunit_code}_facilitators.csv"
+            facilitator_file.save(facilitator_filename)
             print(f"Facilitator filename: {facilitator_filename}")
         else:
             print("Submitted no file, probable error.")
@@ -552,6 +559,11 @@ def addunit():
      
         #Process csvs
         s_data, f_data, error = process_csvs(student_filename, facilitator_filename)
+
+        if os.path.exists(student_filename):
+            os.remove(student_filename)
+        if os.path.exists(facilitator_filename):
+            os.remove(facilitator_filename)
         if error:
             flask.flash(error, 'error')
             return flask.render_template('addunit.html', form=form)
