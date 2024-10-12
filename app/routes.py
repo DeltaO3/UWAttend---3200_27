@@ -496,8 +496,10 @@ def admin():
             AddUser(userType=form.UserType.data, email=form.email.data, firstName="place holder", lastName="place holder", passwordHash="placeholder")
 
         return flask.redirect(flask.url_for('admin'))
-    
-    return flask.render_template('admin.html', form=form)
+
+    users = GetAdminsAndCoordinators()
+
+    return flask.render_template('admin.html', form=form, users=users)
 
 # ADDUNIT - /addunit/ /unit/
 @app.route('/addunit', methods=['GET', 'POST'])
