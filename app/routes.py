@@ -911,6 +911,7 @@ def add_student():
 @app.route('/add_facilitator', methods=['POST'])
 def add_facilitator():
     email = flask.request.form['resetEmail']
+    unit_id = flask.request.args.get('id')
     
     status = send_email_ses("noreply@uwaengineeringprojects.com", email, 'welcome')
 
@@ -918,11 +919,11 @@ def add_facilitator():
         flask.flash("Error sending email")
 
     if valid_email(email):
-        AddUser(email, "placeholder", "placeholder", generate_temp_password(), "facilitator")
-        new_facilitator = GetUser(email)
-        AddUnitToFacilitator(new_facilitator, unit_id)
+        if unit in current_user.unitsCoordinate: 
+            AddUser(email, "placeholder", "placeholder", generate_temp_password(), "facilitator")
+            new_facilitator = GetUser(email)
+            AddUnitToFacilitator(new_facilitator, unit_id)
 
-    unit_id = flask.request.args.get('id')
     unit = GetUnit(unitID=unit_id)[0]
     facilitators = GetUnit(unitID=unit_id)[0].facilitators
     facilitator_list = []
