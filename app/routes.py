@@ -372,6 +372,7 @@ def export_data():
 
         # Rename the filtered file to database.zip for consistent download name
         filtered_zip_path = os.path.join(project_root, filtered_zip_filename)
+        print("Renamed file to database.zip")
         if os.path.exists(filtered_zip_path):
             os.rename(filtered_zip_path, zip_path)  # Rename to database.zip
 
