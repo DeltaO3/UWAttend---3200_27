@@ -299,8 +299,8 @@ def addunit():
 
          #read CSV file
         if student_file.filename != '':
-            student_file.save(student_file.filename)
-            student_filename = student_file.filename
+            student_filename = f"{newunit_code}_students.csv"
+            student_file.save(student_filename)
             print(f"Student filename: {student_filename}")
         else:
             print("Submitted no file, probable error.")
@@ -308,8 +308,8 @@ def addunit():
             return flask.render_template('addunit.html', form=form)
         
         if facilitator_file.filename != '':
-            facilitator_file.save(facilitator_file.filename)
-            facilitator_filename = facilitator_file.filename
+            facilitator_filename = f"{newunit_code}_facilitators.csv"
+            facilitator_file.save(facilitator_filename)
             print(f"Facilitator filename: {facilitator_filename}")
         else:
             print("Submitted no file, probable error.")
@@ -318,6 +318,11 @@ def addunit():
      
         #Process csvs
         s_data, f_data, error = process_csvs(student_filename, facilitator_filename)
+
+        if os.path.exists(student_filename):
+            os.remove(student_filename)
+        if os.path.exists(facilitator_filename):
+            os.remove(facilitator_filename)
         if error:
             flask.flash(error, 'error')
             return flask.render_template('addunit.html', form=form)
