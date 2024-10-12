@@ -93,7 +93,7 @@ class UnitForm(FlaskForm):
     enddate = DateField('End Date', validators=[DataRequired()])
     consentcheck = BooleanField('Photo Consent Required?')
     assessmentcheck = BooleanField('Sessions Assessed?')
-    commentsenabled = BooleanField('Comments Enabled?')
+    commentsenabled = BooleanField('Comments Enabled?', default=True)
     sessionnames = StringField('Session Names:', render_kw={"placeholder":"Add sessions"})
     sessions = HiddenField("Sessions", validators=[DataRequired()])
     sessionoccurence = SelectField(
