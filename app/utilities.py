@@ -79,7 +79,10 @@ def process_csvs(student_file_path, facilitator_file_path):
     with app.app_context():
         # Read the data from the CSV file
         s_data = read_csv_file(student_file_path)
-        f_data = read_csv_file(facilitator_file_path)
+        if facilitator_file_path is not None:
+            f_data = read_csv_file(facilitator_file_path)
+        else:
+            f_data = False
         if s_data and f_data:
             # Import the data to the database
             #Ensure passed csv file is correct type 
@@ -94,6 +97,12 @@ def process_csvs(student_file_path, facilitator_file_path):
                 msg = errors[0] if len(errors) == 1 else errors[0] + ", " + errors[1]
                 return 0, 0, msg
             return s_data, f_data, 0 #return value for routes validation
+        if s_data and facilitator_file_path is None:
+            if len(s_data[0]) != 5:
+                print("Not a student csv!")
+                return 0, "Student csv format is incorrect"
+            else:
+                return s_data, 0
 
 # Export a single table's data to a CSV format and return it as a string
 def export_table_to_csv(fetch_function, current_user_id, current_user_type):
