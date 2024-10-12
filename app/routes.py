@@ -230,11 +230,14 @@ def checksessionexists():
             facilitatorNames = GetFacilitatorNamesForSession(new_session.sessionID)
             for f in facilitatorNames :
                 print(f)
-            return flask.jsonify({'sessionExists': "true", 'facilitatorNames': facilitatorNames})
+            return flask.jsonify({'result': "true", 'facilitatorNames': facilitatorNames})
         
         else :
             print("Session doesn't exist.")
-            return flask.jsonify({'sessionExists': "false", })
+            return flask.jsonify({'result': "false" })
+    
+    else :
+        return flask.jsonify({'result': "validateError"})
 
 #ADMIN - /unitconfig /
 @app.route('/unitconfig', methods=['GET', 'POST'])

@@ -15,7 +15,7 @@ function checkSessionExists() {
         datatype: 'json',
         success: function(data) {
             // if the session already exists, show the warning modal
-            if (data['sessionExists'] === "true") {
+            if (data['result'] === "true") {
 
                 const facilitatorNamesLength = data['facilitatorNames'].length
 
@@ -37,8 +37,13 @@ function checkSessionExists() {
                 }
             }
             // if the session doesn't exist, immediately configure session
-            else if (data['sessionExists'] === "false") {
+            else if (data['result'] === "false") {
                 submitSessionForm();
+            }
+            
+            else if (data['result'] === "validateError") {
+                
+                "Please select a valid option for all fields."
             }
         },
         error: function(error) {
