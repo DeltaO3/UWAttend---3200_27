@@ -257,8 +257,7 @@ def export_attendance_records_columns(current_user_id, current_user_type):
                     'lastName': student.lastName,
                     'title': student.title,
                     'preferredName': student.preferredName,
-                    'unitCode': unit.unitCode,
-                    'consent': 'Yes' if attendance.consent_given else 'No',
+                    'unitCode': unit.unitCode
                 }
 
             # Format session data for attendance: [sessionName][FacilitatorName]signInTime;signOutTime
@@ -274,7 +273,8 @@ def export_attendance_records_columns(current_user_id, current_user_type):
                 else ''
             )
             facilitator_name = f"{facilitator.firstName} {facilitator.lastName}"
-            attendance_info = f"[{session.sessionName}][{facilitator_name}]{sign_in_time};{sign_out_time}"
+            consent_status = "yes" if attendance.consent_given == "yes" else "no"
+            attendance_info = f"[{session.sessionName}][{facilitator_name}]{sign_in_time};{sign_out_time};consent_given={consent_status}"
 
             # Store attendance_info under session_key
             attendance_data[unique_key][session_key] = attendance_info
@@ -297,7 +297,7 @@ def export_attendance_records_columns(current_user_id, current_user_type):
 
         # Prepare the headers
         headers = [
-            'studentNumber', 'firstName', 'lastName', 'title', 'preferredName', 'unitCode', 'consent'
+            'studentNumber', 'firstName', 'lastName', 'title', 'preferredName', 'unitCode'
         ]
 
         # Collect all session_keys
