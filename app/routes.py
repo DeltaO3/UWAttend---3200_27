@@ -1005,7 +1005,7 @@ def download_manual():
         manual_path = os.path.join(project_root, 'MANUAL.pdf')
 
         # Use send_file to serve the file for download
-        return send_file(manual_path, as_attachment=True)
+        return send_file(manual_path)
     except Exception as e:
         print(f"Error serving manual: {e}")
         return "Error: Could not download the manual.", 500
