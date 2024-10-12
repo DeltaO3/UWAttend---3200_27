@@ -244,14 +244,7 @@ def unitconfig():
     if current_user.userType == 'facilitator':
         return flask.redirect('home')
 
-    # Get the units the user has access to
-    if current_user.userType == 'admin':
-        # Admins can see all units
-        units_list = db.session.query(Unit).all()  # Corrected 'unit' to 'Unit'
-    else:
-        # Non-admins should only see the units they have access to
-        accessible_unit_ids = GetAccessibleUnitIDs(current_user.userID)
-        units_list = db.session.query(Unit).filter(Unit.unitID.in_(accessible_unit_ids)).all()
+    units_list = current_user.unitsCoordinate
 
     # Create a list to hold unit information
     units_data = []
