@@ -352,7 +352,7 @@ def RemoveStudentFromSession(studentID, sessionID):
 
     else:
         return False
-    
+
 def EditAttendance(sessionID, studentID, signInTime=None, signOutTime=None, login=None, consent=None, grade=None, comments=None):
     # Fetch the attendance record based on studentID
     attendance_record = db.session.query(Attendance).filter_by(studentID=studentID, sessionID=sessionID).first()
@@ -560,3 +560,20 @@ def deleteFacilitatorConnection(unitID, facilitatorEmail):
     
     return False
     
+def GetFacilitatorNamesForSession(sessionID) :
+
+    records = db.session.query(
+        Session, Attendance, User
+        ).join(Attendance, Attendance.sessionID == Session.sessionID
+        ).filter_by(sessionID=sessionID
+        ).join(User, User.userID == Attendance.facilitatorID
+        ).all()
+    
+    facilitatorNames = []
+
+    for record in records :
+        fullName = record[2].firstName + ' ' + record[2].lastName
+        if fullName not in facilitatorNames :
+            facilitatorNames.append(fullName)
+
+    return facilitatorNames
