@@ -38,14 +38,19 @@ def home():
     logged_in_student_ids = [str(record.studentID) for record in attendance_records]
 
     # get only the students who have logged in
-    students = GetStudentList(student_ids=logged_in_student_ids) # TODO should there be a database function for this?
+    students = GetStudentList(student_ids=logged_in_student_ids) 
 
     student_list = []
+    facilitator_list = []
     signed_in_count = 0
 
     for student in students:
         # find the student's attendance record 
         attendance_record = next((record for record in attendance_records if record.studentID == student.studentID), None)
+
+        facilitator_id = attendance_record.facilitatorID
+        if facilitator_id not in facilitator_list:
+            facilitator_list.append(facilitator_id)
 
         # set login status based on whether the student has a time marked where they logged out
         login_status = "no" if attendance_record.signOutTime else "yes"
@@ -64,7 +69,7 @@ def home():
 
     student_list.sort(key=lambda x: (x['login'] == "yes", x['time']), reverse=True)
 
-    return flask.render_template('home.html', form=form, students=student_list, current_session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=current_session.sessionID) 
+    return flask.render_template('home.html', form=form, students=student_list, current_session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=current_session.sessionID, num_facilitators=len(facilitator_list)) 
 	
 # CONFIGURATION - /session/ /admin/
 @app.route('/session', methods=['GET', 'POST'])
