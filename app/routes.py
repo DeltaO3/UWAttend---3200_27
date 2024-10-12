@@ -912,11 +912,13 @@ def add_student():
 def add_facilitator():
     email = flask.request.form['resetEmail']
     unit_id = flask.request.args.get('id')
+    print(unit_id)
 
     if not unit_id:
         return flask.redirect(flask.url_for('home'))
     
     unit = GetUnit(unitID=unit_id)[0]
+    print(unit)
 
     if valid_email(email):
         if unit in current_user.unitsCoordinate: 
