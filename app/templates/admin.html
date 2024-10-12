@@ -44,9 +44,8 @@
             {% if users|length > 0 %}
             <div class="row d-none d-md-flex text-center lead table-heading">
                 <span class="col">Email</span>
-                <span class="col">First Name</span>
-                <span class="col">Last Name</span>
-                <span class="col">User type</span>
+                <span class="col">Name</span>
+                <span class="col">User Type</span>
             </div>
             {% endif %}
         </div>
@@ -56,11 +55,10 @@
         <div class="mx-4 mt-0 mx-md-5 container">
             {% if users|length > 0 %}
             {% for user in users %}
-            <div class="row table-element text-center my-2 py-2">
+            <div class="row table-element-nocursor text-center my-2 py-2">
                 <!-- ^ This is fine :) (url_for reads inside the bracket seperately, so the '' do not interfere) -->
-                <span class="col-md col-6">{{ user.email }}</span>
-                <span class="col-md d-none d-md-inline">{{ user.firstName }}</span>
-                <span class="col-md d-none d-md-inline">{{ user.lastName }}</span>
+                <span class="col-md d-none d-md-inline">{{ user.email }}</span>
+                <span class="col-md col-6">{{ user.firstName }} {{ user.lastName }}</span>
                 <span class="col-md col-6">{{ user.userType }}</span>
             </div>
             {% else %}
