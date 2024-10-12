@@ -912,6 +912,7 @@ def add_student():
 def add_facilitator():
     email = flask.request.form['resetEmail']
     unit_id = flask.request.args.get('id')
+    unit = GetUnit(unitID=unit_id)[0]
     
     status = send_email_ses("noreply@uwaengineeringprojects.com", email, 'welcome')
 
@@ -924,7 +925,6 @@ def add_facilitator():
             new_facilitator = GetUser(email)
             AddUnitToFacilitator(new_facilitator, unit_id)
 
-    unit = GetUnit(unitID=unit_id)[0]
     facilitators = GetUnit(unitID=unit_id)[0].facilitators
     facilitator_list = []
 
