@@ -467,10 +467,12 @@ def reset_password():
     if not email_encoded:
         # If email is not present, return an error or render a page explaining the issue
         flask.flash("Error - No email provided")
-        return flask.redirect(flask.url_for('home'))
+        return flask.redirect(flask.url_for('login'))
      # Bad request
 
     email = urllib.parse.unquote(email_encoded)
+
+    user = GetUser(email = email)
     
     form = ResetPasswordForm()
 
@@ -480,7 +482,7 @@ def reset_password():
         flask.flash('Password changed successfully', category="success")
         return flask.redirect(flask.url_for('login'))
 
-    return flask.render_template('resetPassword.html', form=form)
+    return flask.render_template('resetPassword.html', form=form, name=user.firstName)
 
 
 # LOGIN - /login/ 
