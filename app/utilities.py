@@ -117,7 +117,7 @@ def export_table_to_csv(fetch_function, current_user_id, current_user_type):
         query = [record for record in query if record.unitID in unit_ids]
 
     # Additional filtering for the Attendance table
-    if fetch_function == GetAttendance and current_user_type != "admin":
+    if fetch_function == GetAttendance:
         # Filter attendance records based on session's unit ID
         session_unit_mapping = {
             session.sessionID: session.unitID for session in db.session.query(Session).all()
@@ -134,7 +134,7 @@ def export_table_to_csv(fetch_function, current_user_id, current_user_type):
 
         # If exporting the User table, exclude the passwordHash column
         if fetch_function == GetAllUsers:
-            columns = [col for col in columns if col != 'passwordHash']
+            columns = [col for col in columns if col not in ['passwordHash', 'token']]
 
         # Use StringIO to write CSV data in-memory
         csvfile = StringIO()
