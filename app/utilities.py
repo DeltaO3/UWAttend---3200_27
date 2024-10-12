@@ -107,10 +107,7 @@ def process_csvs(student_file_path, facilitator_file_path):
 # Export a single table's data to a CSV format and return it as a string
 def export_table_to_csv(fetch_function, current_user_id, current_user_type):
 # Get accessible unit IDs if the user is not an admin
-    if current_user_type == "admin":
-        unit_ids = None
-    else:
-        unit_ids = GetAccessibleUnitIDs(current_user_id)
+    unit_ids = GetAccessibleUnitIDs(current_user_id)
 
     # Query all records from the model's table
     query = fetch_function()
@@ -156,14 +153,10 @@ def export_table_to_csv(fetch_function, current_user_id, current_user_type):
 # Creates attendancerecord.csv for exporting
 def export_attendance_records_csv(current_user_id, current_user_type):
 
-    # Check if the user is an admin
-    if current_user_type == "admin":
-            unit_ids = None # No filtering for admins
-    else:
-            unit_ids = GetAccessibleUnitIDs(current_user_id)
-            if not unit_ids:
-                print("No units found for the current coordinator")
-                return None
+    unit_ids = GetAccessibleUnitIDs(current_user_id)
+    if not unit_ids:
+        print("No units found for the current coordinator")
+        return None
 
     # Perform a query that joins the necessary tables
     query = db.session.query(
@@ -222,14 +215,10 @@ def export_attendance_records_csv(current_user_id, current_user_type):
 
 def export_attendance_records_columns(current_user_id, current_user_type):
 
-    # Check if the user is an admin
-    if current_user_type == "admin":
-            unit_ids = None # No filtering for admins
-    else:
-            unit_ids = GetAccessibleUnitIDs(current_user_id)
-            if not unit_ids:
-                print("No units found for the current coordinator")
-                return None
+    unit_ids = GetAccessibleUnitIDs(current_user_id)
+    if not unit_ids:
+        print("No units found for the current coordinator")
+        return None
 
     # Query the attendance records joined with students, sessions, and units
     query = db.session.query(
