@@ -16,16 +16,16 @@ function checkSessionExists() {
         success: function(data) {
             // if the session already exists, show the warning modal
             if (data['sessionExists'] === "true") {
-                let modalTextElement = $("#joinExistingSessionModalText").get(0)
 
                 const facilitatorNamesLength = data['facilitatorNames'].length
 
-                // if the session exists, but there are no students, say the session is empty
+                // if the session exists, but there are no students, immediately configure session
                 if (facilitatorNamesLength == 0) {
-                    modalTextElement.innerHTML = "You are joining an existing empty session.";
+                    submitSessionForm();
                 }
                 // if the session exists and has students signed in, say which facilitators have signed them in
                 else {
+                    let modalTextElement = $("#joinExistingSessionModalText").get(0)
                     modalTextElement.innerHTML = "You are joining an existing session with students signed in by: "
                     for (let i = 0; i < facilitatorNamesLength; i++) {
                         modalTextElement.innerHTML += data['facilitatorNames'][i];
@@ -33,10 +33,10 @@ function checkSessionExists() {
                             modalTextElement.innerHTML += ', '
                         }
                     }
+                    $('#joinExistingSessionModal').modal('show');
                 }
-                $('#joinExistingSessionModal').modal('show');
             }
-            // if the session doesn't exist, immediately submit the session form as usual
+            // if the session doesn't exist, immediately configure session
             else if (data['sessionExists'] === "false") {
                 submitSessionForm();
             }
