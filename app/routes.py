@@ -918,9 +918,6 @@ def add_facilitator():
     
     unit = GetUnit(unitID=unit_id)[0]
 
-    if not status:
-        flask.flash("Error sending email")
-
     if valid_email(email):
         if unit in current_user.unitsCoordinate: 
             AddUser(email, "placeholder", "placeholder", generate_temp_password(), "facilitator")
