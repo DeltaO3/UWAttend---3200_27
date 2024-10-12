@@ -8,6 +8,7 @@ from io import StringIO
 from app import app, db
 from app.models import Student, User, Attendance, Session, Unit
 from app.database import AddStudent, GetStudent, GetAttendance, GetSessionForExport, GetAllUsers, GetUnit, student_exists, GetUser, AddUser, AddUnitToFacilitator, GetAccessibleUnitIDs
+import pandas as pd
 
 # Set of functions used to read and populate students into the database from a csv file.
 # Checklist for future
@@ -387,3 +388,62 @@ def export_all_to_zip(zip_filename, current_user_id, current_user_type):
             print("Exported attendancerecordCOLUMNS.csv")
 
     print(f"All tables have been exported to {zip_filename}")
+
+# Function to filter CSV files by unitCode
+def filter_exported_csv_by_unit(zip_filename, unit_code):
+    print(f"Filtering exported CSVs by unitCode: {unit_code}")
+
+    # Get the unit ID from the unitCode
+    unit_id = get_unit_id_by_code(unit_code)
+
+    if not unit_id:
+        print(f"No unit found for unitCode: {unit_code}")
+        return zip_filename
+
+    # Create a new ZIP file to store filtered CSVs
+    filtered_zip_filename = "filtered_" + zip_filename
+    with zipfile.ZipFile(zip_filename, 'r') as z, zipfile.ZipFile(filtered_zip_filename, 'w', zipfile.ZIP_DEFLATED) as filtered_zip:
+        # First load session.csv to map sessionID to unitID
+        session_data = None
+        if 'sessions.csv' in z.namelist():
+            with z.open('sessions.csv') as f:
+                session_data = pd.read_csv(f)
+                session_data = session_data[['sessionID', 'unitID']]  # Keep only sessionID and unitID columns
+
+        # Iterate over each file in the original zip
+        for file in z.namelist():
+            with z.open(file) as f:
+                df = pd.read_csv(f)
+
+                if 'unitCode' in df.columns:
+                    # Directly filter by unitCode
+                    df_filtered = df[df['unitCode'] == unit_code]
+                elif 'unitID' in df.columns:
+                    # Filter by unitID
+                    df_filtered = df[df['unitID'] == unit_id]
+                elif file == 'attendance.csv' and session_data is not None:
+                    # Filter attendance.csv by session's unitID
+                    if 'sessionID' in df.columns:
+                        # Merge attendance data with session data to get the unitID for each session
+                        df = df.merge(session_data, on='sessionID', how='left')
+                        df_filtered = df[df['unitID'] == unit_id]
+                    else:
+                        df_filtered = df  # If no sessionID column, leave unfiltered
+                else:
+                    # If no filtering is needed for this file, keep it as-is
+                    df_filtered = df
+
+                # Write the filtered DataFrame back to the new zip
+                csv_buffer = StringIO()
+                df_filtered.to_csv(csv_buffer, index=False)
+                filtered_zip.writestr(file, csv_buffer.getvalue())
+
+    print(f"Filtered CSVs by unitCode: {unit_code}, saved as {filtered_zip_filename}")
+    return filtered_zip_filename
+
+# Helper function to get the unitID from a unitCode
+def get_unit_id_by_code(unit_code):
+    unit = db.session.query(Unit).filter_by(unitCode=unit_code).first()
+    if unit:
+        return unit.unitID
+    return None
