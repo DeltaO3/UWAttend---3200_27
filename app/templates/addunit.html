@@ -15,12 +15,11 @@
     {{ message }}
     <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
-{% endif %} {% endfor %} {% endif %} {%
-endwith %}
+{% endif %} {% endfor %} {% endif %} {% endwith %}
 
 <div class="container-fluid">
     <div class="mt-2 justify-content-center d-flex">
-        <h2>Add a Unit</h2>
+        <h2>{% if edit %}Edit {% else %}Add {% endif %}a Unit</h2>
     </div>
     <form method="POST" enctype="multipart/form-data" novalidate>
         {{ form.hidden_tag() }}
@@ -44,41 +43,69 @@ endwith %}
                 {{ input(form.commentsenabled, type="form-check-input") }}
             </div>
             <div class="col-md-4 col-6">
-                {{ input(form.sessionnames) }}
+                <div id="session-names-parent">
+                    {{ form.sessionnames.label(class="form-label") }}
+                    {{ form.sessionnames(class="form-control", **{'data-bs-toggle':"tooltip",
+                    'data-bs-title':"Input session, and press enter to add", 'data-bs-custom-class':"custom-tooltip"})}}
+                    {% for error in form.sessions.errors if form.sessions.errors %}
+                    <span class="form-text text-danger">{{ error }}</span>
+                    {% else %}
+                    <span class="form-text invisible">No error</span>
+                    {% endfor %}
+                    {{ form.sessions()}}
+                    <div class="mb-3 d-flex flex-wrap gap-2" id="sessions-container"></div>
 
+                </div>
                 <div class="d-none" id="comment-suggestions-parent">
-                    {{ input(form.commentsuggestions) }}
+                    {{ input(form.commentsuggestions, tooltip="Input suggestions, and press enter to add") }}
+                    {{ form.comments() }}
+                    <div class="mb-3 d-flex flex-wrap gap-2" id="comments-container"></div>
                 </div>
+                {% if not edit %}
                 <div class="d-md-flex justify-content-around d-none gap-4">
-                    <a href="{{ url_for('download_facilitator_template') }}" class="btn btn-secondary">Download
-                        facilitator
-                        template</a>
-                    <a href="{{ url_for('download_student_template') }}" class="btn btn-secondary">Download student
-                        template</a>
+                    <a href="{{ url_for('download_facilitator_template') }}" class="btn btn-secondary ">
+                        Download facilitator template</a>
+                    <a href="{{ url_for('download_student_template') }}" class="btn btn-secondary">
+                        Download student template</a>
                 </div>
+                {% endif %}
             </div>
-            <div class="col-md-4 col-12 row">
-                {{ input(form.commentsuggestions) }}
-                <div class="col-md-12 col-7">
-                    {{ input(form.facilitatorfile, type="form-control-file w-100") }}
-                    {{ input(form.studentfile, type="form-control-file w-100") }}
+            <div class="col-md-4 col-12">
+                <div class="form-select-parent">
+                    {{ input(form.sessionoccurence, type="form-select") }}
                 </div>
-                <div class="d-md-none d-block col-5">
-                    <a href="{{ url_for('download_facilitator_template') }}" class="btn btn-secondary mb-2">Download
-                        facilitator
-                        template</a>
-                    <a href="{{ url_for('download_student_template') }}" class="btn btn-secondary">Download student
-                        template</a>
+                {% if not edit %}
+                <div class="d-flex flex-row flex-md-column gap-3">
+                    <div>
+                        {{ input(form.facilitatorfile, type="form-control-file") }}
+                        <div class="d-md-none d-block mt-4">
+                            <a href="{{ url_for('download_facilitator_template') }}" class="btn btn-secondary mb-5">
+                                Download facilitator template</a>
+                        </div>
+                    </div>
+                    <div>
+                        {{ input(form.studentfile, type="form-control-file") }}
+                        <div class="d-md-none d-block mt-4">
+                            <a href="{{ url_for('download_student_template') }}" class="btn btn-secondary">
+                                Download student template</a>
+                        </div>
+                    </div>
                 </div>
+                {% else %}
+                <div class="d-flex flex-row flex-md-column gap-4">
+                    <a href="{{ url_for('editStudents') + '?id='+unit_id }}" class="btn btn-secondary">
+                        Edit Students</a>
+                    <a href="{{ url_for('editFacilitators') + '?id='+unit_id }}" class="btn btn-secondary">
+                        Edit Facilitators</a>
+                </div>
+                {% endif %}
             </div>
-
         </div>
-</div>
 
-<div class="d-flex justify-content-center mt-3">
-    {{ form.submit(class="btn btn-primary w-50" ) }}
-</div>
-</form>
+        <div class="d-flex justify-content-center mt-4">
+            {{ form.submit(class="btn btn-primary w-50" ) }}
+        </div>
+    </form>
 </div>
 
 <script src="{{ url_for('static', filename='js/add_unit.js') }}"></script> {% endblock %}

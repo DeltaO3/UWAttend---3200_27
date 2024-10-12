@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileRequired
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, SelectMultipleField, HiddenField, FileField, DateField, widgets, TextAreaField
-from wtforms.validators import DataRequired, ValidationError
+from wtforms.validators import DataRequired, ValidationError, Length
 from app.database import unit_exists
 
 class LoginForm(FlaskForm):
@@ -43,6 +43,11 @@ def unit_check(form, field):
     if unit_exists(form.unitcode.data, form.startdate.data):
        raise ValidationError("Unit and start date combo already exist in db")
      
+def edit_unit_check(form, field):
+    print(f"checking unit validity, {form.unitcode.data}, {form.startdate.data}")
+    if unit_exists(form.unitcode.data, form.startdate.data) and form.unitcode.data != form.currentUnit.data and form.startdate.data != form.currentUnitStart.data:
+       raise ValidationError("Unit and start date combo already exist in db")
+    
 def password_check(form, field):
     if form.password1.data != form.password2.data:
         raise ValidationError("Passwords do not match")
@@ -51,6 +56,10 @@ def date_check(form, field):
 	print(f"checking date validity, {form.startdate.data}, {form.enddate.data}")
 	if form.startdate.data > form.enddate.data:
 		raise ValidationError("Start date must be before end date")
+    
+def is_student_num(form, field):
+    if len(form.studentNumber.data) != 8 and not any(c.isdigit() for c in form.studentNumber.data):
+        raise ValidationError("Student number invalid")
 
 class AddUserForm(FlaskForm):
     UserType = SelectField(
@@ -76,25 +85,50 @@ class ResetPasswordForm(FlaskForm):
     password2 = PasswordField('Confirm new password:', validators=[DataRequired(), password_check])
     submit = SubmitField('Reset Password')
 
-class AddUnitForm(FlaskForm):
+class UnitForm(FlaskForm):
     unitcode = StringField('Unit Code:', validators=[DataRequired(), unit_check])
     unitname = StringField('Unit Name:', validators=[DataRequired()])
     semester = StringField('Semester:', validators=[DataRequired()])
     startdate = DateField('Start Date', validators=[DataRequired(), date_check])
     enddate = DateField('End Date', validators=[DataRequired()])
-    facilitatorfile = FileField('Facilitator List CSV upload', validators=[FileRequired(), FileAllowed(['csv'], "Only accepts .csv files")],render_kw={"accept": ".csv"})
-    studentfile = FileField('Student List CSV Upload:', validators=[FileRequired(), FileAllowed(['csv'], "Only accepts .csv files")],render_kw={"accept": ".csv"})
     consentcheck = BooleanField('Photo Consent Required?')
     assessmentcheck = BooleanField('Sessions Assessed?')
     commentsenabled = BooleanField('Comments Enabled?')
-    sessionnames = StringField('Session Names:', validators=[DataRequired()], render_kw={"placeholder":"Separate with | (e.g. Lab|Workshop|Tutorial)"})
+    sessionnames = StringField('Session Names:', render_kw={"placeholder":"Add sessions"})
+    sessions = HiddenField("Sessions", validators=[DataRequired()])
     sessionoccurence = SelectField(
 		'Session Occurence',
-		choices=[('Morning/Afternoon','Morning/Afternoon'), ('Hours', 'Hours')],
-		validators=[DataRequired()], validate_choice=False)
-    commentsuggestions = StringField('Comment Suggestions:', render_kw={"placeholder":"Optional; separate with |"})
+		choices=[('Morning/Afternoon','Morning/Afternoon'), ('Hours','Hours')],
+		validators=[validate_sessionoccurence])
+    commentsuggestions = StringField('Comment Suggestions:', render_kw={"placeholder":"Optional, add suggestions"})
+    comments = HiddenField("Comments")
+   
+
+class AddUnitForm(UnitForm):
+    facilitatorfile = FileField('Facilitator List CSV upload', validators=[FileRequired(), FileAllowed(['csv'], "Only accepts .csv files")],render_kw={"accept": ".csv"})
+    studentfile = FileField('Student List CSV Upload:', validators=[FileRequired(), FileAllowed(['csv'], "Only accepts .csv files")],render_kw={"accept": ".csv"})
     submit = SubmitField('Add Unit')
+
+class UpdateUnitForm(UnitForm):
+    #Overwrite unit code to use a different validator
+    unitcode = StringField('Unit Code:', validators=[DataRequired(), edit_unit_check]) 
+    #While you can edit  if you are a malicious attacker, all it will do is make you submit even less. 
+    currentUnit = HiddenField("Current Unit") 
+    currentUnitStart = HiddenField("Current Start")
+    submit = SubmitField('Update Unit')
+
+class AddStudentForm(FlaskForm):
+    studentNumber = StringField("Student Number:", validators=[DataRequired(), is_student_num])
+    firstName = StringField("First Name:", validators=[DataRequired()])
+    preferredName = StringField("Preferred Name:", validators=[DataRequired()])
+    lastName = StringField("Last Name:", validators=[DataRequired()])
+    title = StringField("Title:", validators=[DataRequired()])
+    submit = SubmitField("Add Student")
     
+class UploadStudentForm(FlaskForm):
+    studentfile = FileField('Student List CSV Upload:', validators=[FileRequired(), FileAllowed(['csv'], "Only accepts .csv files")],render_kw={"accept": ".csv"})
+    submit = SubmitField("Upload")
+
 class StudentSignInForm(FlaskForm):
     student_sign_in = StringField('Sign in Student', validators=[DataRequired()])
     consent_status = HiddenField('Consent Status', default="none")

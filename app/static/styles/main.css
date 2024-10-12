@@ -1,7 +1,7 @@
 /* Variables */
 :root {
   --primary: var(--bs-primary);
-  --secondary: var(--bs-secondary);
+  --secondary: #9aa4ad;
   --danger: var(--bs-danger);
   --success: var(--bs-success);
   --bg: var(--bs-body-bg);
@@ -12,7 +12,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --primary: var(--bs-primary);
-    --secondary: var(--bs-secondary);
+    --secondary: var(--bs-gray-600);
     --danger: var(--bs-danger);
     --success: var(--bs-teal);
     --bg: var(--bs-gray-900);
@@ -52,7 +52,8 @@ body {
 
 /* Table elements */
 
-#classTable {
+#classTable,
+#unitTable {
   overflow-y: auto;
   height: 0px;
 }
@@ -60,6 +61,12 @@ body {
 .table-heading {
   background-color: color-mix(in srgb, var(--bg) 75%, var(--text) 25%);
   border-radius: 0.5rem;
+}
+
+.outline-table {
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--text);
 }
 
 .table-element {
@@ -161,7 +168,7 @@ body {
   --bs-modal-border-color: var(--text);
 }
 
-//Buttons
+/* Buttons */
 .btn-primary {
   --bs-btn-color: var(--bs-white);
   --bs-btn-bg: var(--primary);
@@ -200,4 +207,19 @@ body {
   --bs-btn-hover-border-color: color-mix(in srgb, var(--danger), black 20%);
   --bs-btn-active-bg: color-mix(in srgb, var(--danger), black 25%);
   --bs-btn-active-border-color: color-mix(in srgb, var(--danger), black 25%);
+}
+
+/* Badges */
+
+.badge {
+  background-color: color-mix(in srgb, var(--secondary) 50%, transparent);
+  color: var(--text);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Badge hover state */
+.badge:hover {
+  background-color: color-mix(in srgb, var(--secondary) 50%, white 30%);
 }

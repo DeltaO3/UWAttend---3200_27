@@ -5,15 +5,16 @@
 <div class="mt-4 mx-md-5 mx-2 d-flex flex-column align-items-center">
     <h2>Session Configuration</h2>
     {% if update %}
-    <p class="text-center">You are already in an active session. <br> Update the session configuration below.</p>
+    <p class="text-center">You are already in an active session.</p>
+    <h4 class="text-center">{{ unit }} {{ currentSession.sessionName }} {{ currentSession.sessionTime }} {{ currentSession.sessionDate }}</h4>
+    <p>Edit the session configuration below.</p>
     {% else %}
     <p class="text-center">
-        You have no active sessions. <br> Configure a new session below to view your class list.
+        You have no active session. <br> Configure a new session below to view your class list.
     </p>
     {% endif %}
 </div>
-<form method="POST" {% if update %} action="{{ url_for('updatesession') }}" {% else %} action="{{ url_for('session') }}"
-    {% endif %}>
+<form method="POST" {% if update %} data-update="true" {% else %} data-update="false"{% endif %}>
     <div class="d-flex justify-content-center">
         <div>
             {{ form.hidden_tag() }}
@@ -55,8 +56,10 @@
             </div>
         </div>
     </div>
-
 </form>
 </div>
+
+{% include 'joinExistingSession.html'%}
+<script src="{{url_for('static', filename='js/joinExistingSession.js')}}"></script>
 <script src="{{url_for('static', filename='js/session_config.js')}}"></script>
 {% endblock %}

@@ -29,6 +29,7 @@ class User(UserMixin, db.Model):
     lastName: Mapped[Optional[str]] = mapped_column(String(50))
     passwordHash: Mapped[str] = mapped_column(String(256), nullable=False)
     userType: Mapped[str] = mapped_column(String((15)), nullable=False)   # "admin", "coordinator", "facilitator"
+    token: Mapped[Optional[str]] = mapped_column(String((256)))
 
     unitsCoordinate: Mapped[List['Unit']] = relationship(secondary='Units_Coordinators_Table', back_populates='coordinators')
     unitsFacilitate: Mapped[List['Unit']] = relationship(secondary='Units_Facilitators_Table', back_populates='facilitators')
