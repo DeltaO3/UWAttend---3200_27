@@ -47,7 +47,7 @@
 			</form>
 			{% else %}
 			<h4 class="text-center">Add Facilitator</h4>
-			<form action="/add_facilitator" method="POST">
+			<form action="/add_facilitator?id={{unit_id}}" method="POST">
 				<input id="resetEmail" class="form-control" name="resetEmail" type="text">
 				<div class="d-flex justify-content-center">
 					<input id="submit" class="btn btn-primary mt-3 col-6" name="submit" type="submit"

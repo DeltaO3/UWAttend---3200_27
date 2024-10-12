@@ -912,9 +912,11 @@ def add_student():
 def add_facilitator():
     email = flask.request.form['resetEmail']
     unit_id = flask.request.args.get('id')
-    unit = GetUnit(unitID=unit_id)[0]
+
+    if not unit_id:
+        return flask.redirect(flask.url_for('home'))
     
-    status = send_email_ses("noreply@uwaengineeringprojects.com", email, 'welcome')
+    unit = GetUnit(unitID=unit_id)[0]
 
     if not status:
         flask.flash("Error sending email")
@@ -924,6 +926,7 @@ def add_facilitator():
             AddUser(email, "placeholder", "placeholder", generate_temp_password(), "facilitator")
             new_facilitator = GetUser(email)
             AddUnitToFacilitator(new_facilitator, unit_id)
+            send_email_ses("noreply@uwaengineeringprojects.com", email, 'welcome')
 
     facilitators = GetUnit(unitID=unit_id)[0].facilitators
     facilitator_list = []
