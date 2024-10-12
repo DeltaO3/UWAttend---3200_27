@@ -221,7 +221,7 @@ def admin():
 
     if form.validate_on_submit() and flask.request.method == 'POST':       
         
-        AddUser(userType=form.UserType.data, email=form.email.data, firstName=form.firstName.data, lastName=form.lastName.data, passwordHash=generate_temp_password())
+        AddUser(userType=form.UserType.data, email=form.email.data, firstName="placeholder", lastName="placeholder", passwordHash=generate_temp_password())
 
         send_email_ses("noreply@uwaengineeringprojects.com", form.email.data, 'welcome')
         flask.flash("User added - confirmation email sent!")
