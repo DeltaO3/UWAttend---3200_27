@@ -39,7 +39,7 @@ def home():
     logged_in_student_ids = [str(record.studentID) for record in attendance_records]
 
     # get only the students who have logged in
-    students = GetStudentList(student_ids=logged_in_student_ids) # TODO should there be a database function for this?
+    students = GetStudentList(student_ids=logged_in_student_ids) 
 
     student_list = []
     signed_in_count = 0
@@ -199,7 +199,38 @@ def updatesession():
     current_unit = GetUnit(unitID=current_session.unitID)[0]
     set_updatesession_form_select_options(current_session, current_unit, form)
 
-    return flask.render_template('session.html', form=form, perth_time=formatted_perth_time, update=True)
+    return flask.render_template('session.html', form=form, perth_time=formatted_perth_time, update=True, currentSession=current_session, unit=current_unit.unitCode)
+
+@app.route('/checksessionexists', methods=['POST'])
+@login_required
+def checksessionexists():
+    form = SessionForm()
+
+    if form.validate_on_submit():
+        # Handle form submission
+        unit_id = form.unit.data
+        session_name = form.session_name.data
+        session_time = form.session_time.data
+        session_date = form.session_date.data
+
+        print(f"Session Name: {session_name}")
+        print(f"Session Time: {session_time}")
+        print(f"Session Date: {session_date}")
+        print(f"Unit Id: {unit_id}")
+
+        # Check if the session already exists
+        new_session = GetUniqueSession(unit_id, session_name, session_time, session_date)
+
+        if new_session is not None :
+            print("Session already exists. Joining existing session.")
+            facilitatorNames = GetFacilitatorNamesForSession(new_session.sessionID)
+            for f in facilitatorNames :
+                print(f)
+            return flask.jsonify({'sessionExists': "true", 'facilitatorNames': facilitatorNames})
+        
+        else :
+            print("Session doesn't exist.")
+            return flask.jsonify({'sessionExists': "false", })
 
 #ADMIN - /unitconfig /
 @app.route('/unitconfig', methods=['GET', 'POST'])
@@ -208,7 +239,234 @@ def unitconfig():
     if current_user.userType == 'facilitator':
         return flask.redirect('home')
     
-    return flask.render_template('unit.html')
+    units_list = current_user.unitsCoordinate
+
+    # Create a list to hold unit information
+    units_data = []
+
+    for unit in units_list:
+        # Extract relevant data for each unit
+        unit_info = {
+            "code": unit.unitCode,
+            "name": unit.unitName or "N/A",
+            "study_period": unit.studyPeriod,
+            "start_date": unit.startDate.strftime('%Y-%m-%d'),
+            "end_date": unit.endDate.strftime('%Y-%m-%d'),
+            "unit_id": str(unit.unitID)
+        }
+        units_data.append(unit_info)
+    
+    return flask.render_template('unit.html', units=units_data)
+
+#UPDATE UNIT FORM
+@app.route('/updateunit', methods=['GET', 'POST'])
+@login_required
+def updateunit():
+    if current_user.userType == 'facilitator':
+        return flask.redirect('home')
+    
+    if 'id' not in flask.request.args:
+        return flask.redirect('unitconfig')
+    
+    unit_id = flask.request.args.get('id') 
+    unit_data = GetUnit(unitID=unit_id)
+    if not unit_data:
+        flask.flash("Unit not found", "error")
+        return flask.redirect(flask.url_for('unitconfig'))
+    unit = unit_data[0]  
+    if unit not in current_user.unitsCoordinate: #!!! TEST THIS WORKS AS INTENDED (cant access not your own units)
+        flask.flash("Unit not found", "error") #Saying that the ID exists is a vulnerability, so we just say it doesnt
+        return flask.redirect(flask.url_for('unitconfig'))
+    
+    #Hardcoding unit session times conversion:
+    session_occurence_name = ""
+    if unit.sessionTimes == "Morning|Afternoon":
+        session_occurence_name = "Morning/Afternoon"
+    else:
+        session_occurence_name = "Hours"
+    print(session_occurence_name)
+
+    # Initialize the form with the existing unit data as defaults
+    if flask.request.method != 'POST':
+        form = UpdateUnitForm(
+            unitcode=unit.unitCode,
+            currentUnit = unit.unitCode,
+            unitname=unit.unitName,
+            semester=unit.studyPeriod,
+            startdate=unit.startDate,
+            currentUnitStart = unit.startDate,
+            enddate=unit.endDate,
+            sessions=unit.sessionNames,
+            commentsenabled=unit.comments,
+            assessmentcheck=unit.marks,
+            consentcheck=unit.consent,
+            comments=unit.commentSuggestions,
+            sessionoccurence = session_occurence_name
+        )
+    else:
+        form = UpdateUnitForm()
+
+    if form.validate_on_submit() and flask.request.method == 'POST':
+        # Update unit variables from update unit form
+        unitCode = form.unitcode.data
+        unitName = form.unitname.data
+        studyPeriod = form.semester.data
+        startDate = form.startdate.data
+        endDate = form.enddate.data
+        sessionNames = form.sessions.data
+        comments = form.commentsenabled.data
+        marks = form.assessmentcheck.data
+        consent = form.consentcheck.data
+        commentSuggestions = form.comments.data
+        sessionoccurence = form.sessionoccurence.data
+
+        print(sessionoccurence)
+
+        #convert session occurences to a | string
+        occurences = ""
+        if sessionoccurence == "Morning/Afternoon":
+            occurences = "Morning|Afternoon"
+        elif sessionoccurence == "Hours":
+            occurences = "8am|9am|10am|11am|12pm|1pm|2pm|3pm|4pm|5pm|6pm"
+        else:
+            print("No occurence, probable error")
+            flask.flash("Error with session occurence", 'error')
+            return flask.render_template('addunit.html', form=form)
+        print(f"session occurences: {occurences}")
+        
+        print(f"Updating unit ID: {unit_id}, Code: {unitCode}, Name: {unitName}")
+
+        # Update the unit's database record with the new form data
+        EditUnit(
+            unit_id,
+            unitCode,
+            unitName,
+            studyPeriod,
+            startDate,
+            endDate,
+            sessionNames,
+            occurences,
+            comments,
+            marks,
+            consent,
+            commentSuggestions
+        )
+
+        flask.flash("Unit updated successfully", "success")
+        return flask.redirect(flask.url_for('unitconfig'))
+
+    return flask.render_template('addunit.html', form=form, edit=True, unit_id = unit_id)
+
+@app.route('/editStudents', methods=['GET', 'POST'])
+@login_required
+def editStudents():
+    unit_id = flask.request.args.get('id')
+    unit = GetUnit(unitID=unit_id)[0]
+    form = AddStudentForm()
+    csv_form = UploadStudentForm()
+
+    if form.submit.data and form.validate_on_submit() and flask.request.method == 'POST':
+        consent = "not required" if unit.consent == False else "no"
+        #Ensure you cant add duplicate students
+        if GetStudent(unitID=unit_id, studentNumber=form.studentNumber.data)[0] is None:
+            flask.flash("Student already assigned to this unit", "error")
+            return flask.redirect(url_for('editStudents', id=unit_id))
+        AddStudent(form.studentNumber.data, form.firstName.data, form.lastName.data, form.title.data, form.preferredName.data, unit_id, consent)
+        flask.flash("Student added successfully", "success")
+        return flask.redirect(url_for('editStudents', id=unit_id))
+
+    students = GetStudent(unitID = unit_id)
+    student_list = []
+    for student in students:
+        student_info = {
+            "name": f"{student.preferredName} {student.lastName}",
+            "number": student.studentNumber,
+            "id": str(student.studentID),
+        }
+        student_list.append(student_info)
+    
+    
+    return flask.render_template('editPeople.html', unit_id=str(unit_id), type="students", students=student_list, unit=unit, form=form, csv_form = csv_form)
+
+@app.route('/uploadStudents', methods=['POST'])
+@login_required
+def uploadStudents():
+    csv_form = UploadStudentForm()
+    unit_id = flask.request.args.get('id')
+
+    if csv_form.validate_on_submit():
+        student_file = csv_form.studentfile.data
+        if student_file.filename != '':
+            student_file.save(student_file.filename)
+            student_filename = student_file.filename
+            print(f"Student filename: {student_filename}")
+        else:
+            print("Submitted no file, probable error.")
+            flask.flash("Error, no student file submitted", 'error')
+            return flask.redirect(url_for('editStudents', id=unit_id))
+        s_data, error = process_csvs(student_filename, None)
+        if error:
+            flask.flash(error, 'error')
+            return flask.redirect(url_for('editStudents', id=unit_id))
+        import_student_in_db(s_data, unit_id)
+        flask.flash("Added students to DB", "success")
+        return flask.redirect(url_for('editStudents', id=unit_id))
+    else:
+        flask.flash("Error uploading CSV file", 'error')
+        return flask.redirect(url_for('editStudents', id=unit_id))
+
+@app.route('/deleteStudent', methods=['POST'])
+@login_required
+def deleteStudent():
+    unit_id = flask.request.args.get('unit_id')
+    unit = GetUnit(unitID=unit_id)[0]
+    if unit not in current_user.unitsCoordinate: #!check this works
+        flask.flash("Unit not found","error")
+        return flask.redirect(url_for('unitconfig'))
+
+    student_id = flask.request.args.get('student_id')
+    if deleteStudentFromDB(unit_id, student_id):
+        flask.flash("Student deleted successfully","success")
+        return flask.redirect(url_for('editStudents', id=unit_id))
+    
+    flask.flash("Error deleting student", "error")
+    return flask.redirect(url_for('editStudents', id=unit_id))
+
+@app.route('/editFacilitators', methods=['GET', 'POST'])
+@login_required
+def editFacilitators():
+    unit_id = flask.request.args.get('id')
+    unit = GetUnit(unitID=unit_id)[0]
+    facilitators = GetUnit(unitID=unit_id)[0].facilitators
+    facilitator_list = []
+
+    for facilitator in facilitators:
+        info = {
+            "name": f"{facilitator.firstName} {facilitator.lastName}",
+            "email": facilitator.email,
+        }
+        facilitator_list.append(info)
+    #facilitators = GetStudent(unitID = unit_id)
+    return flask.render_template('editPeople.html', unit_id=str(unit_id), unit=unit, type="facilitators", facilitators=facilitator_list)
+
+@app.route('/deleteFacilitator', methods=['POST'])
+@login_required
+def deleteFacilitator():
+    unit_id = flask.request.args.get('unit_id')
+    unit = GetUnit(unitID=unit_id)[0]
+    if unit not in current_user.unitsCoordinate: #!check this works
+        flask.flash("Unit not found","error")
+        return flask.redirect(url_for('unitconfig'))
+    
+    facilitator_email = flask.request.args.get('facilitator_id')
+    if deleteFacilitatorConnection(unit_id, facilitator_email):
+        flask.flash("Facilitator deleted successfully","success")
+        return flask.redirect(url_for('editFacilitators', id=unit_id))
+    
+    flask.flash("Error deleting facilitator", "error")
+    return flask.redirect(url_for('editFacilitators', id=unit_id))
+
+
 
 # add users
 @app.route('/admin', methods=['GET', 'POST'])
@@ -371,14 +629,23 @@ def student():
     
     current_session = current_session[0]
 
+    unit = GetUnit(unitID=current_session.unitID)
+
+    if not unit:
+        flask.flash("Error loading unit") 
+        return flask.redirect(flask.url_for('home'))
+    
+    unit = unit[0]
+    comment_suggestions = unit.commentSuggestions
+    comment_list = comment_suggestions.split('|')
+
     attendance_record = GetAttendance(input_sessionID=current_session.sessionID, studentID=student_id)[0] 
 
     student_info = generate_student_info(student, attendance_record)
     print("comments", student_info["comments"])
-
     print("consent", student.consent)
     
-    return flask.render_template('student.html', form=form, student=student_info, attendance=attendance_record)
+    return flask.render_template('student.html', form=form, student=student_info, attendance=attendance_record, comments=comment_list)
 
 @app.route('/remove_from_session', methods=['GET'])
 @login_required
@@ -768,3 +1035,4 @@ def check_status():
 def exitSession():
     removeSessionCookie()
     return flask.redirect(url_for('session'))
+
