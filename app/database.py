@@ -178,7 +178,7 @@ def AddUnitToCoordinator(email, unitID):
     unit.coordinators.append(user)
     db.session.commit()
 
-def AddUnitToFacilitator(email, unitID, unit):
+def AddUnitToFacilitator(email, unitID):
     user = db.session.query(User).filter_by(email=email).first()
     unit = db.session.query(Unit).filter_by(unitID=unitID).first()
     user.unitsFacilitate.append(unit)
