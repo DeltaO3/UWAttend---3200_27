@@ -908,7 +908,7 @@ def add_student():
     # Redirect back to home page when done
     return flask.redirect(flask.url_for('home'))
 
-@app.route('/add_new_facilitator', methods=['POST'])
+@app.route('/add_facilitator', methods=['POST'])
 def add_facilitator():
     email = flask.request.form['resetEmail']
     
