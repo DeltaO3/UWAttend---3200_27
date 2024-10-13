@@ -266,3 +266,6 @@ This section of the page displays all users who are currently registered in the 
 - **Email**: The email address of the user.
 - **Name**: The full name of the user.
 - **User Type**: The type of user (e.g. admin, coordinator)
+
+## Notes for Adrian
+- `attendancerecordsCOLUMN.csv` might have a bug where if a student attended multiple sessions in the same session time (e.g. pipeworks morning and cad morning on a given day), only one of them is recorded the columns. Proper behaviour should be if a student attended multiple session in the same session time, then it should be appended to the information rather than using only the most recent one.
