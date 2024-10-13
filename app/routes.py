@@ -592,7 +592,7 @@ def addunit():
         import_student_in_db(s_data, unit_id)
         error = import_facilitator_in_db(f_data, unit_id, current_user)
         if error == 0:
-            flask.flash("Error, invalid email address in facilitators", 'error')
+            flask.flash("Invalid email address in facilitators csv. The unit has been uploaded but check facilitators", 'error')
             return flask.render_template('addunit.html', form=form)
         
         return flask.redirect(flask.url_for('unitconfig'))
