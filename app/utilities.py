@@ -69,7 +69,7 @@ def import_facilitator_in_db(data, unit_id, current_user):
             if '@' not in str(facilitator):
                 # not an email?
                 print("csv facilitator email not a valid email address")
-                return 0
+                return 
             print(f"Adding new user: {facilitator}")
             AddUser(facilitator, "placeholder", "placeholder", facilitator, "facilitator")
         #add this unit to facilator
