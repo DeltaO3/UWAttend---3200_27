@@ -97,7 +97,7 @@ def process_csvs(student_file_path, facilitator_file_path):
                 msg = ''
                 for error in errors :
                     msg += error + ', '
-                return 0, 0, msg[:-1]
+                return 0, 0, msg[:-2]
             return s_data, f_data, 0 #return value for routes validation
         if s_data and facilitator_file_path is None:
             if len(s_data[0]) != 5:
