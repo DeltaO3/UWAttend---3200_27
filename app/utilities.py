@@ -7,7 +7,8 @@ import zipfile
 from io import StringIO
 from app import app, db
 from app.models import Student, User, Attendance, Session, Unit
-from app.database import AddStudent, GetStudent, GetAttendance, GetSessionForExport, GetAllUsers, GetUnit, student_exists, GetUser, AddUser, AddUnitToFacilitator
+from app.database import AddStudent, GetStudent, GetAttendance, GetSessionForExport, GetAllUsers, GetUnit, student_exists, GetUser, AddUser, AddUnitToFacilitator, GetAccessibleUnitIDs
+import pandas as pd
 
 # Set of functions used to read and populate students into the database from a csv file.
 # Checklist for future
@@ -104,13 +105,36 @@ def process_csvs(student_file_path, facilitator_file_path):
                 return s_data, 0
 
 # Export a single table's data to a CSV format and return it as a string
-def export_table_to_csv(fetch_function):
-    # Query all records from the model's table
-    records = fetch_function()
+def export_table_to_csv(fetch_function, current_user_id, current_user_type):
+# Get accessible unit IDs if the user is not an admin
+    unit_ids = GetAccessibleUnitIDs(current_user_id)
 
-    if records:
+    # Query all records from the model's table
+    query = fetch_function()
+
+    # Filter based on unit ID if not admin
+    if unit_ids and hasattr(query[0], "unitID"):
+        query = [record for record in query if record.unitID in unit_ids]
+
+    # Additional filtering for the Attendance table
+    if fetch_function == GetAttendance:
+        # Filter attendance records based on session's unit ID
+        session_unit_mapping = {
+            session.sessionID: session.unitID for session in db.session.query(Session).all()
+        }
+        # Filter attendance where the session's unitID is in the list of accessible unit IDs
+        query = [
+            record for record in query
+            if session_unit_mapping.get(record.sessionID) in unit_ids
+        ]
+
+    if query:
         # Get the column names from the model's attributes
-        columns = records[0].__table__.columns.keys()
+        columns = query[0].__table__.columns.keys()
+
+        # If exporting the User table, exclude the passwordHash column
+        if fetch_function == GetAllUsers:
+            columns = [col for col in columns if col not in ['passwordHash', 'token']]
 
         # Use StringIO to write CSV data in-memory
         csvfile = StringIO()
@@ -118,7 +142,7 @@ def export_table_to_csv(fetch_function):
         writer.writerow(columns)  # Write the header
 
         # Write each record as a row in the CSV
-        for record in records:
+        for record in query:
             writer.writerow([getattr(record, col) for col in columns])
 
         return csvfile.getvalue()
@@ -127,9 +151,15 @@ def export_table_to_csv(fetch_function):
         return None
 
 # Creates attendancerecord.csv for exporting
-def export_attendance_records_csv():
+def export_attendance_records_csv(current_user_id, current_user_type):
+
+    unit_ids = GetAccessibleUnitIDs(current_user_id)
+    if not unit_ids:
+        print("No units found for the current coordinator")
+        return None
+
     # Perform a query that joins the necessary tables
-    records = db.session.query(
+    query = db.session.query(
         Attendance,
         Student,
         Session,
@@ -140,7 +170,12 @@ def export_attendance_records_csv():
         Session, Attendance.sessionID == Session.sessionID
     ).join(
         Unit, Student.unitID == Unit.unitID
-    ).all()
+    )
+
+    if unit_ids:
+            query = query.filter(Unit.unitID.in_(unit_ids))
+
+    records = query.all()
 
     if records:
         # Define the headers
@@ -178,27 +213,41 @@ def export_attendance_records_csv():
         print("No attendance records found")
         return None
 
-def export_attendance_records_columns():
+def export_attendance_records_columns(current_user_id, current_user_type):
+
+    unit_ids = GetAccessibleUnitIDs(current_user_id)
+    if not unit_ids:
+        print("No units found for the current coordinator")
+        return None
+
     # Query the attendance records joined with students, sessions, and units
-    records = db.session.query(
+    query = db.session.query(
         Attendance,
         Student,
         Session,
-        Unit
+        Unit,
+        User
     ).join(
         Student, Attendance.studentID == Student.studentID
     ).join(
         Session, Attendance.sessionID == Session.sessionID
     ).join(
         Unit, Student.unitID == Unit.unitID
-    ).all()
+    ).join(
+        User, Attendance.facilitatorID == User.userID
+    )
+
+    if unit_ids:
+        query = query.filter(Unit.unitID.in_(unit_ids))
+
+    records = query.all()
 
     if records:
         # Initialize a dictionary to store students, keyed by (studentNumber, unitCode) for uniqueness per unit
         attendance_data = {}
 
         # Iterate over the records and organize by unique student-unit combinations
-        for attendance, student, session, unit in records:
+        for attendance, student, session, unit, facilitator in records:
             # Use a tuple (studentNumber, unitCode) as the key to ensure uniqueness per unit
             unique_key = (student.studentNumber, unit.unitCode)
             if unique_key not in attendance_data:
@@ -208,11 +257,10 @@ def export_attendance_records_columns():
                     'lastName': student.lastName,
                     'title': student.title,
                     'preferredName': student.preferredName,
-                    'unitCode': unit.unitCode,
-                    'consent': 'Yes' if attendance.consent_given else 'No',
+                    'unitCode': unit.unitCode
                 }
 
-            # Format session data for attendance: [sessionName]signInTime;signOutTime
+            # Format session data for attendance: [sessionName][FacilitatorName]signInTime;signOutTime
             session_key = f"{session.sessionDate.strftime('%Y_%B_%d')}_{session.sessionTime}"
             sign_in_time = (
                 attendance.signInTime.strftime('%H:%M:%S')
@@ -224,7 +272,9 @@ def export_attendance_records_columns():
                 if attendance.signOutTime
                 else ''
             )
-            attendance_info = f"[{session.sessionName}]{sign_in_time};{sign_out_time}"
+            facilitator_name = f"{facilitator.firstName} {facilitator.lastName}"
+            consent_status = "yes" if attendance.consent_given == "yes" else "no"
+            attendance_info = f"[{session.sessionName}][{facilitator_name}]{sign_in_time};{sign_out_time};consent_given={consent_status}"
 
             # Store attendance_info under session_key
             attendance_data[unique_key][session_key] = attendance_info
@@ -247,7 +297,7 @@ def export_attendance_records_columns():
 
         # Prepare the headers
         headers = [
-            'studentNumber', 'firstName', 'lastName', 'title', 'preferredName', 'unitCode', 'consent'
+            'studentNumber', 'firstName', 'lastName', 'title', 'preferredName', 'unitCode'
         ]
 
         # Collect all session_keys
@@ -288,49 +338,110 @@ def export_attendance_records_columns():
 
 
 # Export all tables to a single ZIP file containing multiple CSV files
-def export_all_to_zip(zip_filename):
+def export_all_to_zip(zip_filename, current_user_id, current_user_type):
     with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
 
         # Export the Student table
-        student_csv = export_table_to_csv(GetStudent)
+        student_csv = export_table_to_csv(GetStudent, current_user_id, current_user_type)
         if student_csv:
             zipf.writestr('students.csv', student_csv)
             print("Exported students.csv")
 
-        # Export the User table
-        user_csv = export_table_to_csv(GetAllUsers)
-        if user_csv:
-            zipf.writestr('users.csv', user_csv)
-            print("Exported users.csv")
+        # Export the User table only if the user is an admin
+        user_csv = None
+        if current_user_type == "admin":
+            user_csv = export_table_to_csv(GetAllUsers, current_user_id, current_user_type)
+            if user_csv:
+                zipf.writestr('users.csv', user_csv)
+                print("Exported users.csv")
 
         # Export the Attendance table
-        attendance_csv = export_table_to_csv(GetAttendance)
+        attendance_csv = export_table_to_csv(GetAttendance, current_user_id, current_user_type)
         if attendance_csv:
             zipf.writestr('attendance.csv', attendance_csv)
             print("Exported attendance.csv")
 
         # Export the Session table
-        session_csv = export_table_to_csv(GetSessionForExport)
+        session_csv = export_table_to_csv(GetSessionForExport, current_user_id, current_user_type)
         if session_csv:
             zipf.writestr('sessions.csv', session_csv)
             print("Exported sessions.csv")
 
         # Export the Unit table
-        unit_csv = export_table_to_csv(GetUnit)
+        unit_csv = export_table_to_csv(GetUnit, current_user_id, current_user_type)
         if unit_csv:
             zipf.writestr('units.csv', unit_csv)
             print("Exported units.csv")
 
         # Export the Attendance Records CSV
-        attendance_records_csv = export_attendance_records_csv()
+        attendance_records_csv = export_attendance_records_csv(current_user_id, current_user_type)
         if attendance_records_csv:
             zipf.writestr('attendancerecord.csv', attendance_records_csv)
             print("Exported attendancerecord.csv")
 
         # Export the Attendance Records CSV
-        attendance_records_columns = export_attendance_records_columns()
+        attendance_records_columns = export_attendance_records_columns(current_user_id, current_user_type)
         if attendance_records_columns:
             zipf.writestr('attendancerecordCOLUMNS.csv', attendance_records_columns)
             print("Exported attendancerecordCOLUMNS.csv")
 
     print(f"All tables have been exported to {zip_filename}")
+
+# Function to filter CSV files by unitCode
+def filter_exported_csv_by_unit(zip_filename, unit_code):
+    print(f"Filtering exported CSVs by unitCode: {unit_code}")
+
+    # Get the unit ID from the unitCode
+    unit_id = get_unit_id_by_code(unit_code)
+
+    if not unit_id:
+        print(f"No unit found for unitCode: {unit_code}")
+        return zip_filename
+
+    # Create a new ZIP file to store filtered CSVs
+    filtered_zip_filename = "filtered_" + zip_filename
+    with zipfile.ZipFile(zip_filename, 'r') as z, zipfile.ZipFile(filtered_zip_filename, 'w', zipfile.ZIP_DEFLATED) as filtered_zip:
+        # First load session.csv to map sessionID to unitID
+        session_data = None
+        if 'sessions.csv' in z.namelist():
+            with z.open('sessions.csv') as f:
+                session_data = pd.read_csv(f)
+                session_data = session_data[['sessionID', 'unitID']]  # Keep only sessionID and unitID columns
+
+        # Iterate over each file in the original zip
+        for file in z.namelist():
+            with z.open(file) as f:
+                df = pd.read_csv(f)
+
+                if 'unitCode' in df.columns:
+                    # Directly filter by unitCode
+                    df_filtered = df[df['unitCode'] == unit_code]
+                elif 'unitID' in df.columns:
+                    # Filter by unitID
+                    df_filtered = df[df['unitID'] == unit_id]
+                elif file == 'attendance.csv' and session_data is not None:
+                    # Filter attendance.csv by session's unitID
+                    if 'sessionID' in df.columns:
+                        # Merge attendance data with session data to get the unitID for each session
+                        df = df.merge(session_data, on='sessionID', how='left')
+                        df_filtered = df[df['unitID'] == unit_id]
+                    else:
+                        df_filtered = df  # If no sessionID column, leave unfiltered
+                else:
+                    # If no filtering is needed for this file, keep it as-is
+                    df_filtered = df
+
+                # Write the filtered DataFrame back to the new zip
+                csv_buffer = StringIO()
+                df_filtered.to_csv(csv_buffer, index=False)
+                filtered_zip.writestr(file, csv_buffer.getvalue())
+
+    print(f"Filtered CSVs by unitCode: {unit_code}, saved as {filtered_zip_filename}")
+    return filtered_zip_filename
+
+# Helper function to get the unitID from a unitCode
+def get_unit_id_by_code(unit_code):
+    unit = db.session.query(Unit).filter_by(unitCode=unit_code).first()
+    if unit:
+        return unit.unitID
+    return None
