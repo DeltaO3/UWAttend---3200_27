@@ -70,7 +70,7 @@ flask run
 ```
 This will host the application at http://127.0.0.1:5000
 
-## UWAttend Database Schema Documentation
+## Database Schema
 
 This database schema is designed to manage the different entities and relationships within the **UWAttend** system, such as users, sessions, units, attendance, and student information. Below is an explanation of the purpose of each table and its respective columns.
 
@@ -158,4 +158,12 @@ This database schema is designed to manage the different entities and relationsh
 ---
 
 ### 8. **user Table**
-- **Purpose**: This table stores information about the users of th
+- **Purpose**: This table stores information about the users of the system, including administrators, coordinators, and facilitators. Each user has a role and login credentials.
+- **Columns**:
+  - `userID`: The unique identifier for each user.
+  - `userType`: The type of user (e.g., admin, coordinator, facilitator).
+  - `firstName`: The first name of the user.
+  - `lastName`: The last name of the user.
+  - `passwordHash`: The hashed password used for login authentication.
+  - `email`: The email address of the user (unique).
+  - `token`: Optional field for storing a session or authentication token.
