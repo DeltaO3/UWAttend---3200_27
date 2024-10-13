@@ -584,15 +584,16 @@ def addunit():
         unit_id = AddUnit(newunit_code, unit_name, semester, start_date, end_date, 
                 sessionnames, occurences, commentsenabled , assessmentcheck, consent_required, commentsuggestions )
         
+        AddUnitToFacilitator(current_user.email, unit_id)
+        AddUnitToCoordinator(current_user.email, unit_id)
+        
         #Add from csv
         #TODO: handle emailing facilitators - should go in the correct process csv function
         import_student_in_db(s_data, unit_id)
         error = import_facilitator_in_db(f_data, unit_id, current_user)
         if error == 0:
-            flask.flash("Error, invalid email address in facilitators", 'error')
+            flask.flash("Invalid email address in facilitators csv. The unit has been uploaded but check facilitators", 'error')
             return flask.render_template('addunit.html', form=form)
-        AddUnitToFacilitator(current_user.email, unit_id)
-        AddUnitToCoordinator(current_user.email, unit_id)
         
         return flask.redirect(flask.url_for('unitconfig'))
 	    
