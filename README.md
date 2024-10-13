@@ -44,7 +44,7 @@ DATABASE_PASSWORD="insert_password_here"
 ```
 *Note: replace `"insert_secret_key_here"` and `"insert_password_here"` with your desired values*
 
-- `SECRET_KEY` - The key to initalise SQLalchemy
+- `SECRET_KEY` - The key to initialise SQLalchemy
 - `DATABASE_PASSWORD` - The password that will be used to encrypt `app.db`
 
 ### Database Setup
@@ -167,3 +167,38 @@ This database schema is designed to manage the different entities and relationsh
   - `passwordHash`: The hashed password used for login authentication.
   - `email`: The email address of the user (unique).
   - `token`: Optional field for storing a session or authentication token.
+
+## Project File Summary
+
+### `createadmin.py`
+This script is responsible for creating an admin user in the system, initialising the required administrator account for the application.
+
+### `database.py`
+Handles the configuration and connection to the database, including initialising the database models and performing database-related tasks.
+
+### `forms.py`
+Contains the form definitions used throughout the application, typically with Flask-WTF, for handling form validation and user inputs on the frontend.
+
+### `helpers.py`
+Includes utility functions or helper methods that perform common tasks needed across the application, such as formatting or shared logic.
+
+### `__init__.py`
+Initialises the Flask app and sets up configurations, routing, and extensions. This is the entry point for the app's core setup.
+
+### `models.py`
+Defines the data models (tables) for the application using an ORM (like SQLAlchemy). This file contains the structure for the database tables and relationships.
+
+### `routes.py`
+Defines the routes or endpoints for the web application. It maps URLs to their corresponding view functions, handling requests and responses.
+
+### `static`
+Contains static files such as JavaScript, CSS, and other resources (e.g., CSV templates). These files are used to enhance the frontend of the application.
+
+### `templates`
+Houses all the HTML files used in the application, following the Jinja2 templating system. These templates define the structure and layout of the web pages rendered by the Flask app.
+
+### `testdb.py`
+A script for initialising or populating the database with test data.
+
+### `utilities.py`
+Contains utility functions specific to various parts of the application, such as data processing, reading files, or performing operations that don't fit directly into the models or routes.
