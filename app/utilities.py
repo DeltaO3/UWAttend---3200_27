@@ -40,19 +40,19 @@ def import_student_in_db(data, unit_id):
     unit = unit[0]
 
     for record in data:
-        student_number = record['Person ID']
-        
+
+        student_number = record['Student ID']
         if student_exists(student_number, unit_id):
             print(f"Duplicate found: {record['Given Names']} {record['Surname']} (ID: {student_number}) - Skipping import.")
             continue
 
         # Call the AddStudent function from database.py
         AddStudent(
-            studentNumber=record['Person ID'],
+            studentNumber=record['Student ID'],
             firstName=record['Given Names'],
             lastName=record['Surname'],
             title=record['Title'],
-            preferredName=record['Preferred Given Name'],
+            preferredName=record['Preferred Name'],
             unitID=unit_id,  # Assuming a default unit ID, replace as needed
             consent='no' if unit.consent else 'not required' # Setting consent to no as per your requirements
         )
