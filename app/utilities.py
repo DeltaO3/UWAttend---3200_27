@@ -62,8 +62,9 @@ def import_student_in_db(data, unit_id):
 
 def import_facilitator_in_db(data, unit_id, current_user):
 
-    for record in data:
+    for record in data:        
         facilitator = record['Facilitator Email']
+        
         #Add facilitator as user if not in DB
         if(not GetUser(email=facilitator)):
             temp_password = generate_temp_password()
@@ -95,16 +96,13 @@ def process_csvs(student_file_path, facilitator_file_path):
         if s_data and f_data:
             # Import the data to the database
             #Ensure passed csv file is correct type 
-            errors = []
-            if len(s_data[0]) != 5:
-                print("Not a student csv!")
-                errors.append("Student csv format is incorrect")
-            if len(f_data[0]) != 1:
-                print("Not a facilitator csv!")
-                errors.append("Facilitator csv format is incorrect")
+            errors = validate_csv_headers(s_data[0], f_data[0])
+
             if errors:
-                msg = errors[0] if len(errors) == 1 else errors[0] + ", " + errors[1]
-                return 0, 0, msg
+                msg = ''
+                for error in errors :
+                    msg += error + ', '
+                return 0, 0, msg[:-2]
             return s_data, f_data, 0 #return value for routes validation
         if s_data and facilitator_file_path is None:
             if len(s_data[0]) != 5:
@@ -112,6 +110,32 @@ def process_csvs(student_file_path, facilitator_file_path):
                 return 0, "Student csv format is incorrect"
             else:
                 return s_data, 0
+
+# checks if headers are correct based on first row only
+def validate_csv_headers(s_data_row, f_data_row) :
+
+    errors = []
+
+    if len(s_data_row) != 5:
+        print("Not a student csv!")
+        errors.append("Student csv format is incorrect")
+    if len(f_data_row) != 1:
+        print("Not a facilitator csv!")
+        errors.append("Facilitator csv format is incorrect")
+
+    student_headers = ["Student ID", "Surname", "Title", "Given Names", "Preferred Name"]
+    factilitator_headers = ["Facilitator Email"]
+
+    for header in student_headers :
+        if header not in s_data_row :
+            errors.append(f"{header} header not detected in student csv")
+
+    for header in factilitator_headers :
+        if header not in f_data_row :
+            errors.append(f"{header} header not detected in facilitator csv")
+
+    return errors
+
 
 # Export a single table's data to a CSV format and return it as a string
 def export_table_to_csv(fetch_function, current_user_id, current_user_type):

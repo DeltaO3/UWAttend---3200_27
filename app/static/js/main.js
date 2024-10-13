@@ -74,5 +74,5 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
 
 //Closes an alert 3 seconds after it pops up
 setTimeout(function () {
-    $('.alert:not(#serverAlert)').alert('close');
+    $('.alert:not(#serverAlert,#addUnitErrorMsgAlert)').alert('close');
 }, 3000); 

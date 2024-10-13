@@ -52,10 +52,13 @@ def password_check(form, field):
     if form.password1.data != form.password2.data:
         raise ValidationError("Passwords do not match")
 
+
 def date_check(form, field):
-	print(f"checking date validity, {form.startdate.data}, {form.enddate.data}")
-	if form.startdate.data > form.enddate.data:
-		raise ValidationError("Start date must be before end date")
+    print(f"checking date validity, {form.startdate.data}, {form.enddate.data}")
+    if form.startdate.data is not None and form.enddate.data is not None :
+        if form.startdate.data > form.enddate.data :
+            raise ValidationError("Start date must be before end date")
+
     
 def is_student_num(form, field):
     if len(form.studentNumber.data) != 8 and not any(c.isdigit() for c in form.studentNumber.data):

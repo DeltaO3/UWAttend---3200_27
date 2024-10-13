@@ -16,7 +16,6 @@ usertype=os.getenv("USERTYPE")
 #uses email as that is unique.
 with app.app_context():
 	if(not GetUser(email=email)):
-		print("adding admin to database")
 		AddUser(email, firstname, lastname, password, usertype)
 		admin = GetUser(email=email)
 		# print(f"{admin.firstName} {admin.lastName} {admin.userID} is now in database")
