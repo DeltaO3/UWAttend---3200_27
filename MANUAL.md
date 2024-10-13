@@ -2,9 +2,11 @@
 
 Welcome to the UWAttend Web Application. This user manual will guide you through the primary functions of the website, including how to navigate the Home Page, Session Configuration, Unit Configuration, and the Administrator Page.
 
+\newpage
+
 ## Navbar
 
-[Insert navbar here]
+![Navbar](images/navbar.png){ width=50% }
 
 The navigation bar is displayed at the top of your screen. This is the primary way to navigate through different sections of UWAttend. The navbar contains the following information:
 
@@ -17,7 +19,7 @@ The navigation bar is displayed at the top of your screen. This is the primary w
 
 ## Session Configuration
 
-[Insert session config page here]
+![Session Config](images/sessionconfig.png)
 
 This is the page you will be greeted at when you first log into UWAttend. The session configuration page allows facilitators to set up a new session for a course. A *session* refers to a specific class event (e.g., a lab, tutorial or workshop) linked to a unit (course), where attendance is recorded. This page is crucial for setting up the details of the session before students can sign in or out.
 
