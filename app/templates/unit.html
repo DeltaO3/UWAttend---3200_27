@@ -2,11 +2,10 @@
 {% block content %}
 
 <!-- Flash Messages -->
-
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
 {% for category, message in messages %}
-{%if category == 'error'%}
+{% if category == 'error' %}
 <div class="alert alert-danger alert-dismissable fade show d-flex justify-content-between" role="alert">
     {{ message }}
     <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -17,14 +16,20 @@
     <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 {% endif %}
-{% endfor %} {% endif %} {% endwith %}
+{% endfor %}
+{% endif %}
+{% endwith %}
 
-<div class="container-fluid ">
+<div class="container-fluid">
     <div class="mt-2 mx-md-5 mx-2">
         <h2>Unit Configuration</h2>
         <div class="d-flex justify-content-around mt-3">
+            <!-- "Add Unit" Button -->
             <a href="{{ url_for('addunit') }}" class="btn btn-success col-4">Add Unit</a>
-            <a href="{{ url_for('export_data') }}" class="btn btn-primary col-4">Export Database</a>
+            <!-- "Export All" Button -->
+            <form method="GET" action="{{ url_for('export_data') }}" class="col-4">
+                <button type="submit" class="btn btn-primary w-100">Export All Units</button>
+            </form>
         </div>
     </div>
 
@@ -37,6 +42,7 @@
                 <span class="col">Study Period</span>
                 <span class="col">Start Date</span>
                 <span class="col">End Date</span>
+                <span class="col">Actions</span> <!-- New column for the Export button -->
             </div>
             {% endif %}
         </div>
@@ -46,18 +52,24 @@
         <div class="mx-4 mt-0 mx-md-5 container" id="unitTable">
             {% if units|length > 0 %}
             {% for unit in units %}
-            <!-- onlick re-route to student page for this specific student -->
+            <!-- Unit Row with Export Button for each unit -->
             <div class="row table-element text-center my-2 py-2"
-                onclick="location.href='{{ url_for('updateunit') +'?id='+unit.unit_id }}'">
-                <!-- ^ This is fine :) (url_for reads inside the bracket seperately, so the '' do not interfere) -->
+                 onclick="location.href='{{ url_for('updateunit') + '?id='+unit.unit_id }}'">
                 <span class="col-md col-6">{{ unit.code }}</span>
                 <span class="col-md col-6">{{ unit.name }}</span>
                 <span class="col-md d-none d-md-inline">{{ unit.study_period }}</span>
                 <span class="col-md d-none d-md-inline">{{ unit.start_date }}</span>
                 <span class="col-md d-none d-md-inline">{{ unit.end_date }}</span>
+                <!-- Export Button for each Unit -->
+                <span class="col-md col-12">
+                    <form method="GET" action="{{ url_for('export_data') }}">
+                        <input type="hidden" name="unitCode" value="{{ unit.code }}">
+                        <button type="submit" class="btn btn-primary">Export</button>
+                    </form>
+                </span>
             </div>
             {% else %}
-            <h2 class="text-center"> No current units</h2>
+            <h2 class="text-center">No current units</h2>
             {% endfor %}
             {% endif %}
         </div>

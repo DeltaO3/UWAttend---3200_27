@@ -12,6 +12,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 import os
 from datetime import datetime, date
 import sqlalchemy as sa
+import pandas as pd
 
 # HOME -   /home/
 @app.route('/', methods=['GET'])
@@ -246,7 +247,7 @@ def checksessionexists():
 def unitconfig():
     if current_user.userType == 'facilitator':
         return flask.redirect('home')
-    
+
     units_list = current_user.unitsCoordinate
 
     # Create a list to hold unit information
@@ -263,7 +264,7 @@ def unitconfig():
             "unit_id": str(unit.unitID)
         }
         units_data.append(unit_info)
-    
+
     return flask.render_template('unit.html', units=units_data)
 
 #UPDATE UNIT FORM
@@ -477,7 +478,6 @@ def deleteFacilitator():
     return flask.redirect(url_for('editFacilitators', id=unit_id))
 
 
-
 # add users
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
@@ -592,18 +592,36 @@ def addunit():
 	    
     return flask.render_template('addunit.html', form=form)
 
-@app.route('/export', methods=['GET'])
+@app.route('/export', methods=['GET', 'POST'])
 @login_required
 def export_data():
     print("Attempting to Export Database...")
     zip_filename = 'database.zip'
 
+    unit_code = flask.request.args.get('unitCode') or flask.request.form.get('unitCode')
+    print("this is the unit code:")
+    print(unit_code)
+
     # Get database.zip filepath
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     zip_path = os.path.join(project_root, zip_filename)
 
+    current_user_id = current_user.userID
+    current_user_type = current_user.userType
+
     # Call the function to export all data to the 'database.zip'
-    export_all_to_zip(zip_filename)
+    export_all_to_zip(zip_filename, current_user_id, current_user_type)
+
+    # If "All Units" is selected or no unitCode is provided, skip filtering
+    if unit_code and unit_code != 'all':
+        filtered_zip_filename = filter_exported_csv_by_unit(zip_filename, unit_code)
+
+        # Rename the filtered file to database.zip for consistent download name
+        filtered_zip_path = os.path.join(project_root, filtered_zip_filename)
+        print("Renamed file to database.zip")
+        if os.path.exists(filtered_zip_path):
+            os.rename(filtered_zip_path, zip_path)  # Rename to database.zip
+
 
     # Check if the file was created successfully
     if os.path.exists(zip_path):
