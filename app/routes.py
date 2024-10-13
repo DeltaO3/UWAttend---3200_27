@@ -22,7 +22,6 @@ def log_message(message):
     # Ensure logs directory exists
     if not os.path.exists('logs'):
         os.makedirs('logs')
-    print(current_user)
     # Format the log message with a timestamp
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
    
@@ -248,8 +247,7 @@ def checksessionexists():
         if new_session is not None :
             log_message("Session already exists. Joining existing session.")
             facilitatorNames = GetFacilitatorNamesForSession(new_session.sessionID)
-            for f in facilitatorNames :
-                print(f)
+            
             return flask.jsonify({'result': "true", 'facilitatorNames': facilitatorNames})
         
         else :
@@ -314,7 +312,6 @@ def updateunit():
         session_occurence_name = "Morning/Afternoon"
     else:
         session_occurence_name = "Hours"
-    print(session_occurence_name)
 
     # Initialize the form with the existing unit data as defaults
     if flask.request.method != 'POST':
@@ -350,7 +347,6 @@ def updateunit():
         commentSuggestions = form.comments.data
         sessionoccurence = form.sessionoccurence.data
 
-        print(sessionoccurence)
 
         #convert session occurences to a | string
         occurences = ""
@@ -627,8 +623,7 @@ def export_data():
     zip_filename = 'database.zip'
 
     unit_code = flask.request.args.get('unitCode') or flask.request.form.get('unitCode')
-    print("this is the unit code:")
-    print(unit_code)
+   
 
     # Get database.zip filepath
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -646,7 +641,6 @@ def export_data():
 
         # Rename the filtered file to database.zip for consistent download name
         filtered_zip_path = os.path.join(project_root, filtered_zip_filename)
-        print("Renamed file to database.zip")
         if os.path.exists(filtered_zip_path):
             os.rename(filtered_zip_path, zip_path)  # Rename to database.zip
 
@@ -871,7 +865,6 @@ def edit_student_details():
                 flask.flash(message, category='error')
                 student = GetStudent(studentID=form.student_id.data)
                 attendance_record = GetAttendance(input_sessionID=current_session.sessionID, studentID=form.student_id.data)
-                print(form.student_id.data)
                 if not student or not attendance_record:
                     return flask.redirect(flask.url_for('home'))
                 return flask.render_template('student.html', form=form, student=generate_student_info(student[0], attendance_record[0]), attendance=attendance_record[0])
