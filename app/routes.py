@@ -14,6 +14,31 @@ from datetime import datetime, date
 import sqlalchemy as sa
 import pandas as pd
 
+# Custom logging function
+def log_message(message):
+
+    client_ip = flask.request.remote_addr 
+    
+    # Ensure logs directory exists
+    if not os.path.exists('logs'):
+        os.makedirs('logs')
+    # Format the log message with a timestamp
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+   
+
+    if current_user.is_active:
+        formatted_message = f"{client_ip} {current_user.firstName} {current_user.lastName} {timestamp} - {message}\n"
+    else:
+        formatted_message = f"{client_ip} {timestamp} - {message}\n"
+    
+    # Write the log message to a file
+    with open('logs/app.log', 'a') as log_file:
+        log_file.write(formatted_message)
+
+    # Print the log message to the console
+    print(formatted_message)
+
+
 # HOME -   /home/
 @app.route('/', methods=['GET'])
 @app.route('/home', methods=['GET'])
@@ -29,6 +54,9 @@ def home():
 
     if not current_session:
         return redirect(url_for('session')) 
+
+    # log the neccessary info
+    log_message("/home - Session : " + current_session.sessionName)
 
     form = StudentSignInForm()
 
@@ -82,6 +110,8 @@ def home():
 @login_required
 def session():
 
+    log_message("/session")
+
     # if session already exists, redirect to /updatesession
     session_id = flask.session.get('session_id')
     existing_session = GetSession(session_id)
@@ -106,31 +136,24 @@ def session():
             session_time = form.session_time.data
             session_date = form.session_date.data
 
-            # Printing for debugging
-            print(f"Session Name: {session_name}")
-            print(f"Session Time: {session_time}")
-            print(f"Unit Id: {unit_id}")
-            print(f"Session Date: {session_date}")
+            log_message("/session Submitting form : " + "[" + str(session_name) + "] [" + str(session_time) + "] [" + str(unit_id) + "] [" + str(session_date) + "]" )
+            
 
             # Check if the session already exists
             current_session = GetUniqueSession(unit_id, session_name, session_time, session_date)
 
             if current_session is not None :
-                print("Session already exists.")
+                log_message("Session already exists.")
             else :
-                print("Session doesn't exist... creating new session.")
+                log_message("Session doesn't exist... creating new session.")
                 current_session = AddSession(unit_id, session_name, session_time, session_date)
                 if current_session is None :
-                    print("An error has occurred. The session was not created. Please try again.")
+                    log_message("An error has occurred. The session was not created. Please try again.")
                     return flask.redirect(flask.url_for('home'))
 
-            print("Current session details:")
-            print(f"Session name: {current_session.sessionName}")
-            print(f"Session time: {current_session.sessionTime}")
-            print(f"Session date: {current_session.sessionDate}")
+            
 
             flask.session['session_id'] = current_session.sessionID
-            print(f"Saving session id: {current_session.sessionID} to global variable")
 
             # Redirect back to home page with the session ID as a query parameter
             return flask.redirect(flask.url_for('home'))
@@ -145,7 +168,7 @@ def session():
 @app.route('/updatesession', methods=['GET', 'POST'])
 @login_required
 def updatesession():
-
+    log_message("/updatesession")
     # if session doesn't exist, redirect to /session
     current_session_id = flask.session.get('session_id')
     existing_session = GetSession(current_session_id)
@@ -166,28 +189,22 @@ def updatesession():
         session_time = form.session_time.data
         session_date = form.session_date.data
 
-        # Printing for debugging
-        print(f"Session Name: {session_name}")
-        print(f"Session Time: {session_time}")
-        print(f"Session Date: {session_date}")
-        print(f"Unit Id: {unit_id}")
+        log_message("/updatesession Submitting form : " + "[" + str(session_name) + "] [" + str(session_time) + "] [" + str(unit_id) + "] [" + str(session_date) + "]" )
+
 
         # Check if the session already exists
         new_session = GetUniqueSession(unit_id, session_name, session_time, session_date)
 
         if new_session is not None :
-            print("Session already exists. Joining existing session.")
+            log_message("Session already exists. Joining existing session.")
         else :
-            print("Session doesn't exist... creating new session with new details.")
+            log_message("Session doesn't exist... creating new session with new details.")
             new_session = AddSession(unit_id, session_name, session_time, session_date)
             if new_session is None :
-                print("An error has occurred. The session was not created. Please try again.")
+                log_message("An error has occurred. The session was not created. Please try again.")
                 return flask.redirect(flask.url_for('home'))
 
-        print("New session details:")
-        print(f"Session name: {new_session.sessionName}")
-        print(f"Session time: {new_session.sessionTime}")
-        print(f"Session date: {new_session.sessionDate}")
+        
 
         # Update attendance records with current session id and where facilitator is current user
         attendance_records = GetAttendanceByIDAndFacilitator(current_session_id, current_user.userID)
@@ -199,7 +216,6 @@ def updatesession():
 
         # Update session cookie
         flask.session['session_id'] = new_session.sessionID
-        print(f"Saving session id: {new_session.sessionID} to global variable")
 
         # Redirect back to home page
         return flask.redirect(flask.url_for('home'))
@@ -216,6 +232,8 @@ def updatesession():
 def checksessionexists():
     form = SessionForm()
 
+    log_message("/checksessionexists")
+
     if form.validate_on_submit():
         # Handle form submission
         unit_id = form.unit.data
@@ -223,23 +241,17 @@ def checksessionexists():
         session_time = form.session_time.data
         session_date = form.session_date.data
 
-        print(f"Session Name: {session_name}")
-        print(f"Session Time: {session_time}")
-        print(f"Session Date: {session_date}")
-        print(f"Unit Id: {unit_id}")
-
         # Check if the session already exists
         new_session = GetUniqueSession(unit_id, session_name, session_time, session_date)
 
         if new_session is not None :
-            print("Session already exists. Joining existing session.")
+            log_message("Session already exists. Joining existing session.")
             facilitatorNames = GetFacilitatorNamesForSession(new_session.sessionID)
-            for f in facilitatorNames :
-                print(f)
+            
             return flask.jsonify({'result': "true", 'facilitatorNames': facilitatorNames})
         
         else :
-            print("Session doesn't exist.")
+            log_message("Session doesn't exist.")
             return flask.jsonify({'result': "false" })
     
     else :
@@ -249,6 +261,9 @@ def checksessionexists():
 @app.route('/unitconfig', methods=['GET', 'POST'])
 @login_required
 def unitconfig():
+
+    log_message("/unitconfig")
+
     if current_user.userType == 'facilitator':
         return flask.redirect('home')
 
@@ -297,7 +312,6 @@ def updateunit():
         session_occurence_name = "Morning/Afternoon"
     else:
         session_occurence_name = "Hours"
-    print(session_occurence_name)
 
     # Initialize the form with the existing unit data as defaults
     if flask.request.method != 'POST':
@@ -333,7 +347,6 @@ def updateunit():
         commentSuggestions = form.comments.data
         sessionoccurence = form.sessionoccurence.data
 
-        print(sessionoccurence)
 
         #convert session occurences to a | string
         occurences = ""
@@ -486,6 +499,9 @@ def deleteFacilitator():
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
 def admin():
+
+    log_message("/admin")
+
     if current_user.userType != 'admin':
         return flask.redirect('home')
 
@@ -500,7 +516,7 @@ def admin():
 
         # if user doesn't exist, add them
         if user is None :
-            print(f"User added: {form.email.data}")
+            log_message("/admin submitting form : " + "[" + str(form.UserType.data) + "] [" + str(form.email.data) + "] [" + str(form.firstName.data) + "] [" + str(form.lastName.data) + "]")
             AddUser(userType=form.UserType.data, email=form.email.data, firstName="place holder", lastName="place holder", passwordHash="placeholder")
 
         return flask.redirect(flask.url_for('admin'))
@@ -513,6 +529,7 @@ def admin():
 @app.route('/addunit', methods=['GET', 'POST'])
 @login_required
 def addunit():
+    log_message("/addunit")
     if current_user.userType == 'facilitator':
         return flask.redirect('home')
     
@@ -534,7 +551,7 @@ def addunit():
         commentsenabled = form.commentsenabled.data
         commentsuggestions = form.comments.data 
 
-        print(f"session string: " + sessionnames + "; commentString: " + commentsuggestions) #Checking hidden form works
+        log_message("/addunit submitting form [" + str(form.unitcode.data) + "] [" + str(form.unitname.data) + "] [" + str(form.semester.data) + "]")
 
         #Validation occurs in flask forms with custom validators
         
@@ -545,27 +562,28 @@ def addunit():
         elif sessionoccurence == "Hours":
             occurences = "8am|9am|10am|11am|12pm|1pm|2pm|3pm|4pm|5pm|6pm"
         else:
-            print("No occurence, probable error")
+            log_message("/addunit No occurence, probable error")
             flask.flash("Error with session occurence", 'error')
             return flask.render_template('addunit.html', form=form)
-        print(f"session occurence string: {occurences}")
 
          #read CSV file
-        if student_file.filename != '':
+        if student_file.filename != '':            
+            
             student_filename = f"{newunit_code}_students.csv"
             student_file.save(student_filename)
-            print(f"Student filename: {student_filename}")
+            log_message("/addunit Student filename: " + str(student_filename))
         else:
-            print("Submitted no file, probable error.")
+            log_message("/addunit Submitted no file, probable error.")
             flask.flash("Error, no student file submitted", 'error')
             return flask.render_template('addunit.html', form=form)
         
         if facilitator_file.filename != '':
+            
             facilitator_filename = f"{newunit_code}_facilitators.csv"
             facilitator_file.save(facilitator_filename)
-            print(f"Facilitator filename: {facilitator_filename}")
+            log_message("/addunit Facilitator filename: " + str(facilitator_filename))
         else:
-            print("Submitted no file, probable error.")
+            log_message("/addunit Submitted no file, probable error.")
             flask.flash("Error, no facilitator file submitted", 'error')
             return flask.render_template('addunit.html', form=form)
      
@@ -602,12 +620,13 @@ def addunit():
 @app.route('/export', methods=['GET', 'POST'])
 @login_required
 def export_data():
-    print("Attempting to Export Database...")
+    log_message("/export")
+
+    log_message("/export Attempting to Export Database...")
     zip_filename = 'database.zip'
 
     unit_code = flask.request.args.get('unitCode') or flask.request.form.get('unitCode')
-    print("this is the unit code:")
-    print(unit_code)
+   
 
     # Get database.zip filepath
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -625,7 +644,6 @@ def export_data():
 
         # Rename the filtered file to database.zip for consistent download name
         filtered_zip_path = os.path.join(project_root, filtered_zip_filename)
-        print("Renamed file to database.zip")
         if os.path.exists(filtered_zip_path):
             os.rename(filtered_zip_path, zip_path)  # Rename to database.zip
 
@@ -636,14 +654,14 @@ def export_data():
         def delete_database(response):
             try:
                 os.remove(zip_path)
-                print("Temporary Database Deleted")
+                log_message("/export Temporary Database Deleted")
             except Exception as e:
-                print(f"Error removing Temporary Database: {e}")
+                log_message(str(e))
             return response
 
         # Serve the zip file for download
         response = send_file(zip_path, as_attachment=True)
-        print("Admin Successfully Exported Database")
+        log_message("/export Admin Successfully Exported Database")
         return response
 
     else:
@@ -655,6 +673,8 @@ def export_data():
 @app.route('/student', methods=['POST'])
 @login_required
 def student():
+    log_message("/student")
+
     form = AttendanceChangesForm()
 
     student_id = flask.request.form['student_id']
@@ -662,16 +682,17 @@ def student():
     student = GetStudent(studentID=student_id)
 
     if not student:
+        log_message("/student error student not found")
         flask.flash("Error - Student not found")
         return flask.redirect(flask.url_for('home'))
     
     student = student[0]
 
     session_id = flask.session.get('session_id')
-    print(f"Session ID as found in student : {session_id}")
     current_session = GetSession(sessionID=session_id)
 
     if not current_session:
+        log_message("/student Error loading session")
         flask.flash("Error loading session") 
         return flask.redirect(flask.url_for('home'))
     
@@ -680,6 +701,7 @@ def student():
     unit = GetUnit(unitID=current_session.unitID)
 
     if not unit:
+        log_message("/student Error loading unit")
         flask.flash("Error loading unit") 
         return flask.redirect(flask.url_for('home'))
     
@@ -690,8 +712,7 @@ def student():
     attendance_record = GetAttendance(input_sessionID=current_session.sessionID, studentID=student_id)[0] 
 
     student_info = generate_student_info(student, attendance_record)
-    print("comments", student_info["comments"])
-    print("consent", student.consent)
+    
 
     # check if consent, comments and marks are required
     consent_required = GetUnit(unitID=current_session.unitID)[0].consent
@@ -707,6 +728,8 @@ def student():
 @app.route('/remove_from_session', methods=['GET'])
 @login_required
 def remove_from_session():
+
+    log_message("/remove_from_session")
     # Access form data
     student_id = flask.request.args.get('student_id')
 
@@ -715,6 +738,7 @@ def remove_from_session():
     current_session = GetSession(session)
 
     if not current_session:
+        log_message("/remove_from_session Error loading session")
         flask.flash("Error loading session") 
         return flask.redirect(flask.url_for('home'))
     
@@ -723,8 +747,10 @@ def remove_from_session():
     status = RemoveStudentFromSession(student_id, current_session.sessionID)
 
     if status:
+        log_message("/remove_from_session student removed from session")
         flask.flash("Student removed from session")
     else:
+        log_message("/remove_from_session Error removing student from session")
         flask.flash("Error removing student from session")
         
     return flask.redirect(flask.url_for('home'))
@@ -732,6 +758,7 @@ def remove_from_session():
 # CREATE ACCOUNT - /create_account
 @app.route('/create_account', methods=['GET', 'POST'])
 def create_account():
+    log_message("/create_account")
     if current_user.is_authenticated:
         return flask.redirect('home')
     
@@ -742,7 +769,7 @@ def create_account():
         #feels unsafe, feel free to change some things. 
         email = form.firstName.data + "@placeholder.com"
         AddUser(email, form.firstName.data, form.lastName.data, form.password2.data, "facilitator" )
-        print(f"Added user" + form.firstName.data)
+        log_message("/create_account Added user" + str(form.firstName.data))
         login_user(GetUser(email = email))
         return flask.redirect(flask.url_for('home'))
     
@@ -751,6 +778,7 @@ def create_account():
 #FORGOT PASSWORD - /forgot_password
 @app.route('/forgot_password', methods=['GET'])
 def forgot_password():
+    log_message("/forgot_password")
     if current_user.is_authenticated:
         return flask.redirect('home')
     #TODO: add backend logic for email
@@ -759,13 +787,14 @@ def forgot_password():
 #RESET PASSWORD - /reset_password
 @app.route('/reset_password', methods=['GET', 'POST'])
 def reset_password():
+    log_message("/reset_password")
     if current_user.is_authenticated:
         return flask.redirect('home')
     
     form = ResetPasswordForm()
     if form.validate_on_submit():
         #TODO: add email into logic (similar to what create account does)
-        print("resetting password...")
+        log_message("/reset_password resetting password...")
         SetPassword("admin@admin.com", form.password2.data)
         flask.flash('Password changed successfully', category="success")
         return flask.redirect(flask.url_for('login'))
@@ -776,9 +805,9 @@ def reset_password():
 # LOGIN - /login/ 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    
+    log_message("/login")
     if current_user.is_authenticated:
-        print("authenticated")
+        log_message("/login authenticated")
         return flask.redirect('home')
     
     form = LoginForm()
@@ -786,6 +815,7 @@ def login():
         user = database.GetUser(email = form.username.data)                
 
         if user is None or not user.is_password_correct(form.password.data):
+            log_message("/login invalid password or username")
             flask.flash('Invalid username or password', category="error")
             return flask.redirect('login')
         
@@ -797,7 +827,7 @@ def login():
 @app.route('/edit_student_details', methods=['POST'])
 @login_required
 def edit_student_details():
-
+    log_message("/edit_student_details")
     form = AttendanceChangesForm()
 
     session = flask.session.get('session_id')
@@ -805,6 +835,7 @@ def edit_student_details():
     current_session = GetSession(session)
 
     if not current_session:
+        log_message("/edit_student_details Error loading session")
         flask.flash("Error loading session") 
         return flask.redirect(flask.url_for('home'))
     
@@ -831,12 +862,12 @@ def edit_student_details():
             message = EditAttendance(**update_data)   
 
             if message == "True":
+                log_message("/edit_student_details Updated")
                 flask.flash("Student details updated", category='success')
             else:
                 flask.flash(message, category='error')
                 student = GetStudent(studentID=form.student_id.data)
                 attendance_record = GetAttendance(input_sessionID=current_session.sessionID, studentID=form.student_id.data)
-                print(form.student_id.data)
                 if not student or not attendance_record:
                     return flask.redirect(flask.url_for('home'))
                 return flask.render_template('student.html', form=form, student=generate_student_info(student[0], attendance_record[0]), attendance=attendance_record[0])
@@ -846,6 +877,7 @@ def edit_student_details():
 @app.route('/add_student', methods=['POST'])
 @login_required
 def add_student():
+    log_message("/add_student")
     form = StudentSignInForm() # TODO still need a front-end prevention method for false sign ins 
 
     if form.validate_on_submit():
@@ -854,14 +886,13 @@ def add_student():
         consent_status = form.consent_status.data
         # sessionID = form.sessionID.data
 
-        print(f'{studentID} consent as given in form: {consent_status}')
 
         session_id = flask.session.get('session_id')
-        print("Session ID as found in add_student : ", session_id)
 
         session = GetSession(sessionID=session_id)
 
         if not session:
+            log_message("/add_student Error loading session")
             flask.flash("Error loading session") 
             return flask.redirect(flask.url_for('home'))
         
@@ -892,6 +923,7 @@ def add_student():
             unit = GetUnit(unitID=unitID)
 
             if not unit :
+                log_message("/addstudent Error loading unit details")
                 flask.flash("Error loading unit details")
                 return flask.redirect(flask.url_for('home'))
             
@@ -902,11 +934,12 @@ def add_student():
 
             # Add attendance for the current session
             AddAttendance(sessionID=session_id, studentID=studentID, consent_given=student.consent, facilitatorID=current_user.userID)
-            print(f"Logged {student.preferredName} {student.lastName} in")
+            log_message("Logged " + str(student.preferredName) + " " + str(student.lastName) + "in")
 
             return flask.redirect(flask.url_for('home'))
 
         else:
+            log_message("/addstudent Invalid student information")
             flask.flash("Invalid student information", 'error')
 
     # Redirect back to home page when done
@@ -914,7 +947,9 @@ def add_student():
 
 @app.route('/get_session_details/<unitID>')
 @login_required
-def get_session_details(unitID) :
+def get_session_details(unitID):
+
+    log_message("/get_session_details "+ str(unitID))
 
     # get unit by unitID
     unit = GetUnit(unitID=unitID)
@@ -938,9 +973,6 @@ def get_session_details(unitID) :
     for time in session_times :
         session_time_choices.append(time)
 
-    print(f"Sending session details for {unit[0].unitCode}")
-
-    print(f"session time default: {session_time_default}")
 
     # send session details
     return flask.jsonify({'session_name_choices': session_name_choices, 'session_time_choices': session_time_choices, 'session_time_default': session_time_default})
@@ -948,6 +980,7 @@ def get_session_details(unitID) :
 @app.route('/student_suggestions', methods=['GET'])
 @login_required
 def student_suggestions(): 
+    log_message("/student_suggestions")
     # get the search query from the request
     query = flask.request.args.get('q', '').strip().lower()
 
@@ -955,7 +988,7 @@ def student_suggestions():
     session_id = flask.session.get('session_id')
     current_session = GetSession(sessionID=session_id)[0] 
     unit = GetUnit(unitID=current_session.unitID)[0]
-    print(unit.consent)
+    
 
     # get students in the unit associated with the session
     students = GetStudent(unitID=current_session.unitID)
@@ -1007,6 +1040,7 @@ def student_suggestions():
 @app.route('/logout')
 @login_required
 def logout():
+    log_message("/logout")
     removeSessionCookie()
     logout_user()
     return flask.redirect(flask.url_for('login'))
@@ -1014,14 +1048,17 @@ def logout():
 @app.route('/sign_all_out', methods=['POST'])
 @login_required
 def sign_all_out():
+    log_message("/sign_all_out")
     session_id = flask.session.get('session_id')
 
     session = GetSession(sessionID=session_id)
     if not session:
+        log_message("/sign_all_out Invalid session key")
         flask.flash('Failed to sign out all users - invalid session key')
 
     attendance_records = GetAttendance(input_sessionID=session_id)
     if not attendance_records:
+        log_message("/sign_all_out no users signed in")
         flask.flash('Failed to sign out all users - no users signed in')
 
     current_time = get_perth_time().time() # did this so that they all have an identical sign out time
@@ -1033,17 +1070,18 @@ def sign_all_out():
     db.session.commit()
         
 
-    print("Successfully signed out all users")
+    log_message("/sign_all_out Successful")
     return flask.redirect(flask.url_for('home'))
 
 @app.route('/download_facilitator_template')
 def download_facilitator_template():
-    print("Sending facilitator template")
+    log_message("/download_facilitator_template")
     # Serve the facilitator template from the static folder or any desired directory
     return flask.send_from_directory('static/files', 'facilitator_template.csv', as_attachment=True)
 
 @app.route('/download_student_template')
 def download_student_template():
+    log_message("/download_student_template")
     print("Sending student template")
     # Serve the student template from the static folder or any desired directory
     return flask.send_from_directory('static/files', 'student_template.csv', as_attachment=True)
@@ -1055,6 +1093,7 @@ def check_status():
 @app.route('/exitSession', methods=['GET'])
 @login_required
 def exitSession():
+    log_message("/exitSession")
     removeSessionCookie()
     return flask.redirect(url_for('session'))
 

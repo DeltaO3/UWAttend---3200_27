@@ -29,10 +29,8 @@ def get_perth_time():
 def check_unit_is_current(unit) :
     current_date = get_perth_time().date()
     if current_date > unit.endDate or current_date < unit.startDate :
-        print(f"not showing {unit.unitCode} as it is not current")
         return False
     else :
-        print(f"showing {unit.unitCode} as it is current")
         return True
 
 def set_session_form_select_options(form):
@@ -124,15 +122,12 @@ def set_updatesession_form_select_options(current_session, current_unit, form):
 def get_time_suggestion(session_times) :
 
     current_time = get_perth_time().time()
-    print(f"current time: {current_time}")
 
     for session_time in session_times :
         if session_time in sessionTimeDefinitions :
             if current_time >= sessionTimeDefinitions[session_time][0] and current_time <= sessionTimeDefinitions[session_time][1] :
-                print(f"suggesting {session_time} as likely time")
                 return session_time
 
-    print("no appropriate suggestions for time found")
     return None
 
 def generate_student_info(student, attendance_record):

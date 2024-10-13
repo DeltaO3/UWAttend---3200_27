@@ -1,3 +1,4 @@
+import logging
 from flask import Flask
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
@@ -5,6 +6,11 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_apscheduler import APScheduler
 from sqlalchemy import MetaData
+
+# Disable Werkzeug logger before Flask app creation
+log = logging.getLogger('werkzeug')
+log.disabled = True
+
 
 convention = {
     "ix": 'ix_%(column_0_label)s',
@@ -39,3 +45,5 @@ scheduler.add_job(
     trigger='interval',  
     hours=24  
 )
+
+

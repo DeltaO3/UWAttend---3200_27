@@ -38,8 +38,6 @@ class User(UserMixin, db.Model):
         return str(self.userID)
     
     def is_password_correct(self, password_plaintext: str):
-        print(password_plaintext)
-        print(self.passwordHash)
         return check_password_hash(self.passwordHash, password_plaintext)
 
     def set_password(self, password_plaintext: str):
