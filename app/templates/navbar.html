@@ -13,7 +13,7 @@
 			<!-- Left side -->
 			<div class="navbar-nav nav-underline col-lg-8 col-md-9">
 				<!-- Home link (everyone can see this) -->
-				<a class="nav-link {% if request.path == url_for('home') or request.path == '/' %}active"
+				<a class="nav-link {% if not session['session_id'] %}disabled{% endif %}{% if request.path == url_for('home') or request.path == '/' %}active"
 					aria-current="page {% endif %}" href="{{ url_for('home') }}">
 					Home
 				</a>
