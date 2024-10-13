@@ -1,8 +1,8 @@
+\newpage
+
 # UWAttend User Manual
 
 Welcome to the UWAttend Web Application. This user manual will guide you through the primary functions of the website, including how to navigate the Home Page, Session Configuration, Unit Configuration, and the Administrator Page.
-
-\newpage
 
 ## Navbar
 
@@ -53,13 +53,11 @@ Once you have filled out your session details. You can click the **Configure** b
 ### Overview
 
 
-[Insert home page here]
+![Home Page](images/homepage.png){ width=100% }
 
 The Home Page serves as the central dashboard where facilitators manage the session in progress, sign in and out students and access student information.
 
 ### Session Information Display
-
-[Insert session display here]
 
 At the top of the page, the current session title is prominently displayed. This includes details such as:
 
@@ -73,7 +71,7 @@ This information help facilitators keep track of which session they are managing
 
 ### Signing Individual Students In/Out
 
-[Insert search bar here]
+![Search Bar](images/search.png){ width=80% }
 
 To sign in a student, use the search bar with the submit button to type in the student you want to sign in. You can search for a student by the following criteria:
 
@@ -83,7 +81,7 @@ To sign in a student, use the search bar with the submit button to type in the s
 
 A student who is not signed into the current session will be highlighted **GREEN** to indicate you are signing this student in. A student who is signed into the current session will be highlighted **RED** to indicate you are signing this student out.
 
-[insert green and red student here]
+![Green and Red Students](images/greenred.png){ width=80% }
 
 Once a student is selected to be signed in, you may be prompted to ask the student if they consent to their photograph being taken in this class. If the student agrees then select **YES**. If they do not then select **NO**. If selected no, you will prompted to ask again everytime this student attends the class again.
 
@@ -91,9 +89,11 @@ As you sign in students, the page will update to show how many students have sig
 
 To sign out a student, use the same search bar with the submit button and type in the student you want to sign out. A message will appear saying you have signed out this student. 
 
+\newpage
+
 ### Viewing Student Information
 
-[insert student page here]
+![Student Page](images/studentpage.png){ width=80% }
 
 Once a student has been signed in, you can click on each student's name from that list that appears. This will bring up a page which allows facilitators to review and update details related to individual students within a session. 
 
@@ -114,13 +114,11 @@ You may wish to save any changes you made on this page by clicking the "Save Cha
 
 ### Class List Search
 
-[Insert search here]
+![Class List Search](images/classlist.png){ width=80% }
 
 If the class list is long and you wish to search for a student who is signed in the class, you can use the class list search bar. This will filter out a student by either their name or student ID.
 
 ### Sign All Students Out
-
-[insert button here]
 
 At the bottom of the page is a "Sign All Out" button. This allows the facilitator to sign out all students in the session simultaneously, which is useful at the end of a session.
 
@@ -131,7 +129,7 @@ Once the session has concluded or you wish to leave your current session, you ca
 
 ## Unit Configuration (Coordinators and Admin ONLY)
 
-[Insert Unit Configuration page here]
+![Unit Configuration](images/unitconfig.png){ width=80% }
 
 This page is used to manage units (courses) within UWAttend. Only **coordinators** and **administrators** have access to this page, allowing them to add, configure and export data for the units they manage. 
 
@@ -144,10 +142,9 @@ You will see a list of all the units that you, as a coordinator or administrator
 - **Start Date**: The date of when the unit begins.
 - **End Date**: The date for when the unit ends.
 
+\newpage
+
 ### Exporting Unit Data
-
-[Insert Export buttons here]
-
 
 For each unit, you have the ability to export all the related information into CSV  files. There are two options for exporting unit information from UWAttend:
 
@@ -165,10 +162,12 @@ The following files will be generated when exporting if they are populated:
 - **attendancerecord.csv**: Displays a list of all the attendance records for the unit. Each row in the list will be an attendance record. This list is more human readable and should be used when coordinators are examining information about students attendance in a unit.
 - **attendancerecordCOLUMNS.csv**: Displays a list of all the attendance records for the unit. Each row in the list will be a unique student and each column will contain information for each session time. Again, more human readable and should be used when coordinators are examining information about students attendance in a unit. 
 
+\newpage
+
 ### Adding New Units
 Clicking the **Add Unit** button will take you to a new page where you will be able to configure a new unit.
 
-[Insert add unit page here]
+![Add Unit Page](images/addunit.png){ width=80% }
 
 In the form, you will need to enter the following details:
 
@@ -192,7 +191,7 @@ In the form, you will need to enter the following details:
 
 Clicking a unit in the list will take you to a new page where you will be able to edit a preexisting unit.
 
-[Insert edit page here]
+![Edit Unit Page](images/editunit.png){ width=80% }
 
 In the form, you can edit the following details:
 
@@ -213,7 +212,7 @@ In the form, you can edit the following details:
 ### Edit Students for each unit
 Clicking the **Edit Students** button when editing an existing unit will take you to a new page where you can see all the students currently enrolled in the unit.
 
-[Insert editstudents here]
+![Edit Student List](images/editstudents.png){ width=80% }
 
 #### Student List for Unit
 
@@ -236,7 +235,7 @@ If you want to add a single student to a unit, you can fill in the **Add Student
 ### Edit Facilitators for each unit
 Clicking the **Edit Facilitators** button when editing an existing unit will take you to a new page where you can see all the facilitators currently enrolled in the unit.
 
-[Insert editfacilitator here]
+![Edit Facilitator List](images/editfacilitators.png){ width=100% }
 
 #### Facilitator List for Unit
 
@@ -245,7 +244,11 @@ The page will display a list of all the facilitators currently enrolled in the u
 #### Add Facilitator
 If you want to add a facilitator, type in the email address for the facilitator you want to add to the unit. This will send them an email asking them to create their account for UWAttend. Once created, they will be added as a facilitator for the unit.
 
+\newpage
+
 ## Administration Page (Admins ONLY)
+
+![Admin Page](images/adminpage.png){ width=100% }
 
 This page allows administrators to manage users within the system by adding new users and viewing existing ones.
 
