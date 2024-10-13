@@ -41,6 +41,14 @@ UWAttend utilises secret keys located in `.env` for security purposes. Create a 
 ``` shell
 SECRET_KEY="insert_secret_key_here"
 DATABASE_PASSWORD="insert_password_here"
+
+# Optional Admin Account Variables if you want to add an extra admin user
+EMAIL="sampleemail@gmail.com"
+FIRSTNAME="John"
+LASTNAME="Smith"
+PASSWORD="password"
+USERTYPE="admin"
+
 ```
 *Note: replace `"insert_secret_key_here"` and `"insert_password_here"` with your desired values*
 
@@ -58,6 +66,12 @@ flask db upgrade
 
 ``` shell
 python3 -m app.testdb
+```
+
+3. Add any additional admins to the database (OPTIONAL)
+
+``` shell
+python3 -m app.createadmin.py
 ```
 
 ## Running UWAttend

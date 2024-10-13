@@ -49,6 +49,8 @@ You will be prompted to configure the session details for your class. Fill out d
 
 Once you have filled out your session details. You can click the **Configure** button which will redirect you to the **Home Page**.
 
+If the session you are configuring already exists and has students signed in, you will be prompted with an alert that you are entering a session with another facilitator
+
 ## Home Page
 ### Overview
 
@@ -85,7 +87,7 @@ A student who is not signed into the current session will be highlighted **GREEN
 
 Once a student is selected to be signed in, you may be prompted to ask the student if they consent to their photograph being taken in this class. If the student agrees then select **YES**. If they do not then select **NO**. If selected no, you will prompted to ask again everytime this student attends the class again.
 
-As you sign in students, the page will update to show how many students have signed in and how many are expected to attend (e.g., "10 signed in of 10").
+As you sign in students, the page will update to show how many students thar are currently signed in and how many are currently logged in the class list (e.g., "10 signed in of 10").
 
 To sign out a student, use the same search bar with the submit button and type in the student you want to sign out. A message will appear saying you have signed out this student. 
 
@@ -107,7 +109,9 @@ The page contains the following information:
 - **Photo Consent Button**: This checkbox indicates whether the student has given consent for photographs or not.
 - **Grade Field**: Facilitators can input or edit the student's grade for the session in this field.
 - **Leave/edit Comments**: Facilitators can leave notes or comments regarding the students participation, behaviour or any other relevant information during the session.
-- **Remove Student**: Used to remove a student from a session. This is will REMOVE them from the class entirely.
+- **Remove Student**: Used to remove a student from a session. This is will REMOVE them from the class entirely. It will also delete their record of attendance to the session, in case the student was accidentally signed in.
+
+**Photo Consent**, **Grade** and **Comments** may not be availiable if the unit does not have these configured. A multiple sign in/out record box is visible to show notes on if a student is signed in and out multiple times, but a facilitator cannot edit this.
 
 You may wish to save any changes you made on this page by clicking the "Save Changes" button. If you wish to revert or go back to the home page then click "Cancel".
 
@@ -124,8 +128,20 @@ At the bottom of the page is a "Sign All Out" button. This allows the facilitato
 
 Before you sign all the students out, make sure to do a head count and see if that number matches the signed in students number. If it does you can safely sign all students out. Otherwise, search through the class list to see which students are missing.
 
+\newpage
+
+### Editing the Current Session
+
+![Edit the Current Session](images/updatesession.png){ width=80% }
+
+If you want to change the session details for the current session, you can navigate back to **Session Config** and it will prompt you to edit the session details. This is useful if you made an error when configuring the session and you would like to change the details to be in the correct session you are facilitating. 
+
+Updating the session details will only update the students attendance for those that you have signed in. Therefore, if you are sharing a session with multiple facilitators, all facilitators will need to update their session details for all students to be updated correctly.
+
+If you want to edit past sessions, you can first navigate to the session config page to configure the session you want to edit (including changing the date to that session's date). Then, you can navigate to the session config page again to edit the session's details, or edit students' details in the home page.
+
 ### Exiting the Session
-Once the session has concluded or you wish to leave your current session, you can click the "Exit Session" button. This will close the session and erase the current session progress. It will then take you to the "Session Configuration" page to start a new session.
+Once the session has concluded or you wish to leave your current session, you can click the "Exit Session" button. This will close the session. It will then take you to the "Session Configuration" page to start a new session.
 
 ## Unit Configuration (Coordinators and Admin ONLY)
 
@@ -261,7 +277,7 @@ To add a new user, you must select what type of user you would like to add from 
 Once the role has been selected, fill out the email address of the user. This will send them an email asking them to verify and activate their account. Once verified, their details will be updated in the system and they will have access to UWAttend.
 
 ### Existing User List
-This section of the page displays all users who are currently registered in the system. Each row in the list contains important details about each user.
+This section of the page displays all admins and coordinators who are currently registered in the system. Each row in the list contains important details about each user.
 
 - **Email**: The email address of the user.
 - **Name**: The full name of the user.
