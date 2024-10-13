@@ -2,6 +2,19 @@
 
 Welcome to the UWAttend Web Application. This user manual will guide you through the primary functions of the website, including how to navigate the Home Page, Session Configuration, Unit Configuration, and the Administrator Page.
 
+## Navbar
+
+[Insert navbar here]
+
+The navigation bar is displayed at the top of your screen. This is the primary way to navigate through different sections of UWAttend. The navbar contains the following information:
+
+- **Home**: Navigates to the Home Page. (Requires a session to be configured to navigate)
+- **Session Config**: Navigates to the Session Configuration Page.
+- **Unit Config**: Navigates to the Unit Configuration Page. (Coordinators and Admins ONLY)
+- **Administration**: Navigates to the Administration Page. (Admins ONLY)
+- **Download Manual**: Takes you to this user manual.
+- **Logout**: Logs the user out of UWAttend.
+
 ## Session Configuration
 
 [Insert session config page here]
@@ -18,7 +31,7 @@ You will be prompted to configure the session details for your class. Fill out d
 - The **Session Name** allows you to specify the type of session you're facilitating (e.g., Lab, Tutorial, Workshop).
 
 3. Session Time
-- The **Session Time** allows you to indicate the time of day when the session is occuring.
+- The **Session Time** allows you to indicate the time of day when the session is occurring.
 - Depending on how your unit is configured you will either have the following options:
   - **Morning or Afternoon**: You will have the option to select whether the session is the Morning or Afternoon session.
   - **Hourly**: You will have the option to select what time the class starts by the hour.
@@ -51,7 +64,7 @@ At the top of the page, the current session title is prominently displayed. This
 - The session date (2024-10-08)
 - The session time (Morning)
 
-This information help facilitators keep trach of which session they are managing.
+This information help facilitators keep track of which session they are managing.
 
 ### Signing Individual Students In/Out
 
@@ -61,7 +74,7 @@ To sign in a student, use the search bar with the submit button to type in the s
 
 - Full name
 - Student Number
-- Preffered Name
+- Preferred Name
 
 A student who is not signed into the current session will be highlighted **GREEN** to indicate you are signing this student in. A student who is signed into the current session will be highlighted **RED** to indicate you are signing this student out.
 
@@ -86,7 +99,7 @@ The page contains the following information:
 - **Sign-in Time**: Displays the time the student signed in
 - **Sign-out Time**: Displays the time the student signed out
 - **Login Button**: If ticked, the student is signed in the session, if not then they are not signed in the current session. 
-- **Photo Consent Button**: This checknox indicates whether the student has given consent for photographs or not.
+- **Photo Consent Button**: This checkbox indicates whether the student has given consent for photographs or not.
 - **Grade Field**: Facilitators can input or edit the student's grade for the session in this field.
 - **Leave/edit Comments**: Facilitators can leave notes or comments regarding the students participation, behaviour or any other relevant information during the session.
 - **Remove Student**: Used to remove a student from a session. This is will REMOVE them from the class entirely.
@@ -140,7 +153,7 @@ For each unit, you have the ability to export all the related information into C
 The following files will be generated when exporting if they are populated:
 
 - **students.csv**: Displays a list of all the students enrolled in the unit.
-- **users.csv**: Displays a list of all the user accounts in UWAttend. (**Only the admin account will recieve this file**).
+- **users.csv**: Displays a list of all the user accounts in UWAttend. (**Only the admin account will receive this file**).
 - **attendance.csv**: Displays a list of all the attendance records for the unit. This is how the database stores the attendance details
 - **sessions.csv**: Displays a list of all the sessions that have been created for the unit
 - **unit.csv**: Displays the unit information
@@ -160,19 +173,19 @@ In the form, you will need to enter the following details:
 - **Start Date**: The date the unit will start.
 - **End Date**: The date the unit will end.
 - **Session Names**: The types of sessions that will take place for the unit. (e.g., Lab, Tutorial, Workshop)
-- **Session Occurence**: Determines how frequently the sessions will occur per day. Below is the types of session occurences you can select from: 
+- **Session Occurrence**: Determines how frequently the sessions will occur per day. Below is the types of session occurrences you can select from: 
   - Morning/Afternoon: The unit has morning and afternoon sessions
   - Hourly: The unit has sessions that occur multiple hours a day
-- **Comment Suggesstions (OPTIONAL)**: If comments are enabled, you predefine comment suggestions that can be used by facilitators when filling out comments for a student. You can leave blank if no suggestions are needed (e.g., nomark, good behaviour). 
+- **Comment Suggestions (OPTIONAL)**: If comments are enabled, you predefine comment suggestions that can be used by facilitators when filling out comments for a student. You can leave blank if no suggestions are needed (e.g., nomark, good behaviour). 
 - **Photo Consent Required?**: Indicates whether photo consent is required for this unit.
 - **Sessions Assessed?**: Indicates whether sessions for the unit are graded.
 - **Comments Enabled?**: Determines whether the comment feature will be enabled during sessions.
 - **Facilitator List CSV Upload**: Upload a CSV file containing the list of facilitators that will be running the sessions for the unit. This will assign the unit to all the facilitators that are in the CSV file. You may click the **Download facilitator template** to download a CSV file that contains the correct formatting for the upload. 
-- **Student List CSV Upload**: Upload a CSV file containing the list of students that are enrolled in the unit. This will assing the unit to all the students that are in the CSV file. You may click the **Download student template** to download a CSV file that contains the correct formatting for the upload
+- **Student List CSV Upload**: Upload a CSV file containing the list of students that are enrolled in the unit. This will assign the unit to all the students that are in the CSV file. You may click the **Download student template** to download a CSV file that contains the correct formatting for the upload
 
-### Editing an Exisitng Unit
+### Editing an Existing Unit
 
-Clicking a unit in the list will take you to a new page where you will be able to edit a prexisting unit.
+Clicking a unit in the list will take you to a new page where you will be able to edit a preexisting unit.
 
 [Insert edit page here]
 
@@ -184,10 +197,10 @@ In the form, you can edit the following details:
 - **Start Date**: The date the unit will start.
 - **End Date**: The date the unit will end.
 - **Session Names**: The types of sessions that will take place for the unit. (e.g., Lab, Tutorial, Workshop)
-- **Session Occurence**: Determines how frequently the sessions will occur per day. Below is the types of session occurences you can select from: 
+- **Session Occurrence**: Determines how frequently the sessions will occur per day. Below is the types of session occurrences you can select from: 
   - Morning/Afternoon: The unit has morning and afternoon sessions
   - Hourly: The unit has sessions that occur multiple hours a day
-- **Comment Suggesstions (OPTIONAL)**: If comments are enabled, you predefine comment suggestions that can be used by facilitators when filling out comments for a student. You can leave blank if no suggestions are needed (e.g., nomark, good behaviour). 
+- **Comment Suggestions (OPTIONAL)**: If comments are enabled, you predefine comment suggestions that can be used by facilitators when filling out comments for a student. You can leave blank if no suggestions are needed (e.g., nomark, good behaviour). 
 - **Photo Consent Required?**: Indicates whether photo consent is required for this unit.
 - **Sessions Assessed?**: Indicates whether sessions for the unit are graded.
 - **Comments Enabled?**: Determines whether the comment feature will be enabled during sessions.
@@ -199,5 +212,56 @@ Clicking the **Edit Students** button when editing an existing unit will take yo
 
 #### Student List for Unit
 
-The page will display a list of all the students currently enrolled in the unit. It displays information regarding about their student number and there full name. 
+The page will display a list of all the students currently enrolled in the unit. It displays information about their student number and there full name and a **Delete** button to remove them from the unit.
 
+#### Upload Students (CSV)
+
+If you want to add multiple students to a unit at the same time, you can upload a CSV file that is the same format as the **student template**. This will upload any students in that list that don't already exist. If they do exist, they will be ignored.
+
+#### Add Student (Manually)
+
+If you want to add a single student to a unit, you can fill in the **Add Student** form. Fill in the following details for the student you want to add:
+
+- **Student Number**: The students 8-digit UWA number (e.g., 12345678)
+- **Title**: The student's title (e.g., Mr., Ms.)
+- **First Name**: The student's first name.
+- **Last Name**: The student's last name.
+- **Preferred Name**: If the student has a preferred name.
+
+### Edit Facilitators for each unit
+Clicking the **Edit Facilitators** button when editing an existing unit will take you to a new page where you can see all the facilitators currently enrolled in the unit.
+
+[Insert editfacilitator here]
+
+#### Facilitator List for Unit
+
+The page will display a list of all the facilitators currently enrolled in the unit. It displays information such as their email address and their full name and a **Delete** button to remove them from the unit.
+
+#### Add Facilitator
+If you want to add a facilitator, type in the email address for the facilitator you want to add to the unit. This will send them an email asking them to create their account for UWAttend. Once created, they will be added as a facilitator for the unit.
+
+## Administration Page (Admins ONLY)
+
+This page allows administrators to manage users within the system by adding new users and viewing existing ones.
+
+### Adding A New User
+To add a new user, you must select what type of user you would like to add from the dropdown menu. You can select from the following roles:
+
+- **Administrator**: Users will full access to the system, including unit and user management.
+- **Coordinator**: Users who manage specific units and have access to session and student data.
+
+Once the role has been selected, fill out the email address of the user. This will send them an email asking them to verify and activate their account. Once verified, their details will be updated in the system and they will have access to UWAttend.
+
+### Existing User List
+This section of the page displays all users who are currently registered in the system. Each row in the list contains important details about each user.
+
+- **Email**: The email address of the user.
+- **Name**: The full name of the user.
+- **User Type**: The type of user (e.g. admin, coordinator)
+
+<!--  LocalWords:  UWAttend Navbar navbar Config config SEM2 everytime UWA CSV
+<!--  LocalWords:  csv attendancerecord attendancerecordCOLUMNS CITS3200 SEM1
+<!--  LocalWords:  nomark editstudents editfacilitator dropdown
+ -->
+ -->
+ -->
