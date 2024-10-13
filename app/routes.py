@@ -18,15 +18,20 @@ import pandas as pd
 def log_message(message):
 
     client_ip = flask.request.remote_addr 
-
+    
     # Ensure logs directory exists
     if not os.path.exists('logs'):
         os.makedirs('logs')
-
+    print(current_user)
     # Format the log message with a timestamp
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    formatted_message = f"{client_ip} {timestamp} - {message}\n"
+   
 
+    if current_user.is_active:
+        formatted_message = f"{client_ip} {current_user.firstName} {current_user.lastName} {timestamp} - {message}\n"
+    else:
+        formatted_message = f"{client_ip} {timestamp} - {message}\n"
+    
     # Write the log message to a file
     with open('logs/app.log', 'a') as log_file:
         log_file.write(formatted_message)
@@ -603,14 +608,9 @@ def addunit():
         
         #Add from csv
         #TODO: handle emailing facilitators - should go in the correct process csv function
-        serror = import_student_in_db(s_data, unit_id)
-        if serror == 0:
-            flask.flash("Error, invalid csv header", 'error')
-            return flask.render_template('addunit.html', form=form)
-        ferror = import_facilitator_in_db(f_data, unit_id, current_user)
-        if error == 0:
-            flask.flash("Error, invalid email address in facilitators", 'error')
-            return flask.render_template('addunit.html', form=form)
+        import_student_in_db(s_data, unit_id)            
+        import_facilitator_in_db(f_data, unit_id, current_user)
+        
         AddUnitToFacilitator(current_user.email, unit_id)
         AddUnitToCoordinator(current_user.email, unit_id)
         
