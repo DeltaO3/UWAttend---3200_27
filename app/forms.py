@@ -35,7 +35,7 @@ def validate_sessionoccurence(form, field):
 def validate_UserType(form, field):
     if not field.data:
         print("reached here")
-        raise ValidationError("Select at least one occurence")
+        raise ValidationError("Select valid user type")
         
 
 def unit_check(form, field):
@@ -64,7 +64,7 @@ def is_student_num(form, field):
 class AddUserForm(FlaskForm):
     UserType = SelectField(
     'User Type',
-    choices=[('admin', 'Administrator'), ('coordinator', 'Coordinator'), ('facilitator', 'Facilitator')],
+    choices=[('admin', 'Administrator'), ('coordinator', 'Coordinator')],
     validators=[validate_UserType]
     )
     email       = StringField('Email:', validators=[DataRequired()])
@@ -90,7 +90,7 @@ class UnitForm(FlaskForm):
     enddate = DateField('End Date', validators=[DataRequired()])
     consentcheck = BooleanField('Photo Consent Required?')
     assessmentcheck = BooleanField('Sessions Assessed?')
-    commentsenabled = BooleanField('Comments Enabled?')
+    commentsenabled = BooleanField('Comments Enabled?', default=True)
     sessionnames = StringField('Session Names:', render_kw={"placeholder":"Add sessions"})
     sessions = HiddenField("Sessions", validators=[DataRequired()])
     sessionoccurence = SelectField(

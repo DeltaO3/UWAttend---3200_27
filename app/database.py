@@ -1,13 +1,13 @@
 import flask
 from app import app
 from app import db
-from .models import db, Student, User, Attendance, Session, Unit
+from .models import db, Student, User, Attendance, Session, Unit, Units_Coordinators_Table
 from datetime import datetime, date, timedelta
 from app.helpers import get_perth_time
 
 # sql
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import and_, func
+from sqlalchemy import and_, func, or_
 from sqlalchemy.exc import IntegrityError
 
 def SignOut(studentID, sessionID):
@@ -299,9 +299,15 @@ def GetStudentList(student_ids):
         print("You did not submit a parameter to use so returning all student records")
 
     
-    attendance_records = query.all()
+    students = query.all()
     
-    return attendance_records
+    return students
+
+def GetAdminsAndCoordinators():
+
+    query = db.session.query(User).filter(or_(User.userType == "coordinator", User.userType == "admin"))
+    adminsAndCoordinators = query.all()
+    return adminsAndCoordinators
 
 def GetUser(userID = None, email = None, userType = None):
 
@@ -599,6 +605,15 @@ def GetFacilitatorNamesForSession(sessionID) :
             facilitatorNames.append(fullName)
 
     return facilitatorNames
+
+def GetAccessibleUnitIDs(user_id):
+    # Query to get unitIDs the user has access to as a coordinator
+    accessible_units = db.session.query(Unit.unitID).join(
+        Units_Coordinators_Table, Unit.unitID == Units_Coordinators_Table.c.unitID
+    ).filter(Units_Coordinators_Table.c.userID == user_id).all()
+
+    # Convert the result to a list of unit IDs
+    return [unit.unitID for unit in accessible_units]
 
 def StoreToken(email, token):
     user = GetUser(email=email)

@@ -13,6 +13,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 import os
 from datetime import datetime, date
 import sqlalchemy as sa
+import pandas as pd
 
 # HOME -   /home/
 @app.route('/', methods=['GET'])
@@ -42,11 +43,16 @@ def home():
     students = GetStudentList(student_ids=logged_in_student_ids) 
 
     student_list = []
+    facilitator_list = []
     signed_in_count = 0
 
     for student in students:
         # find the student's attendance record 
         attendance_record = next((record for record in attendance_records if record.studentID == student.studentID), None)
+
+        facilitator_id = attendance_record.facilitatorID
+        if facilitator_id not in facilitator_list:
+            facilitator_list.append(facilitator_id)
 
         # set login status based on whether the student has a time marked where they logged out
         login_status = "no" if attendance_record.signOutTime else "yes"
@@ -65,7 +71,12 @@ def home():
 
     student_list.sort(key=lambda x: (x['login'] == "yes", x['time']), reverse=True)
 
-    return flask.render_template('home.html', form=form, students=student_list, current_session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=current_session.sessionID) 
+    current_unit = GetUnit(unitID=current_session.unitID)[0]
+    
+    # check if consent is required
+    consent_required = GetUnit(unitID=current_session.unitID)[0].consent
+    
+    return flask.render_template('home.html', form=form, students=student_list, current_session=current_session, total_students=len(student_list), signed_in=signed_in_count, session_num=current_session.sessionID, current_unit=current_unit, consent_required=consent_required, num_facilitators=len(facilitator_list)) 
 	
 # CONFIGURATION - /session/ /admin/
 @app.route('/session', methods=['GET', 'POST'])
@@ -226,11 +237,14 @@ def checksessionexists():
             facilitatorNames = GetFacilitatorNamesForSession(new_session.sessionID)
             for f in facilitatorNames :
                 print(f)
-            return flask.jsonify({'sessionExists': "true", 'facilitatorNames': facilitatorNames})
+            return flask.jsonify({'result': "true", 'facilitatorNames': facilitatorNames})
         
         else :
             print("Session doesn't exist.")
-            return flask.jsonify({'sessionExists': "false", })
+            return flask.jsonify({'result': "false" })
+    
+    else :
+        return flask.jsonify({'result': "validateError"})
 
 #ADMIN - /unitconfig /
 @app.route('/unitconfig', methods=['GET', 'POST'])
@@ -238,7 +252,7 @@ def checksessionexists():
 def unitconfig():
     if current_user.userType == 'facilitator':
         return flask.redirect('home')
-    
+
     units_list = current_user.unitsCoordinate
 
     # Create a list to hold unit information
@@ -255,7 +269,7 @@ def unitconfig():
             "unit_id": str(unit.unitID)
         }
         units_data.append(unit_info)
-    
+
     return flask.render_template('unit.html', units=units_data)
 
 #UPDATE UNIT FORM
@@ -397,14 +411,16 @@ def uploadStudents():
     if csv_form.validate_on_submit():
         student_file = csv_form.studentfile.data
         if student_file.filename != '':
-            student_file.save(student_file.filename)
-            student_filename = student_file.filename
+            student_filename = f"{unit_id}_new_students.csv"
+            student_file.save(student_filename)
             print(f"Student filename: {student_filename}")
         else:
             print("Submitted no file, probable error.")
             flask.flash("Error, no student file submitted", 'error')
             return flask.redirect(url_for('editStudents', id=unit_id))
         s_data, error = process_csvs(student_filename, None)
+        if os.path.exists(student_filename):
+            os.remove(student_filename)
         if error:
             flask.flash(error, 'error')
             return flask.redirect(url_for('editStudents', id=unit_id))
@@ -465,7 +481,6 @@ def deleteFacilitator():
     
     flask.flash("Error deleting facilitator", "error")
     return flask.redirect(url_for('editFacilitators', id=unit_id))
-
 
 
 # add users
@@ -531,8 +546,8 @@ def addunit():
 
          #read CSV file
         if student_file.filename != '':
-            student_file.save(student_file.filename)
-            student_filename = student_file.filename
+            student_filename = f"{newunit_code}_students.csv"
+            student_file.save(student_filename)
             print(f"Student filename: {student_filename}")
         else:
             print("Submitted no file, probable error.")
@@ -540,8 +555,8 @@ def addunit():
             return flask.render_template('addunit.html', form=form)
         
         if facilitator_file.filename != '':
-            facilitator_file.save(facilitator_file.filename)
-            facilitator_filename = facilitator_file.filename
+            facilitator_filename = f"{newunit_code}_facilitators.csv"
+            facilitator_file.save(facilitator_filename)
             print(f"Facilitator filename: {facilitator_filename}")
         else:
             print("Submitted no file, probable error.")
@@ -550,6 +565,11 @@ def addunit():
      
         #Process csvs
         s_data, f_data, error = process_csvs(student_filename, facilitator_filename)
+
+        if os.path.exists(student_filename):
+            os.remove(student_filename)
+        if os.path.exists(facilitator_filename):
+            os.remove(facilitator_filename)
         if error:
             flask.flash(error, 'error')
             return flask.render_template('addunit.html', form=form)
@@ -560,8 +580,10 @@ def addunit():
         
         #Add from csv
         import_student_in_db(s_data, unit_id)
-        import_facilitator_in_db(f_data, unit_id, current_user)
-        
+        error = import_facilitator_in_db(f_data, unit_id, current_user)
+        if error == 0:
+            flask.flash("Error, invalid email address in facilitators", 'error')
+            return flask.render_template('addunit.html', form=form)
         AddUnitToFacilitator(current_user.email, unit_id)
         AddUnitToCoordinator(current_user.email, unit_id)
         
@@ -569,18 +591,36 @@ def addunit():
 	    
     return flask.render_template('addunit.html', form=form)
 
-@app.route('/export', methods=['GET'])
+@app.route('/export', methods=['GET', 'POST'])
 @login_required
 def export_data():
     print("Attempting to Export Database...")
     zip_filename = 'database.zip'
 
+    unit_code = flask.request.args.get('unitCode') or flask.request.form.get('unitCode')
+    print("this is the unit code:")
+    print(unit_code)
+
     # Get database.zip filepath
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     zip_path = os.path.join(project_root, zip_filename)
 
+    current_user_id = current_user.userID
+    current_user_type = current_user.userType
+
     # Call the function to export all data to the 'database.zip'
-    export_all_to_zip(zip_filename)
+    export_all_to_zip(zip_filename, current_user_id, current_user_type)
+
+    # If "All Units" is selected or no unitCode is provided, skip filtering
+    if unit_code and unit_code != 'all':
+        filtered_zip_filename = filter_exported_csv_by_unit(zip_filename, unit_code)
+
+        # Rename the filtered file to database.zip for consistent download name
+        filtered_zip_path = os.path.join(project_root, filtered_zip_filename)
+        print("Renamed file to database.zip")
+        if os.path.exists(filtered_zip_path):
+            os.rename(filtered_zip_path, zip_path)  # Rename to database.zip
+
 
     # Check if the file was created successfully
     if os.path.exists(zip_path):
@@ -644,8 +684,17 @@ def student():
     student_info = generate_student_info(student, attendance_record)
     print("comments", student_info["comments"])
     print("consent", student.consent)
-    
-    return flask.render_template('student.html', form=form, student=student_info, attendance=attendance_record, comments=comment_list)
+
+    # check if consent, comments and marks are required
+    consent_required = GetUnit(unitID=current_session.unitID)[0].consent
+    marks_enabled = GetUnit(unitID=current_session.unitID)[0].marks
+    comments_enabled = GetUnit(unitID=current_session.unitID)[0].comments
+    comments_label = form.comments.label.text
+
+    if not comments_enabled :
+       comments_label = "Multiple sign in/out time log"
+
+    return flask.render_template('student.html', form=form, student=student_info, attendance=attendance_record, consent_required=consent_required, comments_enabled=comments_enabled, marks_enabled=marks_enabled, comments_label=comments_label)
 
 @app.route('/remove_from_session', methods=['GET'])
 @login_required
@@ -833,6 +882,7 @@ def edit_student_details():
                 flask.flash(message, category='error')
                 student = GetStudent(studentID=form.student_id.data)
                 attendance_record = GetAttendance(input_sessionID=current_session.sessionID, studentID=form.student_id.data)
+                print(form.student_id.data)
                 if not student or not attendance_record:
                     return flask.redirect(flask.url_for('home'))
                 return flask.render_template('student.html', form=form, student=generate_student_info(student[0], attendance_record[0]), attendance=attendance_record[0])
@@ -1083,3 +1133,16 @@ def exitSession():
     removeSessionCookie()
     return flask.redirect(url_for('session'))
 
+@app.route('/download_manual')
+@login_required
+def download_manual():
+    try:
+        # Define the path to your MANUAL.pdf file in the project root
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        manual_path = os.path.join(project_root, 'MANUAL.pdf')
+
+        # Use send_file to serve the file for download
+        return send_file(manual_path)
+    except Exception as e:
+        print(f"Error serving manual: {e}")
+        return "Error: Could not download the manual.", 500

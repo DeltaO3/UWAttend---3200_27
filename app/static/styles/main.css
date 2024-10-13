@@ -76,6 +76,20 @@ body {
   transition: background-color 0.3s ease-in-out;
 }
 
+.table-element-nocursor {
+  background-color: color-mix(in srgb, var(--bg) 90%, var(--text) 10%);
+  border-radius: 0.5rem;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.table-login {
+  background-color: color-mix(in srgb, var(--text) 10%, var(--success) 10%);
+}
+
+.table-logout {
+  background-color: color-mix(in srgb, var(--text) 10%, var(--danger) 10%);
+}
+
 .table-element:hover {
   background-color: color-mix(in srgb, var(--primary) 60%, transparent);
 }
@@ -161,6 +175,15 @@ body {
   --bs-navbar-color: var(--text);
   --bs-navbar-brand-color: var(--text);
 }
+
+@media (max-width: 768px) {
+  /* Add spacing between buttons in mobile view */
+  .navbar-nav .btn {
+    margin-bottom: 10px; /* Adds space between buttons vertically */
+    width: 100%; /* Makes buttons full width for better layout on small screens */
+  }
+}
+
 
 .modal {
   --bs-modal-color: var(--text);
