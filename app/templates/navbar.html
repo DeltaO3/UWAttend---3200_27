@@ -13,7 +13,7 @@
 			<!-- Left side -->
 			<div class="navbar-nav nav-underline col-lg-8 col-md-9">
 				<!-- Home link (everyone can see this) -->
-				<a class="nav-link {% if request.path == url_for('home') or request.path == '/' %}active"
+				<a class="nav-link {% if not session['session_id'] %}disabled{% endif %}{% if request.path == url_for('home') or request.path == '/' %}active"
 					aria-current="page {% endif %}" href="{{ url_for('home') }}">
 					Home
 				</a>
@@ -42,6 +42,10 @@
 				<span class="navbar-text fw-bold text-truncate me-3 d-none d-md-block">
 					{{ current_user.firstName }} {{ current_user.lastName}}
 				</span>
+
+				<!-- Add the User Manual download button here -->
+                <a href="{{ url_for('download_manual') }}" class="btn btn-info me-3" target="_blank">Download Manual</a>
+
 				<a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
 			</div>
 		</div>

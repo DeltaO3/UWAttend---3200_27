@@ -21,8 +21,8 @@
 
 <div class="container-fluid">
 	<!-- Top section -->
-	<h4 class="text-center mb-0 mt-1">{{ current_session.unitID }}-{{ current_session.sessionName }}-{{
-		current_session.sessionDate }}/{{current_session.sessionTime }}</h4>
+	<h4 class="text-center mb-0 mt-1">{{ current_unit.unitName }}, {{ current_unit.studyPeriod }}: {{
+		current_session.sessionName }}, {{ current_session.sessionDate }}/{{current_session.sessionTime }}</h4>
 
 	<div class="d-flex justify-content-center ">
 		<div class="mx-4 mx-md-5 container">
@@ -33,7 +33,7 @@
 				{{ signed_in }} signed in of {{ total_students }}
 			</h3>
 			<!-- Input element -->
-			<div class="d-flex justify-content-center row ">
+			<div class="d-flex justify-content-md-between justify-content-center row ">
 				<div class="col-md-6">
 					<form id="attendanceForm" class="" method="POST" action="{{ url_for('add_student') }}">
 						{{ form.hidden_tag() }}
@@ -49,13 +49,13 @@
 						</div>
 					</form>
 				</div>
-				<div class="col-md-6 mt-md-0 mt-3 ">
+				<div class="col-md-4 mt-md-0 mt-4 col-8  ">
 					<div class="input-group">
 						<span class="input-group-text image-parent">
 							<i class="bi bi-search"></i>
 						</span>
 						<input type="text" id="search-bar" name="search-bar" class="form-control rounded-end"
-							placeholder="Search class list by name or ID...">
+							placeholder="Search class list...">
 					</div>
 				</div>
 			</div>
@@ -65,7 +65,7 @@
 	{% include 'photoConsent.html'%}
 	<!-- Table Section -->
 	<div class="d-flex justify-content-center">
-		<div class="mx-4 mt-3 mx-md-5 container">
+		<div class="mx-4 mt-2 mx-md-5 container">
 			{% if total_students > 0 %}
 			<div class="row d-none d-md-flex text-center lead table-heading">
 				<span class="col">Name</span>
@@ -84,7 +84,8 @@
 			{% if total_students > 0 %}
 			{% for student in students%}
 			<!-- onlick re-route to student page for this specific student -->
-			<div class="row table-element text-center my-2 py-2" onclick="redirectToStudent('{{ student.id }}')">
+			<div class="row table-element {% if student.login == 'yes' %} table-login {% else %} table-logout {% endif %} text-center my-2 py-2"
+				onclick="redirectToStudent('{{ student.id }}')">
 				<form id="studentForm_{{ student.id }}" action="/student" method="POST" style="display:none;">
 					<input type="hidden" name="student_id" value="{{ student.id }}">
 				</form>
