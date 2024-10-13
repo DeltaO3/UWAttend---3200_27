@@ -176,6 +176,15 @@ body {
   --bs-navbar-brand-color: var(--text);
 }
 
+@media (max-width: 768px) {
+  /* Add spacing between buttons in mobile view */
+  .navbar-nav .btn {
+    margin-bottom: 10px; /* Adds space between buttons vertically */
+    width: 100%; /* Makes buttons full width for better layout on small screens */
+  }
+}
+
+
 .modal {
   --bs-modal-color: var(--text);
   --bs-modal-bg: var(--bg);

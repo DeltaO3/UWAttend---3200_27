@@ -1055,3 +1055,16 @@ def exitSession():
     removeSessionCookie()
     return flask.redirect(url_for('session'))
 
+@app.route('/download_manual')
+@login_required
+def download_manual():
+    try:
+        # Define the path to your MANUAL.pdf file in the project root
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        manual_path = os.path.join(project_root, 'MANUAL.pdf')
+
+        # Use send_file to serve the file for download
+        return send_file(manual_path)
+    except Exception as e:
+        print(f"Error serving manual: {e}")
+        return "Error: Could not download the manual.", 500

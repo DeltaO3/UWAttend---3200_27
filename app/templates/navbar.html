@@ -42,6 +42,10 @@
 				<span class="navbar-text fw-bold text-truncate me-3 d-none d-md-block">
 					{{ current_user.firstName }} {{ current_user.lastName}}
 				</span>
+
+				<!-- Add the User Manual download button here -->
+                <a href="{{ url_for('download_manual') }}" class="btn btn-info me-3" target="_blank">Download Manual</a>
+
 				<a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
 			</div>
 		</div>
