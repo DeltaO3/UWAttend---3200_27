@@ -51,6 +51,8 @@ Once you have filled out your session details. You can click the **Configure** b
 
 If the session you are configuring already exists and has students signed in, you will be prompted with an alert that you are entering a session with another facilitator
 
+\newpage
+
 ## Home Page
 ### Overview
 
@@ -70,6 +72,8 @@ At the top of the page, the current session title is prominently displayed. This
 - The session time (Morning)
 
 This information help facilitators keep track of which session they are managing.
+
+\newpage
 
 ### Signing Individual Students In/Out
 
@@ -95,7 +99,6 @@ To sign out a student, use the same search bar with the submit button and type i
 
 ### Viewing Student Information
 
-![Student Page](images/studentpage.png){ width=80% }
 
 Once a student has been signed in, you can click on each student's name from that list that appears. This will bring up a page which allows facilitators to review and update details related to individual students within a session. 
 
@@ -115,6 +118,9 @@ The page contains the following information:
 
 You may wish to save any changes you made on this page by clicking the "Save Changes" button. If you wish to revert or go back to the home page then click "Cancel".
 
+![Student Page](images/studentpage.png){ width=80% }
+
+\newpage
 
 ### Class List Search
 
