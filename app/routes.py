@@ -487,12 +487,23 @@ def admin():
 
     form = AddUserForm()
 
-    if form.validate_on_submit() and flask.request.method == 'POST':       
-        
-        AddUser(userType=form.UserType.data, email=form.email.data, firstName=form.firstName.data, lastName=form.lastName.data, passwordHash=form.passwordHash.data)
+    if form.validate_on_submit() and flask.request.method == 'POST': 
+
+        # UPDATE LOGIC TO USE EMAILS
+
+        # check user exists
+        user = GetUser(email=form.email.data)
+
+        # if user doesn't exist, add them
+        if user is None :
+            print(f"User added: {form.email.data}")
+            AddUser(userType=form.UserType.data, email=form.email.data, firstName="place holder", lastName="place holder", passwordHash="placeholder")
+
         return flask.redirect(flask.url_for('admin'))
-    
-    return flask.render_template('admin.html', form=form)
+
+    users = GetAdminsAndCoordinators()
+
+    return flask.render_template('admin.html', form=form, users=users)
 
 # ADDUNIT - /addunit/ /unit/
 @app.route('/addunit', methods=['GET', 'POST'])

@@ -7,7 +7,7 @@ from app.helpers import get_perth_time
 
 # sql
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import and_, func
+from sqlalchemy import and_, func, or_
 from sqlalchemy.exc import IntegrityError
 
 def SignOut(studentID, sessionID):
@@ -280,6 +280,12 @@ def GetStudentList(student_ids):
     students = query.all()
     
     return students
+
+def GetAdminsAndCoordinators():
+
+    query = db.session.query(User).filter(or_(User.userType == "coordinator", User.userType == "admin"))
+    adminsAndCoordinators = query.all()
+    return adminsAndCoordinators
 
 def GetUser(userID = None, email = None, userType = None):
 

@@ -76,6 +76,12 @@ body {
   transition: background-color 0.3s ease-in-out;
 }
 
+.table-element-nocursor {
+  background-color: color-mix(in srgb, var(--bg) 90%, var(--text) 10%);
+  border-radius: 0.5rem;
+  transition: background-color 0.3s ease-in-out;
+}
+
 .table-element:hover {
   background-color: color-mix(in srgb, var(--primary) 60%, transparent);
 }
