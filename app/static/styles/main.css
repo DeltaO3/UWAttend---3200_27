@@ -82,6 +82,14 @@ body {
   transition: background-color 0.3s ease-in-out;
 }
 
+.table-login {
+  background-color: color-mix(in srgb, var(--text) 10%, var(--success) 10%);
+}
+
+.table-logout {
+  background-color: color-mix(in srgb, var(--text) 10%, var(--danger) 10%);
+}
+
 .table-element:hover {
   background-color: color-mix(in srgb, var(--primary) 60%, transparent);
 }
