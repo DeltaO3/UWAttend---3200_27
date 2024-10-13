@@ -69,3 +69,93 @@ To start the web-app, run the following:
 flask run
 ```
 This will host the application at http://127.0.0.1:5000
+
+## UWAttend Database Schema Documentation
+
+This database schema is designed to manage the different entities and relationships within the **UWAttend** system, such as users, sessions, units, attendance, and student information. Below is an explanation of the purpose of each table and its respective columns.
+
+---
+
+### 1. **alembic_version Table**
+- **Purpose**: This table tracks the version of the database schema managed by Alembic (a database migration tool). This helps manage database migrations to ensure the schema is up to date.
+- **Columns**:
+  - `version_num`: A unique version identifier for the current schema state.
+
+---
+
+### 2. **session Table**
+- **Purpose**: This table stores information about individual class sessions for a unit. Each session is linked to a unit and tracks the session name, time, and date.
+- **Columns**:
+  - `sessionID`: The unique identifier for each session.
+  - `unitID`: A foreign key linking to the **unit** table, indicating which unit the session belongs to.
+  - `sessionName`: The name of the session (e.g., Lab, Lecture).
+  - `sessionTime`: The time when the session takes place (e.g., Morning, Afternoon).
+  - `sessionDate`: The date of the session.
+  
+---
+
+### 3. **Units_Coordinators_Table**
+- **Purpose**: This table tracks which users are coordinators for specific units. It links users to units and enforces that only designated coordinators can manage unit-specific tasks.
+- **Columns**:
+  - `userID`: A foreign key referencing the **user** table, representing the coordinator.
+  - `unitID`: A foreign key referencing the **unit** table, indicating which unit the coordinator is responsible for.
+
+---
+
+### 4. **Units_Facilitators_Table**
+- **Purpose**: This table tracks which users are facilitators for specific units. Facilitators are responsible for managing sessions and student attendance within the unit.
+- **Columns**:
+  - `userID`: A foreign key referencing the **user** table, representing the facilitator.
+  - `unitID`: A foreign key referencing the **unit** table, indicating which unit the facilitator is assigned to.
+
+---
+
+### 5. **attendance Table**
+- **Purpose**: This table logs attendance records for each student in a session, including sign-in and sign-out times, facilitator details, and session-related comments.
+- **Columns**:
+  - `attendanceID`: The unique identifier for each attendance record.
+  - `sessionID`: A foreign key referencing the **session** table, linking the attendance to a specific session.
+  - `studentID`: A foreign key referencing the **student** table, identifying the student attending the session.
+  - `signInTime`: The time the student signed in for the session.
+  - `signOutTime`: The time the student signed out (optional).
+  - `facilitatorID`: A foreign key referencing the **user** table (as a facilitator), indicating who facilitated the session.
+  - `marks`: Any grades or marks awarded during the session (optional).
+  - `comments`: Comments or feedback about the student's participation in the session (optional).
+  - `consent_given`: Indicates whether the student has given consent for their participation to be recorded.
+
+---
+
+### 6. **student Table**
+- **Purpose**: This table stores information about each student enrolled in a unit, including personal details and consent status.
+- **Columns**:
+  - `studentID`: The unique identifier for each student.
+  - `studentNumber`: The student’s university-assigned number.
+  - `firstName`: The student's first name.
+  - `lastName`: The student's last name.
+  - `title`: The student’s title (e.g., Mr., Ms., Dr.).
+  - `preferredName`: The name the student prefers to be called.
+  - `unitID`: A foreign key referencing the **unit** table, linking the student to a specific unit.
+  - `consent`: Indicates whether the student has provided consent for their participation to be recorded.
+
+---
+
+### 7. **unit Table**
+- **Purpose**: This table stores information about the academic units (courses), including session configurations and related settings for the unit.
+- **Columns**:
+  - `unitID`: The unique identifier for each unit.
+  - `unitCode`: The unique code for the course (e.g., CITS3000).
+  - `unitName`: The name of the course (e.g., Computing 101).
+  - `studyPeriod`: The academic period or semester in which the unit runs.
+  - `startDate`: The date when the unit begins.
+  - `endDate`: The date when the unit ends.
+  - `sessionNames`: Names of the sessions associated with the unit (e.g., Lecture, Lab).
+  - `sessionTimes`: Times when the sessions for the unit occur (e.g., Morning, Afternoon).
+  - `comments`: A boolean value indicating whether comments are enabled for this unit.
+  - `marks`: A boolean value indicating whether marks are assigned for this unit.
+  - `consent`: A boolean value indicating whether consent is required for this unit.
+  - `commentSuggestions`: Suggested comments that can be used by facilitators for feedback.
+
+---
+
+### 8. **user Table**
+- **Purpose**: This table stores information about the users of th
