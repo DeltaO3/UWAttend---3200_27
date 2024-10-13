@@ -3,7 +3,7 @@
 UWAttend is a web-based application written in Flask that is designed to simplify and streamline the process of student sign-ins and sign-outs for university classes. This app helps class facilitators track student participation and manage grading and aims to replace hand-written attendance tracking.
 
 ## Manual
-For more information on how to use UWAttend, visit the following: [MANUAL.md](MANUAL.md)
+For more information on how to use UWAttend, visit the following: [MANUAL.pdf](MANUAL.pdf)
 
 ## Prerequisites
 To run UWAttend on your own machine, you must have the following dependencies installed on your system:
