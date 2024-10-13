@@ -40,8 +40,10 @@ def import_student_in_db(data, unit_id):
     unit = unit[0]
 
     for record in data:
-
-        student_number = record['Person ID']
+        try:
+            student_number = record['Person ID']
+        except:
+            return 0
         if student_exists(student_number, unit_id):
             print(f"Duplicate found: {record['Given Names']} {record['Surname']} (ID: {student_number}) - Skipping import.")
             continue
@@ -61,7 +63,10 @@ def import_student_in_db(data, unit_id):
 def import_facilitator_in_db(data, unit_id, current_user):
 
     for record in data:
-        facilitator = record['Facilitator Email']
+        try:
+            facilitator = record['Facilitator Email']
+        except:
+            return 0
         #Add facilitator as user if not in DB
         if(not GetUser(email=facilitator)):
 
