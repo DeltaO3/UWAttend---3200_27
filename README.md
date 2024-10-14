@@ -39,8 +39,14 @@ pip3 install -r requirements.txt
 UWAttend utilises secret keys located in `.env` for security purposes. Create a file called `.env` in the project root directory and set the following:
 
 ``` shell
-SECRET_KEY="insert_secret_key_here"
-DATABASE_PASSWORD="insert_password_here"
+SECRET_KEY="insert_key_here"
+DATABASE_PASSWORD="insert_key_here"
+
+# UWAttend uses boto3 to send emails using Amazon SES.
+# You must set up SES inorder for the email functionality to work. 
+# If you don't have SES, you will need to set up Admin account variables below in order to start using the app.
+AWS_ACCESS_KEY="insert_key_key"
+AWS_SECRET_ACCESS_KEY="insert_key_here"
 
 # Optional Admin Account Variables if you want to add an extra admin user
 EMAIL="sampleemail@gmail.com"
@@ -50,7 +56,7 @@ PASSWORD="password"
 USERTYPE="admin"
 
 ```
-*Note: replace `"insert_secret_key_here"` and `"insert_password_here"` with your desired values*
+*Note: replace `"insert_key_here"` with your desired values*
 
 - `SECRET_KEY` - The key to initialise SQLalchemy
 - `DATABASE_PASSWORD` - The password that will be used to encrypt `app.db`
@@ -62,7 +68,7 @@ USERTYPE="admin"
 flask db upgrade
 ```
 
-2. Populate the Database:
+2. Populate the Database (Will not work without setting up Amazon SES credentials):
 
 ``` shell
 python3 -m app.testdb
