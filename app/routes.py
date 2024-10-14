@@ -6,6 +6,7 @@ from .helpers import *
 from .models import *
 from .database import *
 from .utilities import *
+from .emails import *
 from app import database
 from flask import send_file, redirect, url_for, after_this_request
 from flask_login import current_user, login_user, logout_user, login_required
@@ -515,15 +516,15 @@ def admin():
         user = GetUser(email=form.email.data)
 
         # if user doesn't exist, add them
-        if user is None :
+        if user is None:
             log_message("/admin submitting form : " + "[" + str(form.UserType.data) + "] [" + str(form.email.data) + "] [" + str(form.firstName.data) + "] [" + str(form.lastName.data) + "]")
-            AddUser(userType=form.UserType.data, email=form.email.data, firstName="place holder", lastName="place holder", passwordHash="placeholder")
+            AddUser(userType=form.UserType.data, email=form.email.data, firstName="placeholder", lastName="placeholder", passwordHash=generate_temp_password())
+            send_email_ses("noreply@uwaengineeringprojects.com", form.email.data, 'welcome')
+            flask.flash("User added - confirmation email sent!")
 
-        return flask.redirect(flask.url_for('admin'))
-
-    users = GetAdminsAndCoordinators()
-
-    return flask.render_template('admin.html', form=form, users=users)
+        return flask.redirect(url_for('admin'))
+    
+    return flask.render_template('admin.html', form=form)
 
 # ADDUNIT - /addunit/ /unit/
 @app.route('/addunit', methods=['GET', 'POST'])
@@ -606,7 +607,6 @@ def addunit():
         AddUnitToCoordinator(current_user.email, unit_id)
         
         #Add from csv
-        #TODO: handle emailing facilitators - should go in the correct process csv function
         import_student_in_db(s_data, unit_id)
         error = import_facilitator_in_db(f_data, unit_id, current_user)
         if error == 0:
@@ -763,25 +763,55 @@ def create_account():
         return flask.redirect('home')
     
     form = CreateAccountForm()
+
+    email_encoded = flask.request.args.get('email', None)  
+    token = flask.request.args.get('token', None)
+
+    if not email_encoded:
+        flask.flash("Error - No email provided")
+        return flask.redirect(flask.url_for('login'))
+    if not token:
+        flask.flash("Error - No token provided")
+        return flask.redirect(flask.url_for('login'))
+
+    email = urllib.parse.unquote(email_encoded)
+
+    valid_token = ValidateToken(email, token)
+
+    if not valid_token:
+        flask.flash("Error - Invalid token")
+        return flask.redirect(flask.url_for('login'))
+    
     if form.validate_on_submit():
-        #TODO: Add email logic
-        #Uses a placeholder email - perhaps this should be included in the route as a ?email=email parameter?
-        #feels unsafe, feel free to change some things. 
-        email = form.firstName.data + "@placeholder.com"
-        AddUser(email, form.firstName.data, form.lastName.data, form.password2.data, "facilitator" )
+        status = UpdateUser(email, form.firstName.data, form.lastName.data, form.password2.data) 
+        if not status:
+            flask.flash("Error updating user details")
+            return flask.redirect(flask.url_for('login'))
+            
         log_message("/create_account Added user" + str(form.firstName.data))
         login_user(GetUser(email = email))
-        return flask.redirect(flask.url_for('home'))
+        return flask.redirect(flask.url_for('login'))
     
     return flask.render_template('createAccount.html', form=form)
 
 #FORGOT PASSWORD - /forgot_password
-@app.route('/forgot_password', methods=['GET'])
+@app.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():
     log_message("/forgot_password")
     if current_user.is_authenticated:
         return flask.redirect('home')
-    #TODO: add backend logic for email
+
+    if flask.request.method == 'POST':
+        email = flask.request.form.get('resetEmail')
+        
+        send_email_ses("noreply@uwaengineeringprojects.com", email, 'forgot_password')
+        
+        if email:
+            flask.flash('If the email exists, a password reset link has been sent.', 'success')
+            return redirect(url_for('login'))  # Redirect to login or another page
+
+        flask.flash('Please enter a valid email address.', 'error')
+
     return flask.render_template('forgotPassword.html')
 
 #RESET PASSWORD - /reset_password
@@ -791,15 +821,37 @@ def reset_password():
     if current_user.is_authenticated:
         return flask.redirect('home')
     
+    email_encoded = flask.request.args.get('email', None)  
+    token = flask.request.args.get('token', None)
+
+    if not email_encoded:
+        flask.flash("Error - No email provided")
+        return flask.redirect(flask.url_for('login'))
+    if not token:
+        flask.flash("Error - No token provided")
+        return flask.redirect(flask.url_for('login'))
+
+    email = urllib.parse.unquote(email_encoded)
+
+    valid_token = ValidateToken(email, token)
+
+    if not valid_token:
+        flask.flash("Error - Invalid token")
+        return flask.redirect(flask.url_for('login'))
+
+    email = urllib.parse.unquote(email_encoded)
+
+    user = GetUser(email = email)
+    
     form = ResetPasswordForm()
+
     if form.validate_on_submit():
-        #TODO: add email into logic (similar to what create account does)
         log_message("/reset_password resetting password...")
-        SetPassword("admin@admin.com", form.password2.data)
+        SetPassword(email, form.password2.data)
         flask.flash('Password changed successfully', category="success")
         return flask.redirect(flask.url_for('login'))
 
-    return flask.render_template('resetPassword.html', form=form)
+    return flask.render_template('resetPassword.html', form=form, name=user.firstName)
 
 
 # LOGIN - /login/ 
@@ -944,6 +996,35 @@ def add_student():
 
     # Redirect back to home page when done
     return flask.redirect(flask.url_for('home'))
+
+@app.route('/add_facilitator', methods=['POST'])
+def add_facilitator():
+    email = flask.request.form['resetEmail']
+    unit_id = flask.request.args.get('id')
+    print(unit_id)
+
+    if not unit_id:
+        return flask.redirect(flask.url_for('home'))
+    
+    unit = GetUnit(unitID=unit_id)[0]
+    print(unit)
+
+    if valid_email(email):
+        if unit in current_user.unitsCoordinate: 
+            AddUser(email, "placeholder", "placeholder", generate_temp_password(), "facilitator")
+            AddUnitToFacilitator(email, unit_id)
+            send_email_ses("noreply@uwaengineeringprojects.com", email, 'welcome')
+
+    facilitators = GetUnit(unitID=unit_id)[0].facilitators
+    facilitator_list = []
+
+    for facilitator in facilitators:
+        info = {
+            "name": f"{facilitator.firstName} {facilitator.lastName}",
+            "email": facilitator.email,
+        }
+        facilitator_list.append(info)
+    return flask.render_template('editPeople.html', unit_id=str(unit_id), unit=unit, type="facilitators", facilitators=facilitator_list)
 
 @app.route('/get_session_details/<unitID>')
 @login_required

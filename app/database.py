@@ -122,6 +122,28 @@ def AddUser(email, firstName, lastName, passwordHash, userType):
         db.session.rollback()
         print(f'An error occurred: {e}')
 
+def UpdateUser(email, firstName, lastName, passwordHash): # no userType as this should already be set 
+
+    user = GetUser(email=email)
+    
+    if not user:
+        print("User not found")
+        return False
+
+    try:
+        user.firstName = firstName
+        user.lastName = lastName
+        user.set_password(passwordHash)  
+
+        db.session.commit()
+        print("User details updated")
+    
+    except IntegrityError as e:
+        db.session.rollback()
+        print(f'An error occurred: {e}')
+
+    return True
+
 
 def AddUnit(unitCode, unitName, studyPeriod, startDate, endDate, sessionNames, sessionTimes, comments, marks, consent, commentSuggestions):
 
@@ -592,3 +614,26 @@ def GetAccessibleUnitIDs(user_id):
 
     # Convert the result to a list of unit IDs
     return [unit.unitID for unit in accessible_units]
+
+def StoreToken(email, token):
+    user = GetUser(email=email)
+
+    if not user:
+        return None
+    
+    user.token = token
+    
+    try:
+        db.session.commit()
+        return token
+    except Exception as e:
+        db.session.rollback()
+        return None
+    
+def ValidateToken(email, token):
+    user = GetUser(email=email)
+
+    if not user:
+        return False
+    
+    return user.token == token

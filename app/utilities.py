@@ -4,10 +4,12 @@
 import csv
 import os
 import zipfile
+import string 
+import secrets
 from io import StringIO
 from app import app, db
-from app.models import Student, User, Attendance, Session, Unit
-from app.database import AddStudent, GetStudent, GetAttendance, GetSessionForExport, GetAllUsers, GetUnit, student_exists, GetUser, AddUser, AddUnitToFacilitator, GetAccessibleUnitIDs
+from .models import *
+from .database import *
 import pandas as pd
 
 # Set of functions used to read and populate students into the database from a csv file.
@@ -65,19 +67,21 @@ def import_facilitator_in_db(data, unit_id, current_user):
         
         #Add facilitator as user if not in DB
         if(not GetUser(email=facilitator)):
-
-            if '@' not in str(facilitator):
-                # not an email?
-                print("csv facilitator email not a valid email address")
-                return 
+            temp_password = generate_temp_password()
             print(f"Adding new user: {facilitator}")
-            AddUser(facilitator, "placeholder", "placeholder", facilitator, "facilitator")
-        #add this unit to facilator
+            AddUser(facilitator, "placeholder", "placeholder", temp_password, "facilitator")
+            send_email_ses("noreply@uwaengineeringprojects.com", facilitator, 'welcome')
+        # add this unit to facilator
         if(facilitator == current_user.email):
             print(f"skipping user {facilitator} as it is the currently logged in user.")
             continue
         print(f"Adding unit {unit_id} to facilitator {facilitator}")
         AddUnitToFacilitator(facilitator, unit_id)
+
+def generate_temp_password(length=12):
+    alphabet = string.ascii_letters + string.digits + string.punctuation
+    password = ''.join(secrets.choice(alphabet) for i in range(length))
+    return password
 
 # Process a .csv file by reading and then importing into "student" table. 
 # If current user is passsed, processes file as a facilitator file

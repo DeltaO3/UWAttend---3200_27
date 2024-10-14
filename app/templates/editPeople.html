@@ -47,8 +47,7 @@
 			</form>
 			{% else %}
 			<h4 class="text-center">Add Facilitator</h4>
-			<!-- !Put proper email password reset logic here! placeholder input  -->
-			<form>
+			<form action="/add_facilitator?id={{unit_id}}" method="POST">
 				<input id="resetEmail" class="form-control" name="resetEmail" type="text">
 				<div class="d-flex justify-content-center">
 					<input id="submit" class="btn btn-primary mt-3 col-6" name="submit" type="submit"
