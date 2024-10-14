@@ -2,7 +2,7 @@ import datetime
 from app import app, db
 from app.database import *
 from .emails import *
-from .utilites import generate_temp_password
+from .utilities import generate_temp_password
 
 with app.app_context():
 	print("Adding Adrian as an admin user")
