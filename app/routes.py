@@ -517,7 +517,7 @@ def admin():
 
         # if user doesn't exist, add them
         if user is None:
-            log_message("/admin submitting form : " + "[" + str(form.UserType.data) + "] [" + str(form.email.data) + "] [" + str(form.firstName.data) + "] [" + str(form.lastName.data) + "]")
+            log_message("/admin submitting form : [" + str(form.email.data) + "]")
             AddUser(userType=form.UserType.data, email=form.email.data, firstName="placeholder", lastName="placeholder", passwordHash=generate_temp_password())
             send_email_ses("noreply@uwaengineeringprojects.com", form.email.data, 'welcome')
             flask.flash("User added - confirmation email sent!")
