@@ -10,6 +10,7 @@ from io import StringIO
 from app import app, db
 from .models import *
 from .database import *
+from .emails import *
 import pandas as pd
 
 # Set of functions used to read and populate students into the database from a csv file.
